@@ -3,7 +3,15 @@ import { Link, useRouteError } from 'react-router-dom';
 
 const Error = () => {
 	const error = useRouteError();
-	console.log(error);
+	if (error.status === 404) {
+		return (
+			<div>
+				<h2>Ohh! Page not found</h2>
+				<p>We can't seem to find the page you are looking for</p>
+				<Link to="/dashboard">Back Home</Link>
+			</div>
+		);
+	}
 	return (
 		<main className="h-screen">
 			<div>
