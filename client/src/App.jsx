@@ -32,10 +32,7 @@ const router = createBrowserRouter([
 				path: `class`,
 				element: <ClassLayout />,
 			},
-			{
-				path: `alltests`,
-				element: <AllTests />,
-			},
+
 			{
 				path: `addtest`,
 				element: <AddTest />,
@@ -52,25 +49,37 @@ const router = createBrowserRouter([
 				path: `login`,
 				element: <Login />,
 			},
-			{
-				path: `profile`,
-				element: <Profile />,
-			},
+
 			{
 				path: `register`,
 				element: <Register />,
 			},
-			{
-				path: `stats`,
-				element: <Stats />,
-			},
-			{
-				path: `admin`,
-				element: <Admin />,
-			},
+
 			{
 				path: `dashboard`,
 				element: <DashboardLayout />,
+				children: [
+					{
+						index: true,
+						element: <AddTest />,
+					},
+					{
+						path: `stats`,
+						element: <Stats />,
+					},
+					{
+						path: `alltests`,
+						element: <AllTests />,
+					},
+					{
+						path: `profile`,
+						element: <Profile />,
+					},
+					{
+						path: `admin`,
+						element: <Admin />,
+					},
+				],
 			},
 		],
 	},

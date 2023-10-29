@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FormRow } from '../components';
 
 const Login = () => {
 	return (
@@ -13,36 +14,20 @@ const Login = () => {
 				<div className="flex justify-center align-middle">
 					<form action="" className="w-fit p-8 md:p-16">
 						{/* EMAIL */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="email"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								email
-							</label>
-							<input
-								type="text"
-								id="email"
-								name="email"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-							/>
-						</div>
+						<FormRow
+							type="email"
+							name="email"
+							labelText="email"
+							defaultValue="jimisw@email.com"
+						/>
 
 						{/* PASSWORD */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="password"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								password
-							</label>
-							<input
-								type="text"
-								id="password"
-								name="password"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-							/>
-						</div>
+						<FormRow
+							type="password"
+							name="password"
+							labelText="password"
+							defaultValue="1234567"
+						/>
 
 						{/* BUTTON */}
 						<div className="flex flex-col justify-center">
@@ -52,9 +37,12 @@ const Login = () => {
 								</button>
 							</Link>
 
-							<Link to="/register" className="text-blue-400 my-6">
-								<p className="text-center">signup</p>
-							</Link>
+							<div className="flex flex-row justify-center mt-6">
+								<p className="mx-2">Not yet a member?</p>
+								<Link to="/register" className="text-blue-400">
+									<p className="text-center">signup</p>
+								</Link>
+							</div>
 						</div>
 					</form>
 				</div>

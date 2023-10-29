@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FormRow } from '../components';
 
 const Register = () => {
 	return (
@@ -13,94 +14,44 @@ const Register = () => {
 				<div className="flex justify-center align-middle">
 					<form action="" className="w-fit p-8 md:p-16">
 						{/* FIRST NAME */}
-						<div className="flex flex-col m-1">
-							<label
-								htmlFor="first-name"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								first name
-							</label>
-							<input
-								type="text"
-								id="first-name"
-								name="first-name"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-								defaultValue="James"
-								required
-							/>
-						</div>
+						<FormRow
+							type="text"
+							name="firstName"
+							labelText="first name"
+							defaultValue="James"
+						/>
 
 						{/* LAST NAME */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="last-name"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								last name
-							</label>
-							<input
-								type="text"
-								id="last-name"
-								name="last-name"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-								defaultValue="SW"
-								required
-							/>
-						</div>
+						<FormRow
+							type="text"
+							name="lastName"
+							labelText="last name"
+							defaultValue="Saunders-Wyndham"
+						/>
 
 						{/* EMAIL */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="email"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								email
-							</label>
-							<input
-								type="email"
-								id="email"
-								name="email"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-								defaultValue="jim@email.com"
-								required
-							/>
-						</div>
+						<FormRow
+							type="email"
+							name="email"
+							labelText="email"
+							defaultValue="jimisw@email.com"
+						/>
 
 						{/* PASSWORD */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="password"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								password
-							</label>
-							<input
-								type="password"
-								id="password"
-								name="password"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-								defaultValue="12345"
-								required
-							/>
-						</div>
+						<FormRow
+							type="password"
+							name="password"
+							labelText="password"
+							defaultValue="1234567"
+						/>
 
 						{/* CONFIRM PASSWORD */}
-						<div className="flex flex-col justify-start align-middle m-1">
-							<label
-								htmlFor="confirm-password"
-								className="text-lg text-bold mb-1 px-2"
-							>
-								confirm password
-							</label>
-							<input
-								type="password"
-								id="confirm-password"
-								name="confirm-password"
-								className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
-								defaultValue="12345"
-								required
-							/>
-						</div>
+						<FormRow
+							type="password"
+							name="password"
+							labelText="password"
+							defaultValue="1234567"
+						/>
 
 						{/* BUTTON */}
 						<div className="flex flex-col justify-center">
@@ -109,10 +60,12 @@ const Register = () => {
 									signup
 								</button>
 							</Link>
-
-							<Link to="/login" className="text-blue-400 my-6">
-								<p className="text-center">login</p>
-							</Link>
+							<div className="flex flex-row justify-center mt-6">
+								<p className="mx-2">Already a member?</p>
+								<Link to="/login" className="text-blue-400">
+									<p className="text-center">login</p>
+								</Link>
+							</div>
 						</div>
 					</form>
 				</div>
