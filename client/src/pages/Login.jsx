@@ -4,7 +4,7 @@ import { FormRow } from '../components';
 
 const Login = () => {
 	return (
-		<section className="flex justify-center align-middle">
+		<section className="flex justify-center align-middle p-12 md:p-24">
 			<article className="flex flex-col w-full md:w-fit py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
 				<div className="w-full bg-blue-400 -mt-16 text-center">
 					<h1 className="m-6 text-3xl font-bold text-white">

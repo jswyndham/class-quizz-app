@@ -34,15 +34,15 @@ const router = createBrowserRouter([
 			},
 
 			{
-				path: `addtest`,
+				path: `add-test`,
 				element: <AddTest />,
 			},
 			{
-				path: `edittest`,
+				path: `edit-test`,
 				element: <EditTest />,
 			},
 			{
-				path: `deletetest`,
+				path: `delete-test`,
 				element: <DeleteTest />,
 			},
 			{
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
 						element: <Stats />,
 					},
 					{
-						path: `alltests`,
+						path: `all-tests`,
 						element: <AllTests />,
 					},
 					{
