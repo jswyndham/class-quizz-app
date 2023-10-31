@@ -37,7 +37,7 @@ const DashboardLayout = () => {
 			<main>
 				<div className="flex flex-row">
 					<BigSidebar />
-					<div className="flex flex-col">
+					<div className="flex">
 						<div>
 							<Navbar />
 						</div>

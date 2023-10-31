@@ -4,7 +4,7 @@ import { IoBarChartSharp } from 'react-icons/io5';
 import { MdQueryStats } from 'react-icons/md';
 import { FaWpforms } from 'react-icons/fa';
 import { ImProfile } from 'react-icons/im';
-import { MsAdminPanelSettings } from 'react-icons/md';
+import { MdAdminPanelSettings } from 'react-icons/md';
 
 const links = [
 	{
@@ -14,7 +14,7 @@ const links = [
 	},
 	{
 		text: 'all tests',
-		path: 'alltests',
+		path: 'all-tests',
 		icon: <MdQueryStats />,
 	},
 	{
@@ -30,7 +30,7 @@ const links = [
 	{
 		text: 'admin',
 		path: 'admin',
-		icon: <MsAdminPanelSettings />,
+		icon: <MdAdminPanelSettings />,
 	},
 ];
 
