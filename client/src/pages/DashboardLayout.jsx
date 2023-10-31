@@ -10,6 +10,7 @@ const DashboardLayout = () => {
 
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [isDarkTheme, setisDarkTheme] = useState(false);
+	const [showLogout, setShowLogout] = useState(false);
 
 	const toggleDarkTheme = () => {
 		console.log('toggle dark theme');
@@ -29,6 +30,9 @@ const DashboardLayout = () => {
 				user,
 				showSidebar,
 				isDarkTheme,
+				showLogout,
+				setShowLogout,
+				setisDarkTheme,
 				toggleDarkTheme,
 				toggleSidebar,
 				logoutUser,
