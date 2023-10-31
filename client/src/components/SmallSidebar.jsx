@@ -1,7 +1,6 @@
 import { FaTimes } from 'react-icons/fa';
 import { useDashboardContext } from '../pages/DashboardLayout';
-import links from '../utils/links';
-import { NavLink } from 'react-router-dom';
+import NavLinks from './NavLinks';
 
 const SmallSidebar = () => {
 	const { showSidebar, toggleSidebar } = useDashboardContext();
@@ -13,8 +12,8 @@ const SmallSidebar = () => {
 				<div
 					className={
 						showSidebar
-							? 'relative w-96 h-screen bg-blue-300 shadow-xl shadow-gray-800 transition-all ease-in-out duration-500 left-0'
-							: 'transition-all ease-in-out -left-96'
+							? 'w-96 h-screen bg-blue-300 shadow-xl shadow-gray-800 transition-all ease-in-out duration-300 left-0 z-50 fixed'
+							: 'w-96 h-screen transition-all ease-in-out duration-300 -left-96 z-50 fixed'
 					}
 				>
 					<div className="flex justify-between">
@@ -33,25 +32,8 @@ const SmallSidebar = () => {
 						</button>
 					</div>
 
-					{/* LINK LIST */}
-					<div className="flex flex-col mt-12 ml-10 text-blue-900 ">
-						{links.map((link) => {
-							const { text, path, icon } = link;
-							return (
-								<NavLink
-									to={path}
-									key={text}
-									className="flex flex-row hover:text-white"
-									onClick={toggleSidebar}
-								>
-									<span className="text-3xl my-6 mr-3">
-										{icon}
-									</span>
-									<span className="text-xl my-6">{text}</span>
-								</NavLink>
-							);
-						})}
-					</div>
+					{/* LINK LIST in NavLinks component*/}
+					<NavLinks />
 				</div>
 			</article>
 		</section>

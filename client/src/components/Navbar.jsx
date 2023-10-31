@@ -4,10 +4,10 @@ import { useDashboardContext } from '../pages/DashboardLayout';
 const Navbar = () => {
 	const { toggleSidebar } = useDashboardContext();
 	return (
-		<nav className="absolute top-0 right-0 flex justify-between h-24 w-screen xl:w-4/5 bg-blue-200 mb-12 pl-12 py-9 font-extrabold">
+		<nav className="absolute top-0 right-0 flex justify-between h-24 w-screen xl:w-5/6 2xl:w-11/12 bg-blue-200 mb-12 pl-12 py-9 font-extrabold">
 			<button
 				type="button"
-				className="xl:invisible mx-6 text-2xl text-blue-900"
+				className="xl:invisible text-2xl text-blue-900"
 				onClick={toggleSidebar}
 			>
 				<FaAlignLeft />
