@@ -18,6 +18,15 @@ import {
 	ClassLayout,
 } from './pages';
 
+export const checkDefaultTheme = () => {
+	const isDarkTheme = localStorage.getItem('darkMode') === 'true';
+	document.documentElement.classList.toggle('dark', isDarkTheme);
+
+	return isDarkTheme;
+};
+
+checkDefaultTheme();
+
 const router = createBrowserRouter([
 	{
 		path: '/',

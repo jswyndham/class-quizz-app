@@ -13,12 +13,12 @@ const Error = () => {
 		);
 	}
 	return (
-		<main className="h-screen">
+		<section className="h-screen">
 			<div>
 				<h1 className="mt-96 mb-6 text-red-700">Error</h1>
 				<Link to="/">Go back home</Link>
 			</div>
-		</main>
+		</section>
 	);
 };
 

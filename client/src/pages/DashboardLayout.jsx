@@ -1,19 +1,23 @@
 import { React, createContext, useContext, useState } from 'react';
 import { Outlet } from 'react-router';
 import { BigSidebar, SmallSidebar, Navbar } from '../components';
+import { checkDefaultTheme } from '../App';
 
 const DashboardContext = createContext();
 
-const DashboardLayout = () => {
+const DashboardLayout = ({ isDarkThemeEnabled }) => {
 	// temp
 	const user = { name: 'James' };
 
 	const [showSidebar, setShowSidebar] = useState(false);
-	const [isDarkTheme, setisDarkTheme] = useState(false);
+	const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());
 	const [showLogout, setShowLogout] = useState(false);
 
 	const toggleDarkTheme = () => {
-		console.log('toggle dark theme');
+		const newDarkTheme = !isDarkTheme;
+		setisDarkTheme(newDarkTheme);
+		document.body.classList.toggle('dark', newDarkTheme);
+		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
 	};
 
 	const toggleSidebar = () => {
@@ -38,8 +42,8 @@ const DashboardLayout = () => {
 				logoutUser,
 			}}
 		>
-			<main>
-				<div className="flex flex-row">
+			<section>
+				<article className="flex flex-row">
 					<BigSidebar />
 					<div className="flex">
 						<div>
@@ -50,8 +54,8 @@ const DashboardLayout = () => {
 							<Outlet />
 						</div>
 					</div>
-				</div>
-			</main>
+				</article>
+			</section>
 		</DashboardContext.Provider>
 	);
 };

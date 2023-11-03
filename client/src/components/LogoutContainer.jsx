@@ -1,25 +1,26 @@
 import { FaUserCircle, FaCaretDown } from 'react-icons/fa';
 import { useDashboardContext } from '../pages/DashboardLayout';
-import ProfileMenu from './ProfileMenu';
 
 const LogoutContainer = () => {
 	const { user, logoutUser } = useDashboardContext();
 
 	return (
-		<div>
-			<button
-				type="button"
-				className="flex flex-row justify-evenly pt-2 -mt-2 h-10 w-fit rounded-lg bg-white text-blue-800 drop-shadow-md shadow-sm shadow-gray-400"
-				onClick={() => setShowLogout(!showLogout)}
-			>
-				<FaUserCircle className="text-3xl ml-2 mr-6 -mt-1 pt-1" />
+		<article className="flex flex-col justify-end -mt-4">
+			<div className="flex flex-row justify-evenly pt-2 -mt-2 h-10 w-fit rounded-lg text-blue-800 dark:text-blue-300">
+				<FaUserCircle className="text-4xl ml-2 mr-4 -mt-1 pt-1 " />
 				{user?.name}
-				<FaCaretDown className="text-2xl ml-6 mr-2" />
-			</button>
-			<div>
-				<ProfileMenu />
+				<FaCaretDown className="text-2xl ml-6 mr-2 " />
 			</div>
-		</div>
+			<div className="flex justify-end">
+				<button
+					type="button"
+					onClick={logoutUser}
+					className="w-24 h-9 m-2 bg-blue-800 text-white rounded-lg drop-shadow-md shadow-md shadow-gray-400 hover:shadow-gray-500 hover:shadow-lg active:shadow-md active:bg-white active:text-blue-800 active:border-solid active:border-2 active:border-blue-800"
+				>
+					logout
+				</button>
+			</div>
+		</article>
 	);
 };
 

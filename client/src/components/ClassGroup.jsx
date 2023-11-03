@@ -20,13 +20,13 @@ const ClassGroup = () => {
 	};
 
 	return (
-		<main>
+		<section>
 			<div>
 				{classGroups.map((classes) => {
 					return <ClassDisplay key={classes.id} {...classes} />;
 				})}
 			</div>
-		</main>
+		</section>
 	);
 };
 

@@ -1,6 +1,7 @@
 import { FaTimes } from 'react-icons/fa';
 import { useDashboardContext } from '../pages/DashboardLayout';
 import NavLinks from './NavLinks';
+import ThemeToggle from './ThemeToggle';
 
 const SmallSidebar = () => {
 	const { showSidebar, toggleSidebar } = useDashboardContext();
@@ -31,6 +32,9 @@ const SmallSidebar = () => {
 							<FaTimes />
 						</button>
 					</div>
+
+					{/* TOGGLE DARK THEME */}
+					<ThemeToggle />
 
 					{/* LINK LIST in NavLinks component*/}
 					<NavLinks />
