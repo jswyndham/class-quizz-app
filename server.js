@@ -1,23 +1,28 @@
-import 'express-async-errors';
 import express from 'express';
+import 'express-async-errors';
 import morgan from 'morgan';
 import * as dotenv from 'dotenv';
-import classRouter from './routes/classRouter.js';
 import mongoose from 'mongoose';
 
+// routers
+import classRouter from './routes/classRouter.js';
+
+// middleware
+import errorHandlerMiddleWare from './middleWare/errorHandlerMiddleWare.js';
+
 const app = express();
-
-dotenv.config();
-
-if (process.env.NODE_ENV === 'development') {
-	app.use(morgan('dev'));
-}
 
 // MIDDLEWARE
 app.use(express.json());
 
 // ROUTER
 app.use('/api/v1/classes', classRouter);
+
+dotenv.config();
+
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan('dev'));
+}
 
 app.get('/', (req, res) => {
 	res.send('Hello World!');
@@ -34,10 +39,7 @@ app.use('*', (req, res) => {
 });
 
 // ERROR MIDDLEWARE
-app.use((err, req, res, next) => {
-	console.log(err);
-	res.status(500).json({ msg: 'Something went wrong on the server' });
-});
+app.use(errorHandlerMiddleWare);
 
 const port = process.env.PORT || 5100;
 
