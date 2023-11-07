@@ -1,4 +1,8 @@
 import { Router } from 'express';
+import {
+	validateClassInput,
+	validateIdParam,
+} from '../middleWare/validationMiddleware.js';
 
 const router = Router();
 
@@ -10,7 +14,12 @@ import {
 	deleteClass,
 } from '../controllers/classController.js';
 
-router.route('/').get(getAllClasses).post(createClass);
-router.route('/:id').get(getClass).patch(updateClass).delete(deleteClass);
+// validation middleware is imported and applied to the necessary routes
+router.route('/').get(getAllClasses).post(validateClassInput, createClass);
+router
+	.route('/:id')
+	.get(validateIdParam, getClass)
+	.patch(validateIdParam, validateClassInput, updateClass)
+	.delete(validateIdParam, deleteClass);
 
 export default router;
