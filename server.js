@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 // routers
 import classRouter from './routes/classRouter.js';
+import authRouter from './routes/authRouter.js';
 
 // middleware
 import errorHandlerMiddleware from './middleWare/errorHandlerMiddleware.js';
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // ROUTER
 app.use('/api/v1/classes', classRouter);
+app.use('/api/v1/auth', authRouter);
 
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));

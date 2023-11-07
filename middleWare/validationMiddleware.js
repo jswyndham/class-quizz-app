@@ -1,8 +1,9 @@
 import { body, param, validationResult } from 'express-validator';
 import { BadRequestError, NotFoundError } from '../errors/customErrors.js';
-import { CLASS_STATUS } from '../utils/constants.js';
+import { CLASS_STATUS, USER_STATUS } from '../utils/constants.js';
 import mongoose from 'mongoose';
 import ClassGroup from '../models/ClassModel.js';
+import User from '../models/UserModel.js';
 
 // VALIDATION FUNCTION
 
@@ -23,7 +24,7 @@ const withValidationErrors = (validateValues) => {
 	];
 };
 
-// VALIDATE CONDITIONS FOR CLASS SCHEMA INPUT VALUES
+// CLASS SCHEMA INPUT VALUES
 export const validateClassInput = withValidationErrors([
 	body('className').notEmpty().withMessage('Class name is required'),
 	body('subject').notEmpty().withMessage('Subject type is required'),
@@ -33,7 +34,7 @@ export const validateClassInput = withValidationErrors([
 		.withMessage('Invalid status value'),
 ]);
 
-// VALIDATE CONDITIONS FOR CLASS SCHEMA PARAM ID VALUE
+// CLASS SCHEMA PARAM ID VALUE
 export const validateIdParam = withValidationErrors([
 	// withMessage() is not required b/c custom() method is an async func
 	param('id').custom(async (value) => {
@@ -48,4 +49,30 @@ export const validateIdParam = withValidationErrors([
 				`Class with id ${value} could not be found.`
 			);
 	}),
+]);
+
+// REGISTER SCHEMA INPUT VALUES
+export const validateRegisterInput = withValidationErrors([
+	body('firstName').notEmpty().withMessage('First name is required'),
+	body('lastName').notEmpty().withMessage('Last name is required'),
+	body('email')
+		.notEmpty()
+		.withMessage('Email is required')
+		.isEmail()
+		.withMessage('Invalid email format')
+		.custom(async (email) => {
+			const user = await User.findOne({ email });
+			if (user) {
+				throw new BadRequestError('Email already exists');
+			}
+		}),
+	body('password')
+		.notEmpty()
+		.withMessage('Password is required')
+		.isLength({ min: 8 })
+		.withMessage('Password must be at leat 8 characters in length'),
+	body('location').notEmpty().withMessage('Location is required'),
+	body('role')
+		.isIn(Object.values(USER_STATUS))
+		.withMessage('Invalid role value'),
 ]);

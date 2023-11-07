@@ -10,3 +10,9 @@ export const CLASS_SORT_BY = {
 	ASCENDING: 'a-z',
 	DESCENDING: 'z-a',
 };
+
+export const USER_STATUS = {
+	STUDENT: 'student',
+	TEACHER: 'teacher',
+	ADMIN: 'admin',
+};
