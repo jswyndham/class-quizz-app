@@ -3,12 +3,13 @@ import { StatusCodes } from 'http-status-codes';
 
 // GET ALL CLASSES
 export const getAllClasses = async (req, res) => {
-	const classGroups = await ClassGroup.find();
+	const classGroups = await ClassGroup.find({ createdBy: req.user.userId });
 	res.status(StatusCodes.OK).json({ classGroups });
 };
 
 // CREATE CLASS
 export const createClass = async (req, res) => {
+	req.body.createdBy = req.user.userId;
 	const classGroup = await ClassGroup.create(req.body);
 	return res.status(StatusCodes.CREATED).json({ classGroup });
 };

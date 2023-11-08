@@ -1,12 +1,15 @@
 import { body, param, validationResult } from 'express-validator';
-import { BadRequestError, NotFoundError } from '../errors/customErrors.js';
+import {
+	BadRequestError,
+	NotFoundError,
+	UnauthorizedError,
+} from '../errors/customErrors.js';
 import { CLASS_STATUS, USER_STATUS } from '../utils/constants.js';
 import mongoose from 'mongoose';
 import ClassGroup from '../models/ClassModel.js';
 import User from '../models/UserModel.js';
 
 // VALIDATION FUNCTION
-
 const withValidationErrors = (validateValues) => {
 	return [
 		validateValues,
@@ -17,6 +20,11 @@ const withValidationErrors = (validateValues) => {
 				if (errorMessages[0].startsWith('Class with')) {
 					throw new NotFoundError(errorMessages);
 				}
+				if (errorMessages[0].startsWith('Not authorized')) {
+					throw new UnauthorizedError(
+						'Not authorized to access this route'
+					);
+				}
 				throw new BadRequestError(errorMessages);
 			}
 			next();
@@ -24,20 +32,10 @@ const withValidationErrors = (validateValues) => {
 	];
 };
 
-// CLASS SCHEMA INPUT VALUES
-export const validateClassInput = withValidationErrors([
-	body('className').notEmpty().withMessage('Class name is required'),
-	body('subject').notEmpty().withMessage('Subject type is required'),
-	body('school').notEmpty().withMessage('School name is required'),
-	body('classStatus')
-		.isIn(Object.values(CLASS_STATUS))
-		.withMessage('Invalid status value'),
-]);
-
 // CLASS SCHEMA PARAM ID VALUE
 export const validateIdParam = withValidationErrors([
-	// withMessage() is not required b/c custom() method is an async func
-	param('id').custom(async (value) => {
+	// withMessage() is not required b/c custom() method needed for async func
+	param('id').custom(async (value, { req }) => {
 		// INVALID MONGO ID
 		const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
 		if (!isValidMongoId) throw new BadRequestError('Invalid MongoDB id');
@@ -48,7 +46,22 @@ export const validateIdParam = withValidationErrors([
 			throw new NotFoundError(
 				`Class with id ${value} could not be found.`
 			);
+		// checking for admin or owner roles
+		const isAdmin = req.user.role === USER_STATUS.ADMIN;
+		const isOwner = req.user.userId === classGroup.createdBy.toString();
+		if (!isAdmin && !isOwner)
+			throw new UnauthorizedError('Not authorized to access this route');
 	}),
+]);
+
+// CLASS SCHEMA INPUT VALUES
+export const validateClassInput = withValidationErrors([
+	body('className').notEmpty().withMessage('Class name is required'),
+	body('subject').notEmpty().withMessage('Subject type is required'),
+	body('school').notEmpty().withMessage('School name is required'),
+	body('classStatus')
+		.isIn(Object.values(CLASS_STATUS))
+		.withMessage('Invalid status value'),
 ]);
 
 // REGISTER SCHEMA INPUT VALUES

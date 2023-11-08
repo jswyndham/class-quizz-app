@@ -12,10 +12,10 @@ const ClassSchema = new mongoose.Schema(
 			enum: Object.values(CLASS_STATUS),
 			default: CLASS_STATUS.CURRENT,
 		},
-		// quiz: {
-		// 	type: [Schema.Types.ObjectId],
-		// 	ref: 'Quiz',
-		// },
+		createdBy: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User',
+		},
 	},
 	{ timestamp: true }
 );

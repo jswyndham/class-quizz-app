@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 // routers
 import classRouter from './routes/classRouter.js';
@@ -11,14 +12,17 @@ import authRouter from './routes/authRouter.js';
 
 // middleware
 import errorHandlerMiddleware from './middleWare/errorHandlerMiddleware.js';
+import { authenticateUser } from './middleWare/authMiddleware.js';
 
+// EXPRESS
 const app = express();
 
 // MIDDLEWARE
 app.use(express.json());
+app.use(cookieParser());
 
 // ROUTER
-app.use('/api/v1/classes', classRouter);
+app.use('/api/v1/classes', authenticateUser, classRouter);
 app.use('/api/v1/auth', authRouter);
 
 if (process.env.NODE_ENV === 'development') {
