@@ -76,3 +76,13 @@ export const validateRegisterInput = withValidationErrors([
 		.isIn(Object.values(USER_STATUS))
 		.withMessage('Invalid role value'),
 ]);
+
+// LOGIN SCHEMA INPUT VALUES
+export const validateLoginInput = withValidationErrors([
+	body('email')
+		.notEmpty()
+		.withMessage('Email is required')
+		.isEmail()
+		.withMessage('Invalid email format'),
+	body('password').notEmpty().withMessage('Password is required'),
+]);
