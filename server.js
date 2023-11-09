@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 // routers
 import classRouter from './routes/classRouter.js';
 import authRouter from './routes/authRouter.js';
+import userRouter from './routes/userRouter.js';
 
 // middleware
 import errorHandlerMiddleware from './middleWare/errorHandlerMiddleware.js';
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 // ROUTER
 app.use('/api/v1/classes', authenticateUser, classRouter);
+app.use('/api/v1/users', authenticateUser, userRouter);
 app.use('/api/v1/auth', authRouter);
 
 if (process.env.NODE_ENV === 'development') {
