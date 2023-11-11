@@ -9,10 +9,16 @@ export const getCurrentUser = async (req, res) => {
 };
 
 export const getApplicationStats = async (req, res) => {
-	res.status(StatusCodes.OK).json({ msg: 'Application stats' });
+	const users = await User.countDocuments();
+	const classGroup = await ClassGroup.countDocuments();
+	res.status(StatusCodes.OK).json({ users, classGroup });
 };
 
 export const updateUser = async (req, res) => {
-	const updatedUser = await User.findByIdAndUpdate(req.user.userId, req.body);
+	const obj = { ...req.body };
+	// don't include password in user info request
+	delete obj.password;
+	console.log(obj);
+	const updatedUser = await User.findByIdAndUpdate(req.user.userId, obj);
 	res.status(StatusCodes.OK).json({ msg: 'Update user' });
 };

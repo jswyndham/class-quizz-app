@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
 	},
 });
 
+// don't show password for user
 UserSchema.methods.toJSON = function () {
 	let obj = this.toObject();
 	delete obj.password;
