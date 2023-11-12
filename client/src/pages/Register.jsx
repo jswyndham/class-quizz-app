@@ -1,6 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Form, redirect, useNavigate, Link } from 'react-router-dom';
 import { FormRow } from '../components';
+
+export const action = async (data) => {
+	console.log(data);
+	return null;
+};
 
 const Register = () => {
 	return (
@@ -12,7 +17,7 @@ const Register = () => {
 					</h1>
 				</div>
 				<div className="flex justify-center align-middle">
-					<form action="" className="w-fit p-8 md:p-16">
+					<Form method="post" className="w-fit p-8 md:p-16">
 						{/* FIRST NAME */}
 						<FormRow
 							type="text"
@@ -48,8 +53,8 @@ const Register = () => {
 						{/* CONFIRM PASSWORD */}
 						<FormRow
 							type="password"
-							name="password"
-							labelText="password"
+							name="confirmPassword"
+							labelText="confirm password"
 							defaultValue="1234567"
 						/>
 
@@ -67,7 +72,7 @@ const Register = () => {
 								</Link>
 							</div>
 						</div>
-					</form>
+					</Form>
 				</div>
 			</article>
 		</section>

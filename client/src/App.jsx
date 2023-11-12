@@ -1,5 +1,4 @@
 import './App.css';
-import ClassGroup from './components/ClassGroup';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import {
 	HomeLayout,
@@ -17,6 +16,8 @@ import {
 	DashboardLayout,
 	ClassLayout,
 } from './pages';
+
+import { action as registerAction } from './pages/Register';
 
 export const checkDefaultTheme = () => {
 	const isDarkTheme = localStorage.getItem('darkMode') === 'true';
@@ -60,8 +61,9 @@ const router = createBrowserRouter([
 			},
 
 			{
-				path: `register`,
+				path: 'register',
 				element: <Register />,
+				action: registerAction,
 			},
 
 			{
@@ -96,19 +98,6 @@ const router = createBrowserRouter([
 
 function App() {
 	return <RouterProvider router={router} />;
-
-	// (
-	// 	<main className="flex flex-row">
-	// 		<section>
-	// 			<h1 className="text-4xl font-bold text-red-600">
-	// 				Class Display
-	// 			</h1>
-	// 		</section>
-	// 		<section>
-	// 			<ClassGroup />
-	// 		</section>
-	// 	</main>
-	// );
 }
 
 export default App;
