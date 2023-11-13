@@ -8,13 +8,13 @@ import { MdAdminPanelSettings } from 'react-icons/md';
 
 const links = [
 	{
-		text: 'add test',
+		text: 'add class',
 		path: '.',
 		icon: <FaWpforms />,
 	},
 	{
-		text: 'all tests',
-		path: 'all-tests',
+		text: 'all classes',
+		path: 'all-classes',
 		icon: <MdQueryStats />,
 	},
 	{

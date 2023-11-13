@@ -18,7 +18,7 @@ const Login = () => {
 							type="email"
 							name="email"
 							labelText="email"
-							defaultValue="jimisw@email.com"
+							defaultValue="jsw@email.com"
 						/>
 
 						{/* PASSWORD */}
@@ -26,7 +26,7 @@ const Login = () => {
 							type="password"
 							name="password"
 							labelText="password"
-							defaultValue="1234567"
+							defaultValue="password1234"
 						/>
 
 						{/* BUTTON */}
