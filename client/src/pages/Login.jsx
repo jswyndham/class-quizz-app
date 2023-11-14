@@ -1,8 +1,40 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {
+	Form,
+	Link,
+	redirect,
+	useActionData,
+	useNavigation,
+} from 'react-router-dom';
 import { FormRow } from '../components';
+import customFetch from '../utils/customFetch';
+import { toast } from 'react-toastify';
+
+// REACT ROUTER ACTION
+export const action = async ({ request }) => {
+	const formData = await request.formData();
+	const data = Object.fromEntries(formData);
+	const errors = { msg: '' };
+	if (data.password.length < 4) {
+		errors.msg = 'password must be more that 4 characters';
+		return errors;
+	}
+	try {
+		await customFetch.post('/auth/login', data);
+		toast.success('Login successful');
+		return redirect('/dashboard');
+	} catch (error) {
+		//toast.error(error?.response?.data?.msg);
+		errors.msg = error?.response?.data?.msg;
+		return errors;
+	}
+};
 
 const Login = () => {
+	const errors = useActionData();
+	const navigation = useNavigation();
+	const isSubmitting = navigation.state === 'submitting';
+
 	return (
 		<section className="flex justify-center align-middle p-12 md:p-24">
 			<article className="flex flex-col w-full md:w-fit py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
@@ -12,7 +44,7 @@ const Login = () => {
 					</h1>
 				</div>
 				<div className="flex justify-center align-middle">
-					<form action="" className="w-fit p-8 md:p-16">
+					<Form method="post" className="w-fit p-8 md:p-16">
 						{/* EMAIL */}
 						<FormRow
 							type="email"
@@ -31,12 +63,16 @@ const Login = () => {
 
 						{/* BUTTON */}
 						<div className="flex flex-col justify-center">
-							<Link to="/login">
-								<button className="h-8 w-96 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl">
-									login
-								</button>
-							</Link>
-
+							<button
+								type="submit"
+								disabled={isSubmitting}
+								className="h-8 w-96 mt-10 mb-4 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+							>
+								{isSubmitting ? 'submitting...' : 'login'}
+							</button>
+							{errors?.msg && (
+								<p style={{ color: 'red' }}>{errors.msg}</p>
+							)}
 							<div className="flex flex-row justify-center mt-6">
 								<p className="mx-2">Not yet a member?</p>
 								<Link to="/register" className="text-blue-400">
@@ -44,7 +80,7 @@ const Login = () => {
 								</Link>
 							</div>
 						</div>
-					</form>
+					</Form>
 				</div>
 			</article>
 		</section>

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Form, Link } from 'react-router-dom';
+import { Form, redirect, useNavigation, Link } from 'react-router-dom';
 import { FormRow } from '../components';
-import customFetch from '../utils/customFetch';
+import customFetch from '../utils/customFetch.js';
+import { toast } from 'react-toastify';
 
 // access all fields using fromData() method and turn entries into an object
 export const action = async ({ request }) => {
@@ -10,15 +11,20 @@ export const action = async ({ request }) => {
 
 	try {
 		await customFetch.post('/auth/register', data);
-
-		return null;
+		toast.success('Registration successful');
+		return redirect('/login');
 	} catch (error) {
 		console.log(error);
+		toast.error(error?.response?.data?.msg);
 		return error;
 	}
 };
 
 const Register = () => {
+	const navigation = useNavigation();
+	console.log(navigation);
+	const isSubmitting = navigation.state === 'submitting';
+
 	return (
 		<section className="flex justify-center align-middle p-12 md:p-24">
 			<article className="flex flex-col w-full md:w-fit py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
@@ -78,9 +84,10 @@ const Register = () => {
 						<div className="flex flex-col justify-center">
 							<button
 								type="submit"
+								disabled={isSubmitting}
 								className="h-8 w-96 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 							>
-								signup
+								{isSubmitting ? 'submitting...' : 'submit'}
 							</button>
 
 							<div className="flex flex-row justify-center mt-6">

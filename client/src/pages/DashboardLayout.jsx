@@ -1,13 +1,22 @@
 import { React, createContext, useContext, useState } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, redirect, useLoaderData } from 'react-router-dom';
 import { BigSidebar, SmallSidebar, Navbar } from '../components';
 import { checkDefaultTheme } from '../App';
+import customFetch from '../utils/customFetch.js';
+
+export const loader = async () => {
+	try {
+		const { data } = await customFetch.get('/users/current-user');
+		return data;
+	} catch (error) {
+		return redirect('/');
+	}
+};
 
 const DashboardContext = createContext();
 
 const DashboardLayout = ({ isDarkThemeEnabled }) => {
-	// temp
-	const user = { name: 'James' };
+	const { user } = useLoaderData();
 
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());

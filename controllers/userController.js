@@ -16,7 +16,7 @@ export const getApplicationStats = async (req, res) => {
 
 export const updateUser = async (req, res) => {
 	const obj = { ...req.body };
-	// don't include password in user info request
+	// delete = don't include password in user info request
 	delete obj.password;
 	console.log(obj);
 	const updatedUser = await User.findByIdAndUpdate(req.user.userId, obj);

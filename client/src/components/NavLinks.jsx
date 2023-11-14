@@ -3,7 +3,7 @@ import links from '../utils/links';
 import { NavLink } from 'react-router-dom';
 
 const NavLinks = () => {
-	const { toggleSidebar, user } = useDashboardContext();
+	const { toggleSidebar } = useDashboardContext();
 	return (
 		<div className="flex flex-col mt-8 ml-10 text-blue-900 dark:text-blue-300">
 			{links.map((link) => {
