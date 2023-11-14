@@ -1,5 +1,5 @@
 import { React, createContext, useContext, useState } from 'react';
-import { Outlet, redirect, useLoaderData } from 'react-router-dom';
+import { Outlet, redirect, useLoaderData, useNavigate } from 'react-router-dom';
 import { BigSidebar, SmallSidebar, Navbar } from '../components';
 import { checkDefaultTheme } from '../App';
 import customFetch from '../utils/customFetch.js';
@@ -17,11 +17,12 @@ const DashboardContext = createContext();
 
 const DashboardLayout = ({ isDarkThemeEnabled }) => {
 	const { user } = useLoaderData();
-
+	const navigate = useNavigate();
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());
 	const [showLogout, setShowLogout] = useState(false);
 
+	// TOGGLE DARK THEME
 	const toggleDarkTheme = () => {
 		const newDarkTheme = !isDarkTheme;
 		setisDarkTheme(newDarkTheme);
@@ -29,12 +30,16 @@ const DashboardLayout = ({ isDarkThemeEnabled }) => {
 		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
 	};
 
+	// TOGGLE MENU
 	const toggleSidebar = () => {
 		setShowSidebar(!showSidebar);
 	};
 
+	// LOGOUT
 	const logoutUser = async () => {
-		console.log('logout user');
+		navigate('/');
+		await customFetch.get('/auth/logout');
+		toast.success('Logging out...');
 	};
 
 	return (
@@ -60,7 +65,7 @@ const DashboardLayout = ({ isDarkThemeEnabled }) => {
 						</div>
 						<div>
 							<SmallSidebar />
-							<Outlet />
+							<Outlet constect={{ user }} />
 						</div>
 					</div>
 				</article>

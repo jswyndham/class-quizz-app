@@ -6,7 +6,7 @@ export { default as Login } from './Login';
 export { default as Error } from './Error';
 export { default as Stats } from './Stats';
 export { default as AllTests } from './AllTests';
-export { default as AddTest } from './AddTest';
+export { default as AddClass } from './AddClass';
 export { default as EditTest } from './EditTest';
 export { default as DeleteTest } from './DeleteTest';
 export { default as Profile } from './Profile';

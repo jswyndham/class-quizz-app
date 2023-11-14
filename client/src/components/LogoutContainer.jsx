@@ -8,7 +8,7 @@ const LogoutContainer = () => {
 		<article className="flex flex-col justify-end -mt-4">
 			<div className="flex flex-row justify-evenly pt-2 -mt-2 h-10 w-fit rounded-lg text-blue-800 dark:text-blue-300">
 				<FaUserCircle className="text-4xl ml-2 mr-4 -mt-1 pt-1 " />
-				{user?.name}
+				{user?.firstName}
 				<FaCaretDown className="text-2xl ml-6 mr-2 " />
 			</div>
 			<div className="flex justify-end">

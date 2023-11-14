@@ -7,7 +7,7 @@ import {
 	Login,
 	Profile,
 	Admin,
-	AddTest,
+	AddClass,
 	AllTests,
 	DeleteTest,
 	EditTest,
@@ -46,8 +46,8 @@ const router = createBrowserRouter([
 			},
 
 			{
-				path: `add-test`,
-				element: <AddTest />,
+				path: `add-class`,
+				element: <AddClass />,
 			},
 			{
 				path: `edit-test`,
@@ -76,7 +76,7 @@ const router = createBrowserRouter([
 				children: [
 					{
 						index: true,
-						element: <AddTest />,
+						element: <AddClass />,
 					},
 					{
 						path: `stats`,
