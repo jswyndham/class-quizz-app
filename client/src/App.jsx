@@ -8,7 +8,7 @@ import {
 	Profile,
 	Admin,
 	AddClass,
-	AllTests,
+	AllClasses,
 	DeleteTest,
 	EditTest,
 	Error,
@@ -83,8 +83,8 @@ const router = createBrowserRouter([
 						element: <Stats />,
 					},
 					{
-						path: `all-tests`,
-						element: <AllTests />,
+						path: `all-classes`,
+						element: <AllClasses />,
 					},
 					{
 						path: `profile`,

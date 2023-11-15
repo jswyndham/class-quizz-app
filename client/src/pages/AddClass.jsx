@@ -1,4 +1,4 @@
-import { FormRow } from '../components';
+import { FormRow, FormRowSelect } from '../components';
 import { useOutletContext } from 'react-router';
 import { CLASS_STATUS } from '../../../utils/constants';
 import { Form, useNavigation, redirect } from 'react-router-dom';
@@ -11,9 +11,9 @@ const AddClass = () => {
 	const isSubmitting = navigation.state === 'submitting';
 
 	return (
-		<section className="w-screen h-screen mx-2 my-24 md:my-16 lg:mx-24 flex justify-center align-middle p-12 md:p-24">
-			<article className="flex flex-col w-full h-5/6 md:w-5/6 md:h-1/2 py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
-				<div className="w-full bg-blue-400 -mt-16 text-center rounded-t-xl">
+		<section className="flex justify-center align-middle w-screen h-screen mt-24 md:my-16  pt-4 md:pt-12 ">
+			<article className="flex flex-col w-screen h-full overflow-hidden">
+				<div className="w-full bg-blue-400  text-center">
 					<h1 className="m-6 text-3xl font-bold text-white">
 						Add Class
 					</h1>
@@ -21,18 +21,28 @@ const AddClass = () => {
 				<div className="flex justify-center align-middle">
 					<Form
 						method="post"
-						className="flex flex-col p-24 drop-shadow-lg"
+						className="flex flex-col p-24 drop-shadow-lg 2xl:ml-20"
 					>
-						<div className="w-fit m-4">
-							<FormRow
-								type="text"
-								name="className"
-								labelText="Class Title"
-								placeholder="class title"
-							/>
+						<div className="flex flex-col 2xl:flex-row mx-4 my-1">
+							<div className="w-fit mx-4 my-2">
+								<FormRow
+									type="text"
+									name="className"
+									labelText="Class Title"
+									placeholder="class title"
+								/>
+							</div>
+							<div className="mx-4 my-2">
+								<FormRowSelect
+									labelText="Class Status"
+									name="classStatus"
+									defaultValue={CLASS_STATUS.CURRENT}
+									list={Object.values(CLASS_STATUS)}
+								/>
+							</div>
 						</div>
-						<div className="flex flex-col xl:flex-row m-4">
-							<div className="xl:mr-2">
+						<div className="flex flex-col 2xl:flex-row mx-4">
+							<div className="mx-4 my-2">
 								<FormRow
 									type="text"
 									name="subject"
@@ -41,7 +51,7 @@ const AddClass = () => {
 								/>
 							</div>
 
-							<div className="xl:ml-2">
+							<div className="mx-4 my-2">
 								<FormRow
 									type="text"
 									name="school"
@@ -49,11 +59,13 @@ const AddClass = () => {
 									placeholder="school name"
 								/>
 							</div>
+							<button
+								type="submit"
+								className="h-8 w-full 2xl:w-60 mt-8 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+							>
+								{isSubmitting ? 'submitting...' : 'create'}
+							</button>
 						</div>
-
-						<button className="h-8 w-60 mt-6 mx-4 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl">
-							{isSubmitting ? 'submitting...' : 'create'}
-						</button>
 					</Form>
 				</div>
 			</article>

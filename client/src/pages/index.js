@@ -5,7 +5,7 @@ export { default as Register } from './Register';
 export { default as Login } from './Login';
 export { default as Error } from './Error';
 export { default as Stats } from './Stats';
-export { default as AllTests } from './AllTests';
+export { default as AllClasses } from './AllClasses';
 export { default as AddClass } from './AddClass';
 export { default as EditTest } from './EditTest';
 export { default as DeleteTest } from './DeleteTest';

@@ -65,7 +65,7 @@ const DashboardLayout = ({ isDarkThemeEnabled }) => {
 						</div>
 						<div>
 							<SmallSidebar />
-							<Outlet constect={{ user }} />
+							<Outlet context={{ user }} />
 						</div>
 					</div>
 				</article>

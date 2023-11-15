@@ -2,7 +2,7 @@ import { useDashboardContext } from '../pages/DashboardLayout';
 import links from '../utils/links';
 import { NavLink } from 'react-router-dom';
 
-const NavLinks = () => {
+const NavLinks = ({ isBigSidebar }) => {
 	const { toggleSidebar } = useDashboardContext();
 	return (
 		<div className="flex flex-col mt-8 ml-10 text-blue-900 dark:text-blue-300">
@@ -13,7 +13,7 @@ const NavLinks = () => {
 						to={path}
 						key={text}
 						className="flex flex-row hover:text-white"
-						onClick={toggleSidebar}
+						onClick={isBigSidebar ? null : toggleSidebar}
 					>
 						<span className="text-3xl my-6 mr-3">{icon}</span>
 						<span className="text-xl my-6">{text}</span>

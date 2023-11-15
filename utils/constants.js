@@ -1,7 +1,7 @@
 export const CLASS_STATUS = {
 	CURRENT: 'current',
-	FINISHED: 'finished',
 	UPCOMING: 'upcoming',
+	FINISHED: 'finished',
 };
 
 export const CLASS_SORT_BY = {
