@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 const NavLinks = ({ isBigSidebar }) => {
 	const { toggleSidebar } = useDashboardContext();
 	return (
-		<div className="flex flex-col mt-8 ml-10 text-blue-900 dark:text-blue-300">
+		<div className="flex flex-col mt-8 mx-12 text-blue-900 dark:text-blue-300">
 			{links.map((link) => {
 				const { text, path, icon } = link;
 				return (

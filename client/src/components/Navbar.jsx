@@ -5,7 +5,7 @@ import LogoutContainer from './LogoutContainer';
 const Navbar = () => {
 	const { toggleSidebar } = useDashboardContext();
 	return (
-		<nav className="absolute top-0 right-0 flex justify-between h-28 w-screen xl:w-5/6 2xl:w-11/12 bg-blue-200 dark:bg-gray-800 pl-12 py-9 font-extrabold">
+		<nav className="absolute top-0 right-0 flex justify-between h-28 w-screen bg-blue-200 dark:bg-gray-800 pl-12 py-9 font-extrabold">
 			<button
 				type="button"
 				className="xl:invisible text-2xl text-blue-900"
