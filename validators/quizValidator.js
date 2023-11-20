@@ -6,7 +6,7 @@ import {
 } from '../errors/customErrors.js';
 import { USER_STATUS } from '../utils/constants.js';
 import mongoose from 'mongoose';
-import ClassGroup from '../models/ClassModel.js';
+import Quiz from '../models/QuizModel.js';
 
 // VALIDATION FUNCTION
 const withValidationErrors = (validateValues) => {
@@ -40,8 +40,8 @@ export const validateIdParam = withValidationErrors([
 		if (!isValidMongoId) throw new BadRequestError('Invalid MongoDB id');
 
 		// INVALID ID
-		const classGroup = await ClassGroup.findById(value);
-		if (!classGroup)
+		const quiz = await Quiz.findById(value);
+		if (!quiz)
 			throw new NotFoundError(
 				`Class with id ${value} could not be found.`
 			);
@@ -58,7 +58,25 @@ export const validateQuizInput = withValidationErrors([
 	body('quizTitle')
 		.notEmpty()
 		.withMessage('A title for your quiz is required'),
-	body('newQuestion')
+	body('questions').notEmpty().withMessage('No questions prepared'),
+	body('questions.*.questionText')
 		.notEmpty()
-		.withMessage('You cuurently have no questions prepared'),
+		.withMessage('You must include a question'),
+	body('questions.*.answerType')
+		.notEmpty()
+		.withMessage('Please choose a question type'),
+	body('questions.*.correctAnswer')
+		.notEmpty()
+		.withMessage('You must include an answer'),
+	body('questions.*.points')
+		.optional()
+		.isInt({ min: 1 })
+		.withMessage('Points must be a positive value'),
+	body('questions.*.options').optional().isArray(),
+	body('questions.*.options.*.optionText')
+		.notEmpty()
+		.withMessage('Option text is required'),
+	body('questions.*.options.*.isCorrect')
+		.isBoolean()
+		.withMessage('isCorrect must be a boolean'),
 ]);

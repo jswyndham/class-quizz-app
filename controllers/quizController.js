@@ -7,14 +7,14 @@ export const getAllQuizzes = async (req, res) => {
 };
 
 // CREATE NEW QUIZ
-export const createClass = async (req, res) => {
+export const createQuiz = async (req, res) => {
 	req.body.createdBy = req.user.userId;
 	const quiz = await Quiz.create(req.body);
 	return res.status(StatusCodes.CREATED).json({ quiz });
 };
 
 // GET SINGLE QUIZ
-export const getClass = async (req, res) => {
+export const getQuiz = async (req, res) => {
 	const quiz = await Quiz.findById(req.params.id);
 	res.status(StatusCodes.OK).json({ quiz });
 };
