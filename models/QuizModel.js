@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
 
 const QuizSchema = new mongoose.Schema({
-	question: String,
-	answers: {
-		type: String,
-		enum: [
-			'multiple choice',
-			'short written answer',
-			'long written answer',
-		],
+	quizTitle: String,
+	newQuestion: {
+		type: mongoose.Types.ObjectId,
+		ref: 'Question',
 	},
-	correctAnswer: String,
+	createdBy: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
+	},
 });
 
 export default mongoose.model('Quiz', QuizSchema);

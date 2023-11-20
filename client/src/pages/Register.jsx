@@ -1,8 +1,9 @@
 import React from 'react';
 import { Form, redirect, useNavigation, Link } from 'react-router-dom';
-import { FormRow } from '../components';
+import { FormRow, FormRowSelect } from '../components';
 import customFetch from '../utils/customFetch.js';
 import { toast } from 'react-toastify';
+import { USER_STATUS } from '../../../utils/constants.js';
 
 // access all fields using fromData() method and turn entries into an object
 export const action = async ({ request }) => {
@@ -21,8 +22,13 @@ export const action = async ({ request }) => {
 };
 
 const Register = () => {
+	// filter out admin as status option
+	const statusOptions = Object.values(USER_STATUS).filter(
+		(status) => status !== USER_STATUS.ADMIN
+	);
+
 	const navigation = useNavigation();
-	console.log(navigation);
+
 	const isSubmitting = navigation.state === 'submitting';
 
 	return (
@@ -73,12 +79,14 @@ const Register = () => {
 						/>
 
 						{/* ROLE */}
-						<FormRow
-							type="text"
-							name="role"
-							labelText="role"
-							defaultValue="teacher"
-						/>
+						<div className="mx-4 my-2">
+							<FormRowSelect
+								labelText="User Role"
+								name="userStatus"
+								defaultValue={USER_STATUS.STUDENT}
+								list={statusOptions}
+							/>
+						</div>
 
 						{/* BUTTON */}
 						<div className="flex flex-col justify-center">

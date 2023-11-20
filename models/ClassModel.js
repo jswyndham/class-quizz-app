@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { CLASS_STATUS } from '../utils/constants.js';
-// import QuizModel from './QuizModel';
 
 const ClassSchema = new mongoose.Schema(
 	{

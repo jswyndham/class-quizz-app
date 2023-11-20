@@ -16,3 +16,9 @@ export const USER_STATUS = {
 	TEACHER: 'teacher',
 	ADMIN: 'admin',
 };
+
+export const QUESTION_TYPE = {
+	MULTIPLE_CHOICE: 'multiple choice',
+	SHORT_ANSWER: 'short written answer',
+	LONG_ANSWER: 'long written answer',
+};

@@ -10,17 +10,17 @@ export const authenticateUser = (req, res, next) => {
 
 	try {
 		// Attach the user info as an object to the verification request
-		const { userId, role } = verifyJWT(token);
-		req.user = { userId, role };
+		const { userId, userStatus } = verifyJWT(token);
+		req.user = { userId, userStatus };
 		next();
 	} catch (error) {
 		throw new UnauthenticatedError('Authenication invalid');
 	}
 };
 
-export const authorizePermissions = (...role) => {
+export const authorizePermissions = (...userStatus) => {
 	return (req, res, next) => {
-		if (!role.includes(req.user.role)) {
+		if (!userStatus.includes(req.user.userStatus)) {
 			throw new UnauthorizedError('Unauthorized to access this route');
 		}
 		next();

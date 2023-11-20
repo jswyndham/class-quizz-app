@@ -1,5 +1,5 @@
 import { ClassContainer, SearchContainer } from '../components';
-import customFetch from '../utils/customFetch';
+import customFetch from '../utils/customFetch.js';
 import { useLoaderData } from 'react-router';
 import { useContext, createContext } from 'react';
 import { toast } from 'react-toastify';

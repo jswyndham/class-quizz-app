@@ -47,7 +47,7 @@ export const validateIdParam = withValidationErrors([
 				`Class with id ${value} could not be found.`
 			);
 		// checking for admin or owner roles
-		const isAdmin = req.user.role === USER_STATUS.ADMIN;
+		const isAdmin = req.user.userStatus === USER_STATUS.ADMIN;
 		const isOwner = req.user.userId === classGroup.createdBy.toString();
 		if (!isAdmin && !isOwner)
 			throw new UnauthorizedError('Not authorized to access this route');
@@ -85,9 +85,6 @@ export const validateRegisterInput = withValidationErrors([
 		.isLength({ min: 8 })
 		.withMessage('Password must be at leat 8 characters in length'),
 	body('location').notEmpty().withMessage('Location is required'),
-	body('role')
-		.isIn(Object.values(USER_STATUS))
-		.withMessage('Invalid role value'),
 ]);
 
 // LOGIN SCHEMA INPUT VALUES
@@ -116,4 +113,14 @@ export const validateUpdateUserInput = withValidationErrors([
 			}
 		}),
 	body('location').notEmpty().withMessage('Location is required'),
+]);
+
+// QUIZ SCHEMA INPUT VALUES
+export const validateQuizInput = withValidationErrors([
+	body('quizTitle')
+		.notEmpty()
+		.withMessage('A title for your quiz is required'),
+	body('newQuestion')
+		.notEmpty()
+		.withMessage('You cuurently have no questions prepared'),
 ]);

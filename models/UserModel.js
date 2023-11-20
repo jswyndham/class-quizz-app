@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { USER_STATUS } from '../utils/constants.js';
 
 const UserSchema = new mongoose.Schema({
 	firstName: {
@@ -9,9 +10,9 @@ const UserSchema = new mongoose.Schema({
 	email: String,
 	password: String,
 	location: String,
-	role: {
+	userStatus: {
 		type: String,
-		enum: ['student', 'teacher', 'admin'],
+		enum: Object.values(USER_STATUS),
 	},
 });
 

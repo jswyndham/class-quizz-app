@@ -8,7 +8,9 @@ import { createJWT } from '../utils/tokenUtils.js';
 // REGISTER USER
 export const register = async (req, res) => {
 	const isFirstAccount = (await User.countDocuments()) === 0;
-	req.body.role = isFirstAccount ? USER_STATUS.ADMIN : USER_STATUS.TEACHER;
+	if (isFirstAccount) {
+		req.body.userStatus = USER_STATUS.ADMIN;
+	}
 
 	// password encryption
 	const hashedPassword = await hashPassword(req.body.password);
@@ -28,7 +30,7 @@ export const login = async (req, res) => {
 
 	if (!isValidUser) throw new UnauthenticatedError('Invalid login');
 
-	const token = createJWT({ userId: user._id, role: user.role });
+	const token = createJWT({ userId: user._id, userStatus: user.userStatus });
 
 	const oneDay = 1000 * 60 * 60 * 24;
 
