@@ -114,13 +114,3 @@ export const validateUpdateUserInput = withValidationErrors([
 		}),
 	body('location').notEmpty().withMessage('Location is required'),
 ]);
-
-// QUIZ SCHEMA INPUT VALUES
-export const validateQuizInput = withValidationErrors([
-	body('quizTitle')
-		.notEmpty()
-		.withMessage('A title for your quiz is required'),
-	body('newQuestion')
-		.notEmpty()
-		.withMessage('You cuurently have no questions prepared'),
-]);

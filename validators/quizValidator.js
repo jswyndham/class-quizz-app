@@ -32,7 +32,7 @@ const withValidationErrors = (validateValues) => {
 };
 
 // QUIZ SCHEMA PARAM ID VALUE
-export const validateIdParam = withValidationErrors([
+export const validateQuizIdParam = withValidationErrors([
 	// withMessage() is not required b/c custom() method needed for async func
 	param('id').custom(async (value, { req }) => {
 		// INVALID MONGO ID
@@ -43,11 +43,11 @@ export const validateIdParam = withValidationErrors([
 		const quiz = await Quiz.findById(value);
 		if (!quiz)
 			throw new NotFoundError(
-				`Class with id ${value} could not be found.`
+				`Quiz with id ${value} could not be found.`
 			);
 		// checking for admin or owner roles
 		const isAdmin = req.user.userStatus === USER_STATUS.ADMIN;
-		const isOwner = req.user.userId === classGroup.createdBy.toString();
+		const isOwner = req.user.userId === quiz.createdBy.toString();
 		if (!isAdmin && !isOwner)
 			throw new UnauthorizedError('Not authorized to access this route');
 	}),
@@ -63,9 +63,7 @@ export const validateQuizInput = withValidationErrors([
 	body('questions.*.answerType')
 		.notEmpty()
 		.withMessage('Please choose a question type'),
-	body('questions.*.correctAnswer')
-		.notEmpty()
-		.withMessage('You must include an answer'),
+	body('questions.*.correctAnswer').optional(),
 	body('questions.*.points')
 		.optional()
 		.isInt({ min: 1 })

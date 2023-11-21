@@ -1,7 +1,4 @@
 import { Router } from 'express';
-
-const router = Router();
-
 import {
 	getQuiz,
 	getAllQuizzes,
@@ -9,8 +6,18 @@ import {
 	updateQuiz,
 	deleteQuiz,
 } from '../controllers/quizController.js';
+import {
+	validateQuizIdParam,
+	validateQuizInput,
+} from '../validators/quizValidator.js';
 
-router.route('/').get(getAllQuizzes).post(createQuiz);
-router.route('/:id').get(getQuiz).patch(updateQuiz).delete(deleteQuiz);
+const router = Router();
+
+router.route('/').get(getAllQuizzes).post(validateQuizInput, createQuiz);
+router
+	.route('/:id')
+	.get(validateQuizIdParam, getQuiz)
+	.patch(validateQuizIdParam, validateQuizInput, updateQuiz)
+	.delete(validateQuizIdParam, deleteQuiz);
 
 export default router;

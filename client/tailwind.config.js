@@ -29,6 +29,13 @@ export default {
 
 			'4xl': '2100px',
 		},
+		colors: {
+			primary: '#ECF4D6',
+			secondary: '#9AD0C2',
+			primary_yellow: '#2D9596',
+			cream: '#265073',
+			white: '#ffffff',
+		},
 	},
 	plugins: [],
 };

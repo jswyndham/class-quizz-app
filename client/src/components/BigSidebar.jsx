@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle';
 const BigSidebar = () => {
 	//const { showSidebar } = useDashboardContext();
 	return (
-		<section className="absolute invisible xl:visible w-72 h-screen bg-blue-200 dark:bg-gray-800 pt-8 top-24">
+		<section className="absolute invisible xl:visible w-72 h-screen bg-primary dark:bg-gray-800 pt-8 top-24">
 			<ThemeToggle />
 			<NavLinks />
 		</section>

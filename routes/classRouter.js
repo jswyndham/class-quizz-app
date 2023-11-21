@@ -3,9 +3,6 @@ import {
 	validateClassInput,
 	validateIdParam,
 } from '../middleWare/validationMiddleware.js';
-
-const router = Router();
-
 import {
 	getClass,
 	getAllClasses,
@@ -13,6 +10,8 @@ import {
 	updateClass,
 	deleteClass,
 } from '../controllers/classController.js';
+
+const router = Router();
 
 // validation middleware is imported and applied to the necessary routes
 router.route('/').get(getAllClasses).post(validateClassInput, createClass);
