@@ -1,4 +1,5 @@
 import Quiz from '../models/QuizModel.js';
+import { StatusCodes } from 'http-status-codes';
 
 // GET ALL QUIZZES
 export const getAllQuizzes = async (req, res) => {
