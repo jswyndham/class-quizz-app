@@ -12,8 +12,8 @@ const ClassContainer = () => {
 		<h2 className="text-3xl font-bold">There are no classes to display</h2>;
 	}
 	return (
-		<section className="relative grid grid-rows-3 grid-flow-col gap-4 h-screen w-screen px-4 xl:left-64 py-24">
-			<div>
+		<section className="relative flex justify-center h-screen w-screen py-36 px-4">
+			<div className="2xl:w-7/12 w-full mx-2 md:mx-12 grid grid-cols-1 gap-6">
 				{classGroups.map((classList) => {
 					return <ClassCard key={classList._id} {...classList} />;
 				})}

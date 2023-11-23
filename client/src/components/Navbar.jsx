@@ -6,10 +6,10 @@ import logo from '../assets/images/slogan_main.png';
 const Navbar = () => {
 	const { toggleSidebar } = useDashboardContext();
 	return (
-		<nav className="absolute top-0 right-0 flex justify-between h-28 w-screen bg-primary text-cream dark:bg-gray-800 pl-12 py-9 font-extrabold">
+		<nav className="absolute top-0 right-0 flex justify-between h-32 w-screen bg-primary text-forth dark:bg-gray-800 pl-12 py-9 font-extrabold">
 			<button
 				type="button"
-				className="xl:invisible text-cream text-2xl"
+				className="text-cream text-2xl"
 				onClick={toggleSidebar}
 			>
 				<FaAlignLeft />

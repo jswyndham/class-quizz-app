@@ -14,6 +14,12 @@ export const createClass = async (req, res) => {
 	return res.status(StatusCodes.CREATED).json({ classGroup });
 };
 
+// export const getClassBySlug = async (req, res) => {
+// 	const slug = req.params.slug;
+// 	const classGroup = await Class.findOne({ slug: slug });
+// 	res.status(StatusCodes.OK).json({ classGroup });
+// };
+
 // GET SINGLE CLASS
 export const getClass = async (req, res) => {
 	const classGroup = await ClassGroup.findById(req.params.id);

@@ -3,7 +3,15 @@ export default {
 	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
 	darkMode: 'class',
 	theme: {
-		extend: {},
+		extend: {
+			colors: {
+				primary: '#ECF4D6',
+				secondary: '#9AD0C2',
+				third: '#2D9596',
+				forth: '#265073',
+				white: '#ffffff',
+			},
+		},
 		screens: {
 			sm: '640px',
 			// => @media (min-width: 640px) { ... }
@@ -28,13 +36,6 @@ export default {
 			'3xl': '1800px',
 
 			'4xl': '2100px',
-		},
-		colors: {
-			primary: '#ECF4D6',
-			secondary: '#9AD0C2',
-			primary_yellow: '#2D9596',
-			cream: '#265073',
-			white: '#ffffff',
 		},
 	},
 	plugins: [],

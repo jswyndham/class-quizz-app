@@ -1,6 +1,6 @@
 import { React, createContext, useContext, useState } from 'react';
 import { Outlet, redirect, useLoaderData, useNavigate } from 'react-router-dom';
-import { BigSidebar, SmallSidebar, Navbar } from '../components';
+import { SmallSidebar, Navbar } from '../components';
 import { checkDefaultTheme } from '../App';
 import customFetch from '../utils/customFetch.js';
 
@@ -58,7 +58,6 @@ const DashboardLayout = ({ isDarkThemeEnabled }) => {
 		>
 			<section>
 				<article className="flex flex-row">
-					<BigSidebar />
 					<div className="flex">
 						<div>
 							<Navbar />

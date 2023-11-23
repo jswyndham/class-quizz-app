@@ -9,6 +9,8 @@ import {
 import { FormRow } from '../components';
 import customFetch from '../utils/customFetch';
 import { toast } from 'react-toastify';
+import logo from '../assets/images/slogan_main.png';
+import loginBackGround from '../assets/images/quizLogIn.jpg';
 
 // REACT ROUTER ACTION
 export const action = async ({ request }) => {
@@ -36,10 +38,20 @@ const Login = () => {
 	const isSubmitting = navigation.state === 'submitting';
 
 	return (
-		<section className="flex justify-center align-middle p-12 md:p-24">
-			<article className="flex flex-col w-full md:w-fit py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
-				<div className="w-full bg-blue-400 -mt-16 text-center">
-					<h1 className="m-6 text-3xl font-bold text-white">Login</h1>
+		<section className="flex flex-row justify-center align-middle h-full w-full">
+			<img
+				src={loginBackGround}
+				alt="teacher test creator slogan"
+				className="hidden lg:flex lg:bg-contain "
+			/>
+
+			<article className="flex flex-col justify-center align-middle w-fit lg:min-w-1/2 py-16 rounded-xl">
+				<div>
+					<img
+						src={logo}
+						alt="teacher test creator slogan"
+						className="mx-8 h-16 w-96"
+					/>
 				</div>
 				<div className="flex justify-center align-middle">
 					<Form method="post" className="w-fit p-8 md:p-16">
@@ -64,7 +76,7 @@ const Login = () => {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="h-8 w-96 mt-10 mb-4 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+								className="h-8 w-96 mt-10 mb-4 bg-white text-secondary font-bold border-solid border-2 border-secondary rounded-lg drop-shadow-lg hover:bg-secondary hover:text-white hover:font-bold hover:shadow-2xl hover:drop-shadow-xl active:shadow-sm active:bg-third"
 							>
 								{isSubmitting ? 'submitting...' : 'login'}
 							</button>
