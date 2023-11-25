@@ -1,11 +1,12 @@
 import { FaSchool, FaCalendarAlt } from 'react-icons/fa';
 import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
-// import { Link, Form } from "react-router-dom";
-import ClassInfo from './ClassInfo';
+import { ClassInfo, ConfirmModal } from './';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { Link } from 'react-router-dom';
+import { Link, redirect, useNavigate } from 'react-router-dom';
+import customFetch from '../utils/customFetch';
+import { toast } from 'react-toastify';
 
 dayjs.extend(advancedFormat);
 
@@ -14,7 +15,11 @@ const ClassCardContext = createContext();
 const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	//const date = day(createdAt).format('YYYY-MM-DD');
 
+	// STATE
 	const [showClassCardMenu, setShowClassCardMenu] = useState(false);
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+	const navigate = useNavigate();
 
 	const menuRef = useRef();
 
@@ -34,18 +39,25 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 		};
 	}, []);
 
+	// HANDLERS
 	const toggleCardMenu = () => {
 		setShowClassCardMenu(!showClassCardMenu);
 	};
 
+	const handleDelete = () => {
+		try {
+			customFetch.delete(`/class/${_id}`);
+			setShowConfirmModal(false);
+			navigate('/dashboard');
+			toast.success('Job deleted');
+		} catch (error) {
+			toast.error(error?.response?.data?.msg);
+		}
+		return redirect('/dashboard');
+	};
+
 	return (
-		<ClassCardContext.Provider
-			value={{
-				showClassCardMenu,
-				setShowClassCardMenu,
-				toggleCardMenu,
-			}}
-		>
+		<>
 			{/* CLASS CARD */}
 			<div className="w-full h-60 my-4 shadow-lg shadow-gray-400">
 				<header className="flex flex-row justify-between h-fit bg-third px-12 py-5">
@@ -88,7 +100,7 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 									duplicate
 								</button>
 							</li>
-							<li className="m-2 hover:text-gray-500">
+							<li className="m-2 text-yellow-600 hover:text-yellow-400">
 								<Link
 									to={`/dashboard/edit-class/${_id}`}
 									onClick={toggleCardMenu}
@@ -97,13 +109,25 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 								</Link>
 							</li>
 							<li className="m-2 hover:text-red-500 text-red-700">
-								<button onClick={toggleCardMenu}>delete</button>
+								<button
+									onClick={() => setShowConfirmModal(true)}
+								>
+									Delete
+								</button>
 							</li>
 						</ul>
 					</div>
 				</article>
 			</section>
-		</ClassCardContext.Provider>
+			<div className="z-50">
+				<ConfirmModal
+					isOpen={showConfirmModal}
+					onConfirm={handleDelete}
+					onCancel={() => setShowConfirmModal(false)}
+					message="Are you sure you want to permanently delete this class?"
+				/>
+			</div>
+		</>
 	);
 };
 

@@ -9,7 +9,6 @@ import {
 	Admin,
 	AddClass,
 	AllClasses,
-	DeleteTest,
 	EditClass,
 	Error,
 	Stats,
@@ -22,6 +21,7 @@ import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
 import { action as addClassAction } from './pages/AddClass';
 import { action as editClassAction } from './pages/EditClass';
+import { action as deleteClassAction } from './pages/DeleteClass';
 import { loader as dashboardLoader } from './pages/DashboardLayout';
 import { loader as allClassesLoader } from './pages/AllClasses';
 import { loader as editClassLoader } from './pages/EditClass';
@@ -47,6 +47,7 @@ const router = createBrowserRouter([
 				index: true,
 				element: <Landing />,
 			},
+
 			{
 				path: `class`,
 				element: <ClassLayout />,
@@ -58,10 +59,6 @@ const router = createBrowserRouter([
 				action: addClassAction,
 			},
 
-			{
-				path: `delete-test`,
-				element: <DeleteTest />,
-			},
 			{
 				path: `login`,
 				element: <Login />,
@@ -94,6 +91,10 @@ const router = createBrowserRouter([
 						element: <EditClass />,
 						loader: editClassLoader,
 						action: editClassAction,
+					},
+					{
+						path: `delete-class/:id`,
+						action: deleteClassAction,
 					},
 					{
 						path: `stats`,

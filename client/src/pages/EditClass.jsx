@@ -14,22 +14,23 @@ export const loader = async ({ params }) => {
 		return redirect('/dashboard');
 	}
 };
-export const action = async () => {
+export const action = async ({ request, params }) => {
 	const formData = await request.formData();
 	const data = Object.fromEntries(formData);
 	try {
 		await customFetch.patch(`/class/${params.id}`, data);
 		toast.success('Class updated');
+		console.log(data);
 		return redirect('/dashboard');
 	} catch (error) {
 		toast.error(error?.response?.data?.msg);
+		console.log(error);
 		return error;
 	}
 };
 
 const EditClass = () => {
 	const { classGroup } = useLoaderData();
-	console.log(classGroup);
 
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === 'submitting';
