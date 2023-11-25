@@ -7,7 +7,7 @@ export { default as Error } from './Error';
 export { default as Stats } from './Stats';
 export { default as AllClasses } from './AllClasses';
 export { default as AddClass } from './AddClass';
-export { default as EditTest } from './EditTest';
+export { default as EditClass } from './EditClass';
 export { default as DeleteTest } from './DeleteTest';
 export { default as Profile } from './Profile';
 export { default as Admin } from './Admin';
