@@ -16,15 +16,19 @@ import {
 	ClassLayout,
 } from './pages';
 
+// PAGE LOADERS
+import { loader as dashboardLoader } from './pages/DashboardLayout';
+import { loader as allClassesLoader } from './pages/AllClasses';
+import { loader as editClassLoader } from './pages/EditClass';
+import { loader as adminLoader } from './pages/Admin';
+import { loader as classLoader } from './pages/ClassLayout';
+
 // PAGE ACTIONS
 import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
 import { action as addClassAction } from './pages/AddClass';
 import { action as editClassAction } from './pages/EditClass';
 import { action as deleteClassAction } from './pages/DeleteClass';
-import { loader as dashboardLoader } from './pages/DashboardLayout';
-import { loader as allClassesLoader } from './pages/AllClasses';
-import { loader as editClassLoader } from './pages/EditClass';
 
 // DEFAULT THEME
 export const checkDefaultTheme = () => {
@@ -46,17 +50,6 @@ const router = createBrowserRouter([
 			{
 				index: true,
 				element: <Landing />,
-			},
-
-			{
-				path: `class`,
-				element: <ClassLayout />,
-			},
-
-			{
-				path: `add-class`,
-				element: <AddClass />,
-				action: addClassAction,
 			},
 
 			{
@@ -87,6 +80,12 @@ const router = createBrowserRouter([
 						action: addClassAction,
 					},
 					{
+						path: 'classlayout/:id',
+						element: <ClassLayout />,
+						loader: classLoader,
+					},
+
+					{
 						path: `edit-class/:id`,
 						element: <EditClass />,
 						loader: editClassLoader,
@@ -108,6 +107,7 @@ const router = createBrowserRouter([
 					{
 						path: `admin`,
 						element: <Admin />,
+						loader: adminLoader,
 					},
 				],
 			},

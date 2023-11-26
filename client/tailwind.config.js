@@ -37,6 +37,10 @@ export default {
 
 			'4xl': '2100px',
 		},
+		// fontFamily: {
+		// 	display: ['Oswald', sans - serif],
+		// },
 	},
+
 	plugins: [],
 };

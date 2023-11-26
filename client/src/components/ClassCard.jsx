@@ -59,16 +59,19 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	return (
 		<>
 			{/* CLASS CARD */}
+
 			<div className="w-full h-60 my-4 shadow-lg shadow-gray-400">
 				<header className="flex flex-row justify-between h-fit bg-third px-12 py-5">
-					<div className="">
-						<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
-							{className}
-						</h3>
-						<p className="text-lg lg:text-xl italic font-sans ml-4">
-							{subject}
-						</p>
-					</div>
+					<Link to={`/dashboard/classlayout/${_id}`}>
+						<div className="">
+							<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
+								{className}
+							</h3>
+							<p className="text-lg lg:text-xl italic font-sans ml-4">
+								{subject}
+							</p>
+						</div>
+					</Link>
 					<div className="">
 						<button
 							ref={menuRef}

@@ -6,7 +6,13 @@ const ClassContainer = () => {
 	const { classGroups } = data;
 
 	if (classGroups.length === 0) {
-		<h2 className="text-3xl font-bold">There are no classes to display</h2>;
+		return (
+			<div className="h-screen w-screen flex justify-center">
+				<h2 className="text-3xl font-display font-bold italic mt-44">
+					You currently have no classes to display.
+				</h2>
+			</div>
+		);
 	}
 	return (
 		<section className="flex justify-center h-screen w-screen py-36 px-4">
