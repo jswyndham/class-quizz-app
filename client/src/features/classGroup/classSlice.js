@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { fetchClasses } from './classAPI';
 
 const initialState = {
-	classes: [],
+	classes: fetchClasses,
 	loading: false,
 	error: null,
 	currentClass: null,

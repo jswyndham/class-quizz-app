@@ -4,5 +4,5 @@ import classReducer from '../src/features/classGroup/classSlice';
 
 export const store = configureStore({
 	reducer: { class: classReducer },
-	reducer: { quiz: quizReducer },
+	// reducer: { quiz: quizReducer },
 });
