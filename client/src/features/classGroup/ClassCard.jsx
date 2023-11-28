@@ -70,6 +70,8 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 							</p>
 						</div>
 					</Link>
+
+					{/* MENU BUTTON */}
 					<div className="">
 						<button
 							ref={menuRef}

@@ -4,12 +4,22 @@ import customFetch from '../../utils/customFetch';
 // Base URL for class-related operations
 const BASE_URL = '/class';
 
-// Async Thunk actions
+// GET ALL CLASSES
 export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
 	const response = await customFetch.get(BASE_URL);
 	return response.data;
 });
 
+// GET SINGLE CLASS
+export const fetchClassById = createAsyncThunk(
+	'class/fetchClassById',
+	async (id) => {
+		const response = await customFetch.get(`${BASE_URL}/${id}`);
+		return response.data;
+	}
+);
+
+// CREATE CLASS
 export const createClass = createAsyncThunk(
 	'class/createClass',
 	async (classData) => {
@@ -18,6 +28,7 @@ export const createClass = createAsyncThunk(
 	}
 );
 
+// EDIT CLASS
 export const updateClass = createAsyncThunk(
 	'class/updateClass',
 	async ({ id, classData }) => {
@@ -29,16 +40,8 @@ export const updateClass = createAsyncThunk(
 	}
 );
 
+// DELETE CLASS
 export const deleteClass = createAsyncThunk('class/deleteClass', async (id) => {
 	await customFetch.delete(`${BASE_URL}/${id}`);
 	return id;
 });
-
-// New function to fetch a specific class by ID
-export const fetchClassById = createAsyncThunk(
-	'class/fetchClassById',
-	async (id) => {
-		const response = await customFetch.get(`${BASE_URL}/${id}`);
-		return response.data;
-	}
-);

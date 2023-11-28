@@ -1,18 +1,10 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ClassCard from './ClassCard';
-import { fetchClasses } from '../features/classGroup/classAPI';
 
 const ClassContainer = () => {
-	const { classes } = useSelector((state) => state.class);
-
-	const dispatch = useDispatch();
-
-	useEffect(() => {
-		dispatch(fetchClasses());
-	}, [dispatch]);
-
-	console.log('classes: ', classes);
+	const { classes, loading, error, currentClass } = useSelector((store) => {
+		store.class;
+	});
 
 	// NO CLASSES TO DISPLAY
 	if (classes.length === 0) {
@@ -30,7 +22,7 @@ const ClassContainer = () => {
 		<section className="flex justify-center h-screen w-screen py-36 px-4">
 			<div className="2xl:w-7/12 w-full mx-2 md:mx-12 grid grid-cols-1 gap-4">
 				{classes.map((classList) => {
-					return <ClassCard key={classList._id} {...classList} />;
+					return <ClassCard key={classList.id} {...classList} />;
 				})}
 			</div>
 		</section>
