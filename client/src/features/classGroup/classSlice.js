@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchClasses } from './classAPI';
+import { fetchClasses, createClass } from './classAPI';
 
 const initialState = {
 	classes: [],
@@ -11,15 +11,12 @@ const initialState = {
 const classSlice = createSlice({
 	name: 'class',
 	initialState,
-	reducers: {
-		fetchClasses: (state, action) => {
-			return action.payload.class;
-		},
-	},
+
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchClasses.pending, (state) => {
 				state.loading = true;
+				state.error = null;
 			})
 			.addCase(fetchClasses.fulfilled, (state, action) => {
 				state.classes = action.payload.classGroups;
@@ -27,9 +24,8 @@ const classSlice = createSlice({
 			})
 			.addCase(fetchClasses.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error;
+				state.error = action.error.message;
 			});
-		// Add cases for other async thunks as needed
 	},
 });
 

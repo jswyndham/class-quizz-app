@@ -26,7 +26,7 @@ import { loader as classLoader } from './pages/ClassLayout';
 // PAGE ACTIONS
 import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
-import { action as addClassAction } from './pages/AddClass';
+// import { action as addClassAction } from './pages/AddClass';
 import { action as editClassAction } from './pages/EditClass';
 import { action as deleteClassAction } from './pages/DeleteClass';
 
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
 					{
 						path: `add-class`,
 						element: <AddClass />,
-						action: addClassAction,
+						// action: addClassAction,
 					},
 					{
 						path: 'classlayout/:id',
