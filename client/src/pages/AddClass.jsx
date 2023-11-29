@@ -1,7 +1,5 @@
-import { useNavigation, redirect } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import customFetch from '../utils/customFetch';
-import AddClassForm from '../components/AddClassForm';
+// import { useNavigation } from "react-router-dom";
+import AddClassForm from "../components/AddClassForm";
 
 // access all fields using fromData() method and turn entries into an object
 
@@ -21,21 +19,19 @@ import AddClassForm from '../components/AddClassForm';
 // };
 
 const AddClass = () => {
-	const navigation = useNavigation();
-	// const isSubmitting = navigation.state === 'submitting';
+  // const navigation = useNavigation();
+  // const isSubmitting = navigation.state === 'submitting';
 
-	return (
-		<section className="flex justify-center align-middle w-screen h-screen bg-secondary mt-24 md:my-16 pt-4 md:pt-12 ">
-			<article className="flex flex-col w-screen h-full overflow-hidden">
-				<div className="w-full bg-blue-400  text-center">
-					<h1 className="m-6 text-3xl font-bold text-white">
-						Add Class
-					</h1>
-				</div>
-				<AddClassForm />
-			</article>
-		</section>
-	);
+  return (
+    <section className="flex justify-center align-middle w-screen h-screen bg-secondary mt-24 md:my-16 pt-4 md:pt-12 ">
+      <article className="flex flex-col w-screen h-full overflow-hidden">
+        <div className="w-full bg-blue-400  text-center">
+          <h1 className="m-6 text-3xl font-bold text-white">Add Class</h1>
+        </div>
+        <AddClassForm />
+      </article>
+    </section>
+  );
 };
 
 export default AddClass;
