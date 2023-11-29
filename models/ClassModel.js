@@ -10,7 +10,6 @@ const ClassSchema = new mongoose.Schema(
 		classStatus: {
 			type: String,
 			enum: Object.values(CLASS_STATUS),
-			default: CLASS_STATUS.CURRENT,
 		},
 		createdBy: {
 			type: mongoose.Types.ObjectId,

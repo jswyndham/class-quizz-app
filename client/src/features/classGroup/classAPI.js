@@ -23,9 +23,13 @@ export const fetchClassById = createAsyncThunk(
 export const createClass = createAsyncThunk(
 	'class/createClass',
 	async (classData) => {
-		const response = await customFetch.post(BASE_URL, classData);
-		console.log(data);
-		return response.data;
+		try {
+			const response = await customFetch.post(BASE_URL, classData);
+			console.log(classData);
+			return response.data;
+		} catch (error) {
+			return error.message;
+		}
 	}
 );
 

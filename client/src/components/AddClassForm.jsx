@@ -4,7 +4,7 @@ import { CLASS_STATUS } from '../../../utils/constants';
 import { FormRow, FormRowSelect } from './';
 import { useDispatch } from 'react-redux';
 import { createClass } from '../features/classGroup/classAPI';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const AddClassForm = () => {
 	// HOOKS
@@ -28,17 +28,17 @@ const AddClassForm = () => {
 	// SUBMIT
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (className && subject && classStatus && school) {
-			try {
-				await dispatch(
-					createClass({ className, subject, classStatus, school })
-				).unwrap(); // Waits for the promise to resolve
-				console.log(createClass);
-				navigate('/dashboard');
-			} catch (error) {
-				console.error('Failed to create class:', error);
-				console.log('Failed to create class:', error);
-			}
+
+		try {
+			await dispatch(
+				createClass({ className, subject, classStatus, school })
+			).unwrap(); // Waits for the promise to resolve
+
+			console.log(CLASS_STATUS);
+			navigate('/dashboard');
+			toast.success('Class successfully added');
+		} catch (error) {
+			console.error('Failed to create class:', error);
 		}
 	};
 
@@ -63,7 +63,6 @@ const AddClassForm = () => {
 						<FormRowSelect
 							labelText="Class Status"
 							name="classStatus"
-							defaultValue={CLASS_STATUS.CURRENT}
 							list={Object.values(CLASS_STATUS)}
 							onChange={onClassStatusChanged}
 						/>

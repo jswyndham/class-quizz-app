@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FormRow = ({ type, name, labelText, defaultValue }) => {
+const FormRow = ({ type, name, labelText, defaultValue, value, onChange }) => {
 	return (
 		<div className="flex flex-col m-1">
 			<label
@@ -15,6 +15,8 @@ const FormRow = ({ type, name, labelText, defaultValue }) => {
 				name={name}
 				className="h-8 w-96 border-2 outline-gray-700 drop-shadow-md px-2 py-4"
 				defaultValue={defaultValue}
+				value={value}
+				onChange={onChange}
 				required
 			/>
 		</div>

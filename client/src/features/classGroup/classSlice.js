@@ -5,13 +5,28 @@ const initialState = {
 	classes: [],
 	loading: false,
 	error: null,
-	currentClass: null,
 };
 
 const classSlice = createSlice({
 	name: 'class',
 	initialState,
-
+	reducers: {
+		createClass: {
+			reducer(state, action) {
+				state.classes.push(action.payload);
+			},
+			prepare(className, subject, school, classStatus) {
+				return {
+					payload: {
+						className,
+						subject,
+						school,
+						classStatus,
+					},
+				};
+			},
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// GET ALL CLASSES
@@ -34,6 +49,7 @@ const classSlice = createSlice({
 			})
 			.addCase(createClass.fulfilled, (state, action) => {
 				state.loading = false;
+				console.log(action.payload);
 				state.classes.push(action.payload);
 			})
 			.addCase(createClass.rejected, (state, action) => {

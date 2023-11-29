@@ -29,8 +29,8 @@ const ClassContainer = () => {
 	return (
 		<section className="flex justify-center h-screen w-screen py-36 px-4">
 			<div className="2xl:w-7/12 w-full mx-2 md:mx-12 grid grid-cols-1 gap-4">
-				{classes.map((classList) => {
-					return <ClassCard key={classList._id} {...classList} />;
+				{classes.map((classGroup) => {
+					return <ClassCard key={classGroup._id} {...classGroup} />;
 				})}
 			</div>
 		</section>
