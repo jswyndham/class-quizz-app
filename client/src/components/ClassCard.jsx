@@ -51,7 +51,7 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 		} catch (error) {
 			toast.error(error?.response?.data?.msg);
 		}
-		return redirect('/dashboard');
+		return navigate('/dashboard');
 	};
 
 	return (

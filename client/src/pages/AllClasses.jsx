@@ -1,10 +1,10 @@
-import { ClassContainer, SearchContainer } from '../components';
+import { ClassContainer } from '../components';
 import customFetch from '../utils/customFetch.js';
 import { useLoaderData } from 'react-router';
 import { useContext, createContext } from 'react';
 import { toast } from 'react-toastify';
 
-export const loader = async ({ request }) => {
+export const loader = async () => {
 	try {
 		const { data } = await customFetch.get('/class');
 		return { data };
