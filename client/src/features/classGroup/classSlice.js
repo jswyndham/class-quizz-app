@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchClasses, createClass } from './classAPI';
+import {
+	fetchClasses,
+	createClass,
+	updateClass,
+	deleteClass,
+} from './classAPI';
 
 const initialState = {
 	classes: [],
@@ -53,6 +58,35 @@ const classSlice = createSlice({
 				state.classes.push(action.payload);
 			})
 			.addCase(createClass.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message;
+			})
+			.addCase(updateClass.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(updateClass.fulfilled, (state, action) => {
+				const index = state.classes.findIndex(
+					(c) => c.id === action.payload.id
+				);
+				if (index !== -1) {
+					state.classes[index] = action.payload;
+				}
+			})
+			.addCase(updateClass.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message;
+			})
+			.addCase(deleteClass.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(deleteClass.fulfilled, (state, action) => {
+				state.classes = state.classes.filter(
+					(c) => c.id !== action.payload
+				);
+			})
+			.addCase(deleteClass.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message;
 			});

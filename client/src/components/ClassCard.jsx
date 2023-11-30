@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { ClassInfo, ConfirmModal } from './';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { Link, redirect, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import customFetch from '../utils/customFetch';
 import { toast } from 'react-toastify';
+import CardModal from './CardModal';
 
 dayjs.extend(advancedFormat);
 
@@ -14,8 +15,8 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	//const date = day(createdAt).format('YYYY-MM-DD');
 
 	// STATE
-	const [showClassCardMenu, setShowClassCardMenu] = useState(false);
-	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [isClassCardMenu, setIsClassCardMenu] = useState(false);
+	const [isConfirmModal, setIsConfirmModal] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -24,11 +25,11 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
 			if (
-				!showClassCardMenu &&
+				!isClassCardMenu &&
 				menuRef.current &&
 				!menuRef.current.contains(e.target)
 			) {
-				setShowClassCardMenu(false);
+				setIsClassCardMenu(false);
 			}
 		};
 		document.addEventListener('click', checkOutsideMenu);
@@ -38,14 +39,24 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	}, []);
 
 	// HANDLERS
-	const toggleCardMenu = () => {
-		setShowClassCardMenu(!showClassCardMenu);
+
+	const handleLink = () => {
+		navigate(`/dashboard/classlayout/${_id}`);
+	};
+
+	const handleMenuClick = (e) => {
+		e.stopPropagation();
+		setIsClassCardMenu(!isClassCardMenu);
+	};
+
+	const handleEditClick = () => {
+		navigate(`/dashboard/edit-class/${id}`);
 	};
 
 	const handleDelete = () => {
 		try {
 			customFetch.delete(`/class/${_id}`);
-			setShowConfirmModal(false);
+			setIsConfirmModal(false);
 			navigate('/dashboard');
 			toast.success('Job deleted');
 		} catch (error) {
@@ -58,26 +69,36 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 		<>
 			{/* CLASS CARD */}
 
-			<div className="w-full h-60 my-4 shadow-lg shadow-gray-400">
-				<header className="flex flex-row justify-between h-fit bg-third px-12 py-5">
-					<Link to={`/dashboard/classlayout/${_id}`}>
-						<div className="">
-							<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
-								{className}
-							</h3>
-							<p className="text-lg lg:text-xl italic font-sans ml-4">
-								{subject}
-							</p>
-						</div>
-					</Link>
+			<article
+				onClick={handleLink}
+				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
+			>
+				<header className="relative flex flex-row justify-between h-fit bg-third px-12 py-5">
 					<div className="">
+						<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
+							{className}
+						</h3>
+						<p className="text-lg lg:text-xl italic font-sans ml-4">
+							{subject}
+						</p>
+					</div>
+
+					<div className="relative w-14 h-8 bg-black bg-opacity-20 rounded-md">
 						<button
 							ref={menuRef}
-							className="text-white text-3xl font-bold hover:cursor-pointer"
-							onClick={toggleCardMenu}
+							className="absolute z-10 text-white -mt-2 ml-1 text-5xl font-bold hover:cursor-pointer"
+							onClick={handleMenuClick}
 						>
 							<PiDotsThreeBold />
 						</button>
+
+						{/* CARD MENU */}
+						<CardModal
+							isShowClassMenu={isClassCardMenu}
+							handleEdit={handleEditClick}
+							isDelete={setIsConfirmModal}
+							id={_id}
+						/>
 					</div>
 				</header>
 
@@ -85,46 +106,14 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 					<ClassInfo icon={<FaSchool />} text={school} />
 					<ClassInfo icon={<FaCalendarAlt />} text={classStatus} />
 				</div>
-			</div>
+			</article>
 
-			{/* CARD MENU */}
-			<section className="flex flex-row-reverse -mt-60 mr-12 z-10">
-				<article className={showClassCardMenu ? 'flex' : 'hidden'}>
-					<div
-						className={
-							'w-fit h-fit bg-white p-6 rounded-lg shadow-xl shadow-gray-800 drop-shadow-lg transition-all ease-in-out duration-300 top-0 z-50'
-						}
-					>
-						<ul className="text-xl">
-							<li className="m-2 hover:text-gray-500">
-								<button onClick={toggleCardMenu}>
-									duplicate
-								</button>
-							</li>
-							<li className="m-2 text-yellow-600 hover:text-yellow-400">
-								<Link
-									to={`/dashboard/edit-class/${_id}`}
-									onClick={toggleCardMenu}
-								>
-									edit
-								</Link>
-							</li>
-							<li className="m-2 hover:text-red-500 text-red-700">
-								<button
-									onClick={() => setShowConfirmModal(true)}
-								>
-									Delete
-								</button>
-							</li>
-						</ul>
-					</div>
-				</article>
-			</section>
+			{/* DROP MENU MODAL */}
 			<div className="z-50">
 				<ConfirmModal
-					isOpen={showConfirmModal}
+					isOpen={isConfirmModal}
 					onConfirm={handleDelete}
-					onCancel={() => setShowConfirmModal(false)}
+					onCancel={() => setIsConfirmModal(false)}
 					message="Are you sure you want to permanently delete this class?"
 				/>
 			</div>

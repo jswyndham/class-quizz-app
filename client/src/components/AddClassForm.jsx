@@ -39,6 +39,7 @@ const AddClassForm = () => {
 			toast.success('Class successfully added');
 		} catch (error) {
 			console.error('Failed to create class:', error);
+			toast.error('Failed to create class');
 		}
 	};
 
