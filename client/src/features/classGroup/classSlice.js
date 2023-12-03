@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { isEqual } from 'lodash';
 import {
 	fetchClasses,
 	createClass,
 	updateClass,
 	deleteClass,
+	fetchCurrentUser,
 } from './classAPI';
 
 const initialState = {
@@ -15,23 +17,7 @@ const initialState = {
 const classSlice = createSlice({
 	name: 'class',
 	initialState,
-	reducers: {
-		createClass: {
-			reducer(state, action) {
-				state.classes.push(action.payload);
-			},
-			prepare(className, subject, school, classStatus) {
-				return {
-					payload: {
-						className,
-						subject,
-						school,
-						classStatus,
-					},
-				};
-			},
-		},
-	},
+	reducers: {},
 	extraReducers: (builder) => {
 		builder
 			// GET ALL CLASSES
@@ -40,7 +26,9 @@ const classSlice = createSlice({
 				state.error = null;
 			})
 			.addCase(fetchClasses.fulfilled, (state, action) => {
-				state.classes = action.payload.classGroups;
+				if (!isEqual(state.classes, action.payload.classGroups)) {
+					state.classes = action.payload.classGroups;
+				}
 				state.loading = false;
 			})
 			.addCase(fetchClasses.rejected, (state, action) => {
@@ -67,7 +55,7 @@ const classSlice = createSlice({
 			})
 			.addCase(updateClass.fulfilled, (state, action) => {
 				const index = state.classes.findIndex(
-					(c) => c.id === action.payload.id
+					(c) => c._id === action.payload._id
 				);
 				if (index !== -1) {
 					state.classes[index] = action.payload;
@@ -87,6 +75,17 @@ const classSlice = createSlice({
 				);
 			})
 			.addCase(deleteClass.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message;
+			})
+			.addCase(fetchCurrentUser.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchCurrentUser.fulfilled, (state, action) => {
+				state.currentUser = action.payload;
+			})
+			.addCase(fetchCurrentUser.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message;
 			});

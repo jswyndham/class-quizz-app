@@ -8,8 +8,8 @@ const NavLinks = ({ isBigSidebar }) => {
 		<div className="flex flex-col mt-8 mx-6 text-cream">
 			{links.map((link) => {
 				const { text, path, icon } = link;
-				const { role } = user;
-				if (path === 'admin' && role !== 'admin') return;
+
+				if (user && path === 'admin' && user.role !== 'admin') return;
 				return (
 					<NavLink
 						to={path}

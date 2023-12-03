@@ -9,5 +9,5 @@ export { default as NavLinks } from './NavLinks';
 export { default as ThemeToggle } from './ThemeToggle';
 export { default as SearchContainer } from './SearchContainer';
 export { default as ClassContainer } from './ClassContainer';
-export { default as ConfirmModal } from './ConfirmModal';
+export { default as ConfirmDeleteModal } from './ConfirmDeleteModal';
 export { default as ClassInfo } from './ClassInfo';

@@ -1,7 +1,7 @@
 import { ClassContainer } from '../components';
-import customFetch from '../utils/customFetch.js';
 import { useLoaderData } from 'react-router';
-import { useContext, createContext } from 'react';
+import { useContext, createContext, useMemo } from 'react';
+import customFetch from '../utils/customFetch';
 import { toast } from 'react-toastify';
 
 export const loader = async () => {
@@ -20,8 +20,10 @@ const AllClassesContext = createContext();
 const AllClasses = () => {
 	const { data } = useLoaderData();
 
+	const contextValue = useMemo(() => ({ data }), [data]);
+
 	return (
-		<AllClassesContext.Provider value={{ data }}>
+		<AllClassesContext.Provider value={contextValue}>
 			<ClassContainer />
 		</AllClassesContext.Provider>
 	);

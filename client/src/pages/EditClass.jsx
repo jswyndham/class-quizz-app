@@ -1,9 +1,11 @@
-import { FormRow, FormRowSelect } from '../components';
-import { useLoaderData } from 'react-router-dom';
-import { CLASS_STATUS } from '../../../utils/constants';
-import { Form, useNavigation, redirect } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import { redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
+import ClassForm from '../components/ClassForm';
+import { useDispatch } from 'react-redux';
+import classHooks from '../hooks/ClassHooks';
+import { updateClass } from '../features/classGroup/classAPI';
 
 export const loader = async ({ params }) => {
 	try {
@@ -14,86 +16,61 @@ export const loader = async ({ params }) => {
 		return redirect('/dashboard');
 	}
 };
-export const action = async ({ request, params }) => {
-	const formData = await request.formData();
-	const data = Object.fromEntries(formData);
-	try {
-		await customFetch.patch(`/class/${params.id}`, data);
-		toast.success('Class updated');
-		console.log(data);
-		return redirect('/dashboard');
-	} catch (error) {
-		toast.error(error?.response?.data?.msg);
-		console.log(error);
-		return error;
-	}
-};
 
 const EditClass = () => {
 	const { classGroup } = useLoaderData();
 
-	const navigation = useNavigation();
-	const isSubmitting = navigation.state === 'submitting';
+	const {
+		onNameChanged,
+		onSubjectChanged,
+		onSchoolChanged,
+		onClassStatusChanged,
+		className,
+		subject,
+		classStatus,
+		school,
+	} = classHooks(classGroup);
+
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
+	// SUBMIT
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		const classData = { className, subject, classStatus, school };
+		console.log({ className, subject, classStatus, school });
+		try {
+			dispatch(updateClass({ id: classGroup._id, classData }));
+			navigate('/dashboard');
+			toast.success('Class successfully updated');
+		} catch (error) {
+			console.error('Failed to update class:', error);
+			toast.error('Failed to update class');
+		}
+	};
 
 	return (
-		<article className="flex justify-center align-middle w-screen h-full overflow-hidden">
-			<Form
-				method="post"
-				className="m-24 flex flex-col p-24 drop-shadow-lg"
-			>
-				<div className="flex flex-col justify-center">
-					<div className="m-6 text-center">
-						<h2 className="text-4xl text-blue-600 font-bold">
-							Edit Class
-						</h2>
-					</div>
-					<div className="flex flex-col 2xl:flex-row mx-4 my-1">
-						<div className="w-fit mx-4 my-2">
-							<FormRow
-								type="text"
-								name="className"
-								labelText="Class Title"
-								defaultValue={classGroup.className}
-							/>
-						</div>
-						<div className="mx-4 my-2">
-							<FormRowSelect
-								labelText="Class Status"
-								name="classStatus"
-								defaultValue={classGroup.classStatus}
-								list={Object.values(CLASS_STATUS)}
-							/>
-						</div>
-					</div>
-					<div className="flex flex-col 2xl:flex-row mx-4">
-						<div className="mx-4 my-2">
-							<FormRow
-								type="text"
-								name="subject"
-								labelText="Subject"
-								defaultValue={classGroup.subject}
-							/>
-						</div>
-
-						<div className="mx-4 my-2">
-							<FormRow
-								type="text"
-								name="school"
-								labelText="School Name"
-								defaultValue={classGroup.school}
-							/>
-						</div>
-					</div>
-					<button
-						type="submit"
-						className="h-8 w-10/12 2xl:w-60 mt-8 mx-9 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'submitting...' : 'update'}
-					</button>
+		<section className="flex justify-center align-middle w-screen h-screen bg-secondary mt-24 md:my-16 pt-4 md:pt-12 ">
+			<article className="flex flex-col w-screen h-full overflow-hidden">
+				<div className="w-full bg-blue-400  text-center">
+					<h1 className="m-6 text-3xl font-bold text-white">
+						Edit Class
+					</h1>
 				</div>
-			</Form>
-		</article>
+				<ClassForm
+					onSubmit={handleSubmit}
+					nameRow={onNameChanged}
+					classStatusRow={onClassStatusChanged}
+					subjectRow={onSubjectChanged}
+					schoolRow={onSchoolChanged}
+					classNameDefault={classGroup.className}
+					classStatusDefault={classGroup.classStatus}
+					subjectDefault={classGroup.subject}
+					schoolDefault={classGroup.school}
+				/>
+			</article>
+		</section>
 	);
 };
 

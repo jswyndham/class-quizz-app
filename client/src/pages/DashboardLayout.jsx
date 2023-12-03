@@ -1,75 +1,82 @@
-import { createContext, useContext, useState } from "react";
-import { Outlet, redirect, useLoaderData, useNavigate } from "react-router-dom";
-import { SmallSidebar, Navbar } from "../components";
-import { checkDefaultTheme } from "../App";
-import customFetch from "../utils/customFetch.js";
-import { toast } from "react-toastify";
-
-export const loader = async () => {
-  try {
-    const { data } = await customFetch.get("/users/current-user");
-    return data;
-  } catch (error) {
-    return redirect("/");
-  }
-};
+import { useEffect, useState, createContext, useContext, useMemo } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { SmallSidebar, Navbar } from '../components';
+import { checkDefaultTheme } from '../App';
+import customFetch from '../utils/customFetch';
+import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCurrentUser } from '../features/classGroup/classAPI';
 
 const DashboardContext = createContext();
 
 const DashboardLayout = () => {
-  const { user } = useLoaderData();
-  const navigate = useNavigate();
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());
-  const [showLogout, setShowLogout] = useState(false);
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const user = useSelector((state) => state.class.currentUser);
+	const [showSidebar, setShowSidebar] = useState(false);
+	const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());
+	const [showLogout, setShowLogout] = useState(false);
 
-  // TOGGLE DARK THEME
-  const toggleDarkTheme = () => {
-    const newDarkTheme = !isDarkTheme;
-    setisDarkTheme(newDarkTheme);
-    document.body.classList.toggle("dark", newDarkTheme);
-    localStorage.setItem("theme", newDarkTheme ? "dark" : "light");
-  };
+	useEffect(() => {
+		if (!user) {
+			dispatch(fetchCurrentUser())
+				.unwrap()
+				.catch(() => {
+					navigate('/');
+				});
+		}
+	}, [user, dispatch, navigate]);
 
-  // TOGGLE MENU
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
+	// TOGGLE DARK THEME
+	const toggleDarkTheme = () => {
+		const newDarkTheme = !isDarkTheme;
+		setisDarkTheme(newDarkTheme);
+		document.body.classList.toggle('dark', newDarkTheme);
+		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
+	};
 
-  // LOGOUT
-  const logoutUser = async () => {
-    navigate("/");
-    await customFetch.get("/auth/logout");
-    toast.success("Logging out...");
-  };
+	// TOGGLE MENU
+	const toggleSidebar = () => {
+		setShowSidebar(!showSidebar);
+	};
 
-  return (
-    <DashboardContext.Provider
-      value={{
-        user,
-        showSidebar,
-        isDarkTheme,
-        showLogout,
-        setShowLogout,
-        setisDarkTheme,
-        toggleDarkTheme,
-        toggleSidebar,
-        logoutUser,
-      }}
-    >
-      <section>
-        <article className="flex flex-row">
-          <div className="flex">
-            <Navbar />
-            <div>
-              <SmallSidebar />
-              <Outlet context={{ user }} />
-            </div>
-          </div>
-        </article>
-      </section>
-    </DashboardContext.Provider>
-  );
+	// LOGOUT
+	const logoutUser = async () => {
+		navigate('/');
+		await customFetch.get('/auth/logout');
+		toast.success('Logging out...');
+	};
+
+	const value = useMemo(
+		() => ({
+			user,
+			showSidebar,
+			isDarkTheme,
+			showLogout,
+			setShowLogout,
+			setisDarkTheme,
+			toggleDarkTheme,
+			toggleSidebar,
+			logoutUser,
+		}),
+		[user, showSidebar, isDarkTheme, showLogout]
+	);
+
+	return (
+		<DashboardContext.Provider value={value}>
+			<section>
+				<article className="flex flex-row">
+					<div className="flex">
+						<Navbar />
+						<div>
+							<SmallSidebar />
+							<Outlet context={{ user }} />
+						</div>
+					</div>
+				</article>
+			</section>
+		</DashboardContext.Provider>
+	);
 };
 
 export const useDashboardContext = () => useContext(DashboardContext);

@@ -54,3 +54,12 @@ export const deleteClass = createAsyncThunk('class/deleteClass', async (id) => {
 	await customFetch.delete(`${BASE_URL}/${id}`);
 	return id;
 });
+
+// CURRENT USER
+export const fetchCurrentUser = createAsyncThunk(
+	'class/fetchCurrentUser',
+	async () => {
+		const response = await customFetch.get('/users/current-user');
+		return response.data;
+	}
+);

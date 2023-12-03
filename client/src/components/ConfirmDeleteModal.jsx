@@ -1,10 +1,15 @@
-const ConfirmModal = ({ isOpen, onConfirm, onCancel, message }) => {
-	if (!isOpen) return null;
+const ConfirmDeleteModal = ({ isOpen, onConfirm, onCancel, message }) => {
+	if (!isOpen) {
+		console.log('isOpen is triggered');
+		return null;
+	} else {
+		console.log('isOpen not triggered');
+	}
 
 	return (
 		<article>
 			<div className="absolute h-screen w-screen bg-gray-700 bg-blend-overlay inset-0 opacity-70"></div>
-			<div className="flex justify-center -mt-96">
+			<div className="flex justify-center">
 				<div className="h-56 w-96 rounded-lg drop-shadow-md shadow-md shadow-slate-400 border-solid border-2 border-slate-300 bg-white">
 					<div className="modal">
 						<div className="flex m-6">
@@ -31,4 +36,4 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message }) => {
 	);
 };
 
-export default ConfirmModal;
+export default ConfirmDeleteModal;
