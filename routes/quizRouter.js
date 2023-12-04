@@ -5,10 +5,12 @@ import {
 	createQuiz,
 	updateQuiz,
 	deleteQuiz,
+	addQuestionToQuiz,
 } from '../controllers/quizController.js';
 import {
 	validateQuizIdParam,
 	validateQuizInput,
+	validateQuestionInput,
 } from '../validators/quizValidator.js';
 
 const router = Router();
@@ -19,5 +21,11 @@ router
 	.get(validateQuizIdParam, getQuiz)
 	.patch(validateQuizIdParam, validateQuizInput, updateQuiz)
 	.delete(validateQuizIdParam, deleteQuiz);
+router.patch(
+	'/:id/add-question',
+	validateQuizIdParam,
+	validateQuestionInput,
+	addQuestionToQuiz
+);
 
 export default router;

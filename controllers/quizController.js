@@ -22,20 +22,49 @@ export const getQuiz = async (req, res) => {
 
 // UPDATE QUIZ
 export const updateQuiz = async (req, res) => {
-	const updatedQuiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
+	const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 	});
 	res.status(StatusCodes.OK).json({
 		msg: 'Quiz updated',
-		class: updatedQuiz,
+		class: quiz,
 	});
 };
 
 // DELETE QUIZ
 export const deleteQuiz = async (req, res) => {
-	const removedQuiz = await Quiz.findByIdAndDelete(req.params.id);
+	const quiz = await Quiz.findByIdAndDelete(req.params.id);
 	res.status(StatusCodes.OK).json({
 		msg: 'Quiz deleted',
-		quiz: removedQuiz,
+		quiz: quiz,
 	});
+};
+
+// ADD QUESTIONS
+export const addQuestionToQuiz = async (req, res) => {
+	try {
+		const quizId = req.params.id;
+		const questionData = req.body;
+
+		const updatedQuiz = await Quiz.findByIdAndUpdate(
+			quizId,
+			{ $push: { questions: questionData } },
+			{ new: true, runValidators: true }
+		);
+
+		if (!updatedQuiz) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Quiz not found' });
+		}
+
+		res.status(StatusCodes.OK).json({
+			msg: 'Question added',
+			quiz: updatedQuiz,
+		});
+	} catch (error) {
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			msg: error.message,
+		});
+	}
 };

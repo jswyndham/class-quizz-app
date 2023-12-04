@@ -79,6 +79,12 @@ const router = createBrowserRouter([
 						path: 'classlayout/:id',
 						element: <ClassLayout />,
 						loader: classLoader,
+						children: [
+							{
+								path: 'quiz',
+								element: <QuizComponent />,
+							},
+						],
 					},
 
 					{

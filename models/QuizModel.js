@@ -16,10 +16,6 @@ const questionSchema = new mongoose.Schema({
 		enum: Object.values(QUESTION_TYPE),
 	},
 	options: [optionSchema],
-	// difficulty: {
-	// 	type: String,
-	// 	enum: ['easy', 'medium', 'hard'],
-	// },
 
 	correctAnswer: String,
 	hints: [String],

@@ -76,3 +76,22 @@ export const validateQuizInput = withValidationErrors([
 		.isBoolean()
 		.withMessage('isCorrect must be a boolean'),
 ]);
+
+// QUESTION INPUT
+export const validateQuestionInput = withValidationErrors([
+	body('questionText').notEmpty().withMessage('Question text is required'),
+	body('answerType').notEmpty().withMessage('Answer type is required'),
+	body('options').optional().isArray(),
+	body('options.*.optionText')
+		.notEmpty()
+		.withMessage('Option text is required'),
+	body('options.*.isCorrect')
+		.isBoolean()
+		.withMessage('isCorrect must be a boolean'),
+	body('correctAnswer').optional(),
+	body('hints').optional().isArray(),
+	body('points')
+		.optional()
+		.isInt({ min: 1 })
+		.withMessage('Points must be a positive value'),
+]);
