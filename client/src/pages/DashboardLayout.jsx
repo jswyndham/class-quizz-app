@@ -5,7 +5,7 @@ import { checkDefaultTheme } from "../App";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCurrentUser } from "../features/classGroup/classAPI";
+import { fetchCurrentUser } from "../features/users/userAPI";
 
 const DashboardContext = createContext();
 
