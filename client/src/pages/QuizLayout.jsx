@@ -1,4 +1,4 @@
-const ClassLayout = () => {
+const QuizLayout = () => {
 	return (
 		<section className="w-screen h-screen flex justify-center align-middle">
 			<div className="mt-36">
@@ -8,4 +8,4 @@ const ClassLayout = () => {
 	);
 };
 
-export default ClassLayout;
+export default QuizLayout;

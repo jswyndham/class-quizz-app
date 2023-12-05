@@ -9,9 +9,9 @@ import {
 } from './quizAPI';
 
 const initialState = {
-	quiz: [], // Array to hold quiz data
-	loading: false, // Loading state for async operations
-	error: null, // Error state for handling API errors
+	quiz: [],
+	loading: false,
+	error: null,
 };
 
 const quizSlice = createSlice({

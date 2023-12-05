@@ -14,6 +14,7 @@ import {
 	Stats,
 	DashboardLayout,
 	ClassLayout,
+	QuizLayout,
 } from './pages';
 
 // PAGE LOADERS
@@ -82,7 +83,7 @@ const router = createBrowserRouter([
 						children: [
 							{
 								path: 'quiz',
-								element: <QuizComponent />,
+								element: <QuizLayout />,
 							},
 						],
 					},

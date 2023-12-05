@@ -11,3 +11,4 @@ export { default as EditClass } from './EditClass';
 export { default as Profile } from './Profile';
 export { default as Admin } from './Admin';
 export { default as ClassLayout } from './ClassLayout';
+export { default as QuizLayout } from './QuizLayout';
