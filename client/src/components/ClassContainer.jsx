@@ -7,10 +7,10 @@ import { fetchCurrentUser } from '../features/users/userAPI';
 const MemoizedClassCard = memo(ClassCard);
 
 const ClassContainer = () => {
-	const { userData, classesData } = useSelector(
+	const { userData, classData } = useSelector(
 		(state) => ({
 			userData: state.class.currentUser,
-			classesData: state.class.classes,
+			classData: state.class.class,
 			loading: state.class.loading,
 		}),
 		shallowEqual
@@ -25,12 +25,12 @@ const ClassContainer = () => {
 	}, [userData, dispatch]);
 
 	useEffect(() => {
-		console.log('Rendering with classesData:', classesData);
+		console.log('Rendering with classData:', classData);
 		dispatch(fetchClasses());
 	}, [dispatch]);
 
 	// NO CLASSES TO DISPLAY
-	if (classesData.length === 0) {
+	if (classData.length === 0) {
 		return (
 			<div className="h-screen w-screen flex justify-center">
 				<h2 className="text-3xl font-display font-bold italic mt-44">
@@ -44,7 +44,7 @@ const ClassContainer = () => {
 	return (
 		<section className="flex justify-center h-screen w-screen pt-36 px-4">
 			<div className="2xl:w-7/12 w-full h-fit mx-2 md:mx-12 grid grid-cols-1 2xl:grid-rows-2 gap-4">
-				{classesData.map((classGroup) => {
+				{classData.map((classGroup) => {
 					return (
 						<MemoizedClassCard
 							key={classGroup._id}

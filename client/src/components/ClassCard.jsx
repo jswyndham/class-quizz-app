@@ -1,7 +1,7 @@
 import { FaSchool, FaCalendarAlt } from 'react-icons/fa';
 import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ClassInfo, ConfirmDeleteModal } from './';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -12,8 +12,10 @@ import { toast } from 'react-toastify';
 
 dayjs.extend(advancedFormat);
 
-const ClassCard = ({ _id, className, classStatus, school, subject }) => {
+const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	//const date = day(createdAt).format('YYYY-MM-DD');
+
+	const classData = useSelector((state) => state.class.class);
 
 	// STATE
 	const [isClassCardMenu, setIsClassCardMenu] = useState(false);
@@ -26,6 +28,12 @@ const ClassCard = ({ _id, className, classStatus, school, subject }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const menuRef = useRef();
+
+	// USEEFFECT
+	useEffect(() => {
+		console.log('Rendering with classData:', classData);
+		dispatch(fetchClasses());
+	}, [dispatch]);
 
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
@@ -76,8 +84,7 @@ const ClassCard = ({ _id, className, classStatus, school, subject }) => {
 		}
 	};
 
-	const handleLink = (e) => {
-		e.stopPropagation();
+	const handleLink = () => {
 		navigate(`/dashboard/classlayout/${_id}`);
 	};
 
@@ -86,7 +93,7 @@ const ClassCard = ({ _id, className, classStatus, school, subject }) => {
 			{/* CLASS CARD */}
 
 			<article
-				onClick={handleLink}
+				onClick={() => handleLink(_id)}
 				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
 			>
 				<header className="relative flex flex-row justify-between h-fit bg-third px-12 py-5">
@@ -121,7 +128,7 @@ const ClassCard = ({ _id, className, classStatus, school, subject }) => {
 						isShowClassMenu={isClassCardMenu}
 						handleEdit={handleEditClick}
 						handleDelete={openConfirmModal}
-						id={_id}
+						id={classData._id}
 					/>
 				</div>
 			</article>
