@@ -8,7 +8,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat";
 import { useNavigate } from "react-router-dom";
 import CardModal from "./CardModal";
 import { toast } from "react-toastify";
-import { fetchQuizzes } from "../features/quiz/quizAPI";
+import { deleteQuiz, fetchQuizzes } from "../features/quiz/quizAPI";
 
 dayjs.extend(advancedFormat);
 
@@ -18,7 +18,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
   const quizData = useSelector((state) => state.quiz.quiz);
 
   // STATE
-  const [isClassCardMenu, setIsClassCardMenu] = useState(false);
+  const [isCardMenu, setIsCardMenu] = useState(false);
 
   const [confirmModalState, setConfirmModalState] = useState({
     isOpen: false,
@@ -38,11 +38,11 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
   useEffect(() => {
     const checkOutsideMenu = (e) => {
       if (
-        !isClassCardMenu &&
+        !isCardMenu &&
         menuRef.current &&
         !menuRef.current.contains(e.target)
       ) {
-        setIsClassCardMenu(false);
+        setIsCardMenu(false);
       }
     };
 
@@ -63,7 +63,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
 
   const handleMenuClick = (e) => {
     e.stopPropagation();
-    setIsClassCardMenu(!isClassCardMenu);
+    setIsCardMenu(!isCardMenu);
   };
 
   const handleEditClick = (e) => {
@@ -74,23 +74,22 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
   const handleDeleteClick = async (e) => {
     e.stopPropagation();
     try {
-      await dispatch(deleteClass(_id));
+      await dispatch(deleteQuiz(_id));
       closeConfirmModal();
-      dispatch(fetchClasses());
-      navigate("/dashboard");
-      toast.success("Class deleted");
+      dispatch(fetchQuizzes());
+      toast.success("Quiz deleted");
     } catch (error) {
       toast.error(error?.response?.data?.msg);
     }
   };
 
   const handleLink = () => {
-    navigate(`quiz/${_id}`);
+    navigate(`/dashboard/quiz/${_id}`);
   };
 
   return (
     <>
-      {/* CLASS CARD */}
+      {/* Quiz CARD */}
 
       <article
         onClick={() => handleLink(_id)}
@@ -122,7 +121,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
         {/* CARD MENU */}
         <div onClick={handleMenuClick} className="absolute right-8 top-4">
           <CardModal
-            isShowClassMenu={isClassCardMenu}
+            isShowClassMenu={isCardMenu}
             handleEdit={handleEditClick}
             handleDelete={openConfirmModal}
             id={quizData._id}
