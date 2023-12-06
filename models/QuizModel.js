@@ -22,21 +22,24 @@ const questionSchema = new mongoose.Schema({
 	points: Number,
 });
 
-const QuizSchema = new mongoose.Schema({
-	quizTitle: String,
-	questions: [questionSchema],
-	createdBy: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User',
+const QuizSchema = new mongoose.Schema(
+	{
+		quizTitle: String,
+		questions: [questionSchema],
+		createdBy: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User',
+		},
+		creationDate: {
+			type: Date,
+			default: Date.now,
+		},
+		lastUpdated: Date,
+		duration: Number, // Duration in minutes
+		category: String,
+		// tags: [String],
 	},
-	creationDate: {
-		type: Date,
-		default: Date.now,
-	},
-	lastUpdated: Date,
-	duration: Number, // Duration in minutes
-	category: String,
-	// tags: [String],
-});
+	{ timestamps: true }
+);
 
 export default mongoose.model('Quiz', QuizSchema);
