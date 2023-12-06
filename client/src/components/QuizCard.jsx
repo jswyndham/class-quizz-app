@@ -125,7 +125,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
             isShowClassMenu={isClassCardMenu}
             handleEdit={handleEditClick}
             handleDelete={openConfirmModal}
-            id={classData._id}
+            id={quizData._id}
           />
         </div>
       </article>

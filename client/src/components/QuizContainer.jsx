@@ -1,10 +1,10 @@
 import { useEffect, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import ClassCard from "./ClassCard";
+import QuizCard from "./QuizCard";
 import { fetchQuizzes } from "../features/quiz/quizAPI";
 import { fetchCurrentUser } from "../features/users/userAPI";
 
-const MemoizedQuizCard = memo(ClassCard);
+const MemoizedQuizCard = memo(QuizCard);
 
 const QuizContainer = () => {
   const userData = useSelector((state) => state.class.currentUser);
