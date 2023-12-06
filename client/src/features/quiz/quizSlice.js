@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { isEqual } from 'lodash';
 import {
 	fetchQuizzes,
+	fetchQuizById,
 	createQuiz,
 	updateQuiz,
 	deleteQuiz,
@@ -10,6 +11,7 @@ import {
 
 const initialState = {
 	quiz: [],
+	currentQuiz: null,
 	loading: false,
 	error: null,
 };
@@ -20,6 +22,7 @@ const quizSlice = createSlice({
 	reducers: {},
 	extraReducers: (builder) => {
 		builder
+
 			// GET ALL CLASSES
 			.addCase(fetchQuizzes.pending, (state) => {
 				state.loading = true;
@@ -35,6 +38,20 @@ const quizSlice = createSlice({
 				state.loading = false;
 				state.error = action.error.message;
 			})
+
+			// FETCH QUIZ BY ID
+			.addCase(fetchQuizById.pending, (state) => {
+				state.loading = true;
+			})
+			.addCase(fetchQuizById.fulfilled, (state, action) => {
+				state.loading = false;
+				state.currentQuiz = action.payload.quiz;
+			})
+			.addCase(fetchQuizById.rejected, (state, action) => {
+				state.error = action.error.message;
+				state.loading = false;
+			})
+
 			// CREATE NEW CLASS
 			.addCase(createQuiz.pending, (state) => {
 				state.loading = true;

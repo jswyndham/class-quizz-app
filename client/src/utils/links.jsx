@@ -13,6 +13,11 @@ const links = [
 		icon: <FaWpforms />,
 	},
 	{
+		text: 'all quiz',
+		path: 'all-quizzes',
+		icon: <FaWpforms />,
+	},
+	{
 		text: 'add class',
 		path: 'add-class',
 		icon: <MdQueryStats />,
