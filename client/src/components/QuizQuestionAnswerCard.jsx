@@ -11,7 +11,10 @@ const QuizQuestionAnswerCard = ({
 
   // Multiple Choice Answer
   const renderMultipleChoiceAnswer = () => (
-    <li key={index} className="relative my-8 flex items-center">
+    <li
+      key={index}
+      className="relative my-14 sm:my-12 md:my-10 flex items-center"
+    >
       <input
         id={index}
         type="radio"
@@ -56,9 +59,6 @@ const QuizQuestionAnswerCard = ({
       }}
     />
   );
-
-  // const answerType = QUESTION_TYPE.LONG_ANSWER;
-  // console.log('Rendering type: ', answerType);
 
   return (
     <div>

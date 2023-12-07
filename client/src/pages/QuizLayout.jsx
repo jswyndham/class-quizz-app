@@ -53,11 +53,11 @@ const QuizLayout = () => {
         </div>
       </div>
       <article className="w-screen h-screen flex justify-center">
-        <div className="flex flex-col justify-center items-center w-3/4 h-fit p-6 m-6 border border-slate-300 rounded-md  drop-shadow-xl shadow-lg shadow-slate-400">
+        <div className="flex flex-col justify-center items-center w-full lg:w-3/4 h-fit p-1 lg:p-6 lg:m-6 border border-slate-300 rounded-md  drop-shadow-xl shadow-lg shadow-slate-400">
           {currentQuiz.questions.map((question) => (
             <div
               key={question._id}
-              className="w-11/12 my-6 border border-slate-400 rounded-sm"
+              className="w-full lg:w-11/12 my-6 border border-slate-400 rounded-sm"
             >
               <QuizQuestionCard
                 points={question.points}
