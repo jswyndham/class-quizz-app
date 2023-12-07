@@ -16,6 +16,7 @@ import {
 	DashboardLayout,
 	ClassLayout,
 	QuizLayout,
+	AddQuiz,
 } from './pages';
 
 // PAGE LOADERS
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
 						path: 'all-quizzes',
 						element: <AllQuizzes />,
 						loader: quizLoader,
+					},
+					{
+						path: 'add-quiz',
+						element: <AddQuiz />,
 					},
 
 					{

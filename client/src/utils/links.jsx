@@ -23,6 +23,11 @@ const links = [
 		icon: <MdQueryStats />,
 	},
 	{
+		text: 'add quiz',
+		path: 'add-quiz',
+		icon: <MdQueryStats />,
+	},
+	{
 		text: 'stats',
 		path: 'stats',
 		icon: <IoBarChartSharp />,
