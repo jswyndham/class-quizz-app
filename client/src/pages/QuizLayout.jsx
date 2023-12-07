@@ -59,7 +59,10 @@ const QuizLayout = () => {
               key={question._id}
               className="w-11/12 my-6 border border-slate-400 rounded-sm"
             >
-              <QuizQuestionCard question={question.questionText} />
+              <QuizQuestionCard
+                points={question.points}
+                question={question.questionText}
+              />
 
               <ol className="p-6 text-xl">
                 {question.answerType === QUESTION_TYPE.MULTIPLE_CHOICE
