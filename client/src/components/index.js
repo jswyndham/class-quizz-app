@@ -13,3 +13,8 @@ export { default as ConfirmDeleteModal } from "./ConfirmDeleteModal";
 export { default as ClassInfo } from "./ClassInfo";
 export { default as QuizContainer } from "./QuizContainer";
 export { default as QuizCard } from "./QuizCard";
+export { default as QuizForm } from "./QuizForm";
+export { default as QuizFormQuestion } from "./QuizFormQuestion";
+export { default as QuizFormAnswer } from "./QuizFormAnswer";
+export { default as QuizLayoutAnswer } from "./QuizLayoutAnswer";
+export { default as QuizLayoutQuestion } from "./QuizLayoutQuestion";

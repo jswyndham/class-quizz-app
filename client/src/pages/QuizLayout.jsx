@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchQuizById } from "../features/quiz/quizAPI";
 import { useParams } from "react-router-dom";
 import { PiDotsThreeBold } from "react-icons/pi";
-import QuizQuestionCard from "../components/QuizQuestionCard";
-import QuizQuestionAnswerCard from "../components/QuizQuestionAnswerCard";
+import { QuizLayoutQuestion, QuizLayoutAnswer } from "../components";
 import { QUESTION_TYPE } from "../../../utils/constants";
 
 const QuizLayout = () => {
@@ -59,7 +58,7 @@ const QuizLayout = () => {
               key={question._id}
               className="w-full lg:w-11/12 my-6 border border-slate-400 rounded-sm"
             >
-              <QuizQuestionCard
+              <QuizLayoutQuestion
                 points={question.points}
                 question={question.questionText}
               />
@@ -67,7 +66,7 @@ const QuizLayout = () => {
               <ol className="p-6 text-xl">
                 {question.answerType === QUESTION_TYPE.MULTIPLE_CHOICE
                   ? question.options.map((option, index) => (
-                      <QuizQuestionAnswerCard
+                      <QuizLayoutAnswer
                         key={index}
                         index={index}
                         answerType={question.answerType}
@@ -76,9 +75,7 @@ const QuizLayout = () => {
                       />
                     ))
                   : question.answerType === QUESTION_TYPE.LONG_ANSWER && (
-                      <QuizQuestionAnswerCard
-                        answerType={question.answerType}
-                      />
+                      <QuizLayoutAnswer answerType={question.answerType} />
                     )}
               </ol>
             </div>

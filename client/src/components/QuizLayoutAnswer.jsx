@@ -1,12 +1,7 @@
 import { Editor } from "@tinymce/tinymce-react";
 import { QUESTION_TYPE } from "../../../utils/constants";
 
-const QuizQuestionAnswerCard = ({
-  index,
-  answerType,
-  answers,
-  correctAnswer,
-}) => {
+const QuizLayoutAnswer = ({ index, answerType, answers, correctAnswer }) => {
   const isCorrect = answers === correctAnswer;
 
   // Multiple Choice Answer
@@ -70,4 +65,4 @@ const QuizQuestionAnswerCard = ({
   );
 };
 
-export default QuizQuestionAnswerCard;
+export default QuizLayoutAnswer;

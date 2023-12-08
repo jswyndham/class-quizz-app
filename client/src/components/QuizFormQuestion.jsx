@@ -1,52 +1,60 @@
-import { QUESTION_TYPE } from '../../../utils/constants';
-import { FormRow, FormRowSelect } from '.';
+import { QUESTION_TYPE } from "../../../utils/constants";
+import { FormRowSelect } from ".";
+import { Editor } from "@tinymce/tinymce-react";
 
 const QuizFormQuestion = ({
-	questionTextRow,
-	answerTypeRow,
-	answerRow,
-	questionTextValue,
-	answerTypeValue,
-	answerValue,
-	questionTextDefault,
-	answerTypeDefault,
-	answerDefault,
+  questionTypeOnChange,
+  questionTextValue,
+  questionTypeValue,
+  questionTypeDefault,
+  onQuestionTextChange,
 }) => {
-	return (
-		<div className="flex flex-col justify-center align-middle border border-slate-400 p-6">
-			<div className="flex flex-col 2xl:flex-row mx-4 my-1">
-				<FormRowSelect
-					name="answerType"
-					labelText="Question Type"
-					list={Object.values(QUESTION_TYPE)}
-					onChange={answerTypeRow}
-					value={answerTypeValue}
-					defaultValue={answerTypeDefault}
-				/>
-			</div>
+  // Handler for TinyMCE content change
+  const handleEditorChange = (content) => {
+    onQuestionTextChange(content);
+  };
 
-			<div className="mx-4 my-2">
-				<FormRow
-					type="text"
-					labelText="Question Text"
-					name="questionText"
-					onChange={questionTextRow}
-					value={questionTextValue}
-					defaultValue={questionTextDefault}
-				/>
-			</div>
-			<div className="mx-4 my-2">
-				<FormRow
-					type="text"
-					name="optionText"
-					labelText="Answer"
-					onChange={answerRow}
-					value={answerValue}
-					defaultValue={answerDefault}
-				/>
-			</div>
-		</div>
-	);
+  return (
+    <div className="flex flex-col justify-center align-middle">
+      <div className="flex flex-col 2xl:flex-row mx-4 my-1">
+        <FormRowSelect
+          name="answerType"
+          labelText="Question Type"
+          list={Object.values(QUESTION_TYPE)}
+          onChange={questionTypeOnChange}
+          value={questionTypeValue}
+          defaultValue={questionTypeDefault}
+        />
+      </div>
+
+      <div className="mx-4 my-2">
+        <label htmlFor="questionText">Question Text</label>
+        <Editor
+          apiKey="eqgzlv5pjy49jlvt19f5xsydn4ft70ik3ol07ntoienablzn"
+          value={questionTextValue}
+          init={{
+            height: 500,
+            selector: "textarea#mediaembed",
+            menubar: true,
+            plugins: [
+              "link",
+              "image",
+              "media",
+              "table",
+              "code",
+              "preview",
+              "insertdatetime",
+              "lists",
+              // Add other plugins as needed
+            ],
+            toolbar:
+              "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | media code",
+          }}
+          onEditorChange={handleEditorChange}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default QuizFormQuestion;

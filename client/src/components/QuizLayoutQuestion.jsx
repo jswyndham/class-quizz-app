@@ -1,4 +1,4 @@
-const QuizQuestionCard = ({ points, question }) => {
+const QuizLayoutQuestion = ({ points, question }) => {
   return (
     <div className="w-full h-fit bg-blue-100">
       <div className="flex flex-row-reverse  pt-3 pr-6">
@@ -13,4 +13,4 @@ const QuizQuestionCard = ({ points, question }) => {
   );
 };
 
-export default QuizQuestionCard;
+export default QuizLayoutQuestion;
