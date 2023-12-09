@@ -1,5 +1,6 @@
 import Quiz from '../models/QuizModel.js';
 import { StatusCodes } from 'http-status-codes';
+import sanitizeHtml from 'sanitize-html';
 
 // GET ALL QUIZZES
 export const getAllQuizzes = async (req, res) => {
@@ -7,9 +8,21 @@ export const getAllQuizzes = async (req, res) => {
 	res.status(StatusCodes.OK).json({ allQuizzes });
 };
 
-// CREATE NEW QUIZ
+// CREATE QUIZ
 export const createQuiz = async (req, res) => {
 	req.body.createdBy = req.user.userId;
+	if (req.body.questions && req.body.questions.length > 0) {
+		req.body.questions = req.body.questions.map((question) => ({
+			...question,
+			questionText: sanitizeHtml(question.questionText),
+		}));
+	}
+	req.body.questions.forEach((question) => {
+		question.options.forEach((option, index) => {
+			option.isCorrect = index === question.correctAnswer;
+		});
+	});
+
 	const quiz = await Quiz.create(req.body);
 	return res.status(StatusCodes.CREATED).json({ quiz });
 };
@@ -22,6 +35,12 @@ export const getQuiz = async (req, res) => {
 
 // UPDATE QUIZ
 export const updateQuiz = async (req, res) => {
+	if (req.body.questions && req.body.questions.length > 0) {
+		req.body.questions = req.body.questions.map((question) => ({
+			...question,
+			questionText: sanitizeHtml(question.questionText),
+		}));
+	}
 	const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 	});
@@ -45,7 +64,12 @@ export const addQuestionToQuiz = async (req, res) => {
 	try {
 		const quizId = req.params.id;
 		const questionData = req.body;
-
+		if (req.body.questions && req.body.questions.length > 0) {
+			req.body.questions = req.body.questions.map((question) => ({
+				...question,
+				questionText: sanitizeHtml(question.questionText),
+			}));
+		}
 		const updatedQuiz = await Quiz.findByIdAndUpdate(
 			quizId,
 			{ $push: { questions: questionData } },

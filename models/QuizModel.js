@@ -25,6 +25,7 @@ const questionSchema = new mongoose.Schema({
 const QuizSchema = new mongoose.Schema(
 	{
 		quizTitle: String,
+		quizDescription: String,
 		questions: [questionSchema],
 		createdBy: {
 			type: mongoose.Types.ObjectId,
