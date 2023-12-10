@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
-const classHooks = (initialValues) => {
-	const [className, setClassName] = useState(initialValues.className || '');
-	const [subject, setSubject] = useState(initialValues.subject || '');
-	const [classStatus, setClassStatus] = useState(
-		initialValues.classStatus || ''
+const classHooks = (initialClassData) => {
+	const [className, setClassName] = useState(
+		initialClassData.className || ''
 	);
-	const [school, setSchool] = useState(initialValues.school || '');
+	const [subject, setSubject] = useState(initialClassData.subject || '');
+	const [classStatus, setClassStatus] = useState(
+		initialClassData.classStatus || ''
+	);
+	const [school, setSchool] = useState(initialClassData.school || '');
 
 	// ON CHANGE
 	const onNameChanged = (e) => setClassName(e.target.value);

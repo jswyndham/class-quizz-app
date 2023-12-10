@@ -58,8 +58,9 @@ export const validateQuizInput = withValidationErrors([
 	body('quizTitle')
 		.notEmpty()
 		.withMessage('A title for your quiz is required'),
-	body('questions').notEmpty().withMessage('No questions prepared'),
-	body('questions').notEmpty().withMessage('No questions prepared'),
+	body('questions.*.questionText')
+		.notEmpty()
+		.withMessage('No questions prepared'),
 	body('questions.*.answerType')
 		.notEmpty()
 		.withMessage('Please choose a question type'),

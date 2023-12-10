@@ -1,146 +1,163 @@
 import { Form } from 'react-router-dom';
-import { FormRow, QuizFormAnswer, QuizFormQuestion } from '.';
-import { useNavigation } from 'react-router-dom';
-import { useState } from 'react';
+import { QuizFormAnswer, QuizFormQuestion } from '.';
+import quizHooks from '../hooks/QuizHooks';
+import { useNavigate, useNavigation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { createQuiz } from '../features/quiz/quizAPI';
 
-const QuizForm = ({
-	onSubmit,
-	quizTitleRow,
-	quizTitleValue,
-	quizTitleDefault,
-}) => {
-	// SINGLE FORM STATE
-	const [questions, setQuestions] = useState([
-		{
-			questionText: '',
-			answerType: '',
-			options: [{ optionText: '', isCorrect: false }], // Starting with one answer
-			correctAnswer: '',
-		},
-	]);
+const QuizForm = () => {
+	// STATE HOOKS
+	const {
+		quiz,
+		setQuizTitle,
+		updateQuestion,
+		addNewQuestion,
+		addOptionToQuestion,
+		updateAnswerType,
+		updateOption,
+		deleteOption,
+	} = quizHooks({});
+
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === 'submitting';
 
-	const addNewAnswer = (questionIndex, e) => {
+	// ADD QUIZ TITLE
+	const handleQuizTitleChange = (e) => {
+		setQuizTitle(e.target.value);
+	};
+
+	// ADD QUESTION TEXT
+	const updateQuestionText = (questionIndex, newText) => {
+		const updatedQuestion = {
+			...quiz.questions[questionIndex],
+			questionText: newText,
+		};
+		updateQuestion(questionIndex, updatedQuestion);
+	};
+
+	// ADD NEW QUESTION
+	const handleAddNewQuestion = () => {
+		addNewQuestion();
+	};
+
+	// ADD NEW OPTION (ANSWER) TO QUESTION
+	const handleAddOption = (questionIndex) => {
+		addOptionToQuestion(questionIndex);
+	};
+
+	// ADD OPTION (ANSWER) TEXT
+	const handleOptionTextChange = (questionIndex, optionIndex, e) => {
+		const updatedOption = {
+			...quiz.questions[questionIndex].options[optionIndex],
+			optionText: e.target.value,
+		};
+		updateOption(questionIndex, optionIndex, updatedOption);
+	};
+
+	// DELETE OPTION
+	const handleDeleteOption = (questionIndex, optionIndex) => {
+		deleteOption(questionIndex, optionIndex);
+	};
+
+	// SUBMIT
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const newQuestions = questions.map((question, idx) => {
-			if (idx === questionIndex) {
-				return {
-					...question,
-					options: [
-						...question.options,
-						{ optionText: '', isCorrect: false },
-					],
-				};
-			}
-			return question;
-		});
-		setQuestions(newQuestions);
-	};
-
-	const setCorrectAnswer = (questionIndex, answerIndex) => {
-		const updatedQuestions = questions.map((question, idx) => {
-			if (idx === questionIndex) {
-				return {
-					...question,
-					correctAnswer: answerIndex,
-					options: question.options.map((option, optIndex) => ({
-						...option,
-						isCorrect: optIndex === answerIndex,
-					})),
-				};
-			}
-			return question;
-		});
-		setQuestions(updatedQuestions);
-	};
-
-	const deleteAnswer = (questionIndex, answerIndex) => {
-		const newQuestions = questions.map((question, index) => {
-			if (index === questionIndex) {
-				return {
-					...question,
-					options: question.options.filter(
-						(_, optIndex) => optIndex !== answerIndex
-					),
-				};
-			}
-			return question;
-		});
-		setQuestions(newQuestions);
+		try {
+			await dispatch(createQuiz({ quiz })).unwrap();
+			navigate('/dashboard/all-quizzes');
+			toast.success('Quiz successfully added');
+		} catch (error) {
+			console.error('Failed to create quiz:', error);
+			toast.error('Failed to create quiz');
+		}
 	};
 
 	return (
 		<div className="flex justify-center align-middle w-screen h-fit">
 			<Form
 				method="post"
-				onSubmit={onSubmit}
-				className="flex flex-col justify-center items-center drop-shadow-lg w-full m-3 md:mx-5 my-4 lg:w-10/12 xl:w-7/12 2xl:w-5/12"
+				onSubmit={handleSubmit}
+				className="flex flex-col justify-center items-center drop-shadow-lg w-full m-3 md:mx-5 my-4 lg:w-10/12 xl:w-max"
 			>
 				<div className="flex flex-col justify-center w-full md:mx-2 my-1">
 					<div className="w-full mx-4 my-2">
-						<FormRow
+						<input
 							type="text"
 							name="quizTitle"
-							labelText="Quiz Title"
-							placeholder="quiz title"
-							onChange={quizTitleRow}
-							value={quizTitleValue}
-							defaultValue={quizTitleDefault}
+							value={quiz.title}
+							onChange={handleQuizTitleChange}
+							placeholder="Quiz Title"
 						/>
 					</div>
-					{questions.map((question, questionIndex) => (
+					{quiz.questions.map((question, questionIndex) => (
 						<div
 							key={questionIndex}
-							className="flex flex-col justify-center align-middle lg:border border-slate-400 lg:p-6 my-4"
+							className="flex flex-col justify-center align-middle bg-slate-100 lg:border border-slate-400 lg:p-6 my-4"
 						>
 							<QuizFormQuestion
-							// questionTypeOnChange={questionText}
-							// questionTypeValue={question.answerType}
-							// questionTypeDefault={(content) =>
-							//   updateQuestionProperty(index, "questionText", content)
-							// }
-							// answerTypeOnChange={(e) =>
-							//   updateQuestionProperty(index, "answerType", e.target.value)
-							// }
+								questionTextValue={question.questionText}
+								questionTypeValue={question.answerType}
+								questionTypeOnChange={(e) =>
+									updateAnswerType(
+										questionIndex,
+										e.target.value
+									)
+								}
+								onQuestionTextChange={(updatedText) =>
+									updateQuestionText(
+										questionIndex,
+										updatedText
+									)
+								}
 							/>
+
 							{question.options.map((option, optionIndex) => (
 								<QuizFormAnswer
 									key={optionIndex}
-									index={optionIndex}
-									answerValue={option.optionText}
-									deleteClick={() =>
-										deleteAnswer(questionIndex, optionIndex)
+									optionTextValue={option.optionText}
+									onOptionTextChange={(newText) =>
+										handleOptionTextChange(
+											questionIndex,
+											optionIndex,
+											newText
+										)
 									}
-									questionIndex={questionIndex}
-									setCorrectAnswer={setCorrectAnswer}
-									isCorrect={
-										optionIndex === question.correctAnswer
+									onDelete={() =>
+										handleDeleteOption(
+											questionIndex,
+											optionIndex
+										)
 									}
 								/>
 							))}
-							<div className="flex justify-center">
-								<button
-									onClick={(e) =>
-										addNewAnswer(questionIndex, e)
-									}
-									type="button"
-									className="flex justify-center w-2/3 my-8 text-white text-xl bg-third hover:bg-white hover:border hover:border-third hover:text-third hover:shadow-xl hover:shadow-slate-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-								>
-									Add Answer
-								</button>
-							</div>
+							<button
+								type="button"
+								onClick={() => handleAddOption(questionIndex)}
+							>
+								Add Option
+							</button>
 						</div>
 					))}
-					<div className="flex flex-col 2xl:flex-row mx-4 mt-8">
-						<button
-							type="submit"
-							className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-						>
-							{isSubmitting ? 'submitting...' : 'create'}
-						</button>
-					</div>
+					<button
+						type="button"
+						onClick={handleAddNewQuestion}
+						className="flex justify-center w-8/12 p-6 text-xl bg-secondary border border-slate-500 rounded-lg shadow-lg shadow-slate-300"
+					>
+						Add New Question
+					</button>
+				</div>
+				{/* SUBMIT FORM */}
+				<div className="flex justify-center w-8/12 mx-4 my-12">
+					<button
+						type="submit"
+						className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+					>
+						{isSubmitting ? 'submitting...' : 'create'}
+					</button>
 				</div>
 			</Form>
 		</div>

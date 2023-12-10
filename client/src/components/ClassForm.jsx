@@ -78,7 +78,7 @@ const ClassForm = ({
 						type="submit"
 						className="h-8 w-full 2xl:w-60 mt-8 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 					>
-						{isSubmitting ? 'submitting...' : 'create'}
+						{isSubmitting ? 'submitting...' : 'submit'}
 					</button>
 				</div>
 			</Form>

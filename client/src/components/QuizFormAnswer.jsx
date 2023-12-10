@@ -2,21 +2,21 @@ import { FormRow } from '.';
 import { TiDelete } from 'react-icons/ti';
 
 const QuizFormAnswer = ({
-	answerRow,
-	answerValue,
-	answerDefault,
+	onOptionTextChange,
+	optionTextValue,
 	index,
 	questionIndex,
 	setCorrectAnswer,
 	isCorrect,
-	deleteClick,
+	onDelete,
 }) => {
+	// HANDLE RADIO BUTTON
 	const handleRadioChange = () => {
-		setCorrectAnswer(questionIndex, index); // Function to update correct answer in the parent state
+		setCorrectAnswer(questionIndex, index);
 	};
 
 	return (
-		<div className="flex flex-col md:px-4 bg-primary my-2">
+		<div className="flex flex-col md:px-4 bg-primary my-2 drop-shadow-xl border border-slate-300">
 			<ul className="text-xl">
 				<li className="flex flex-row justify-center align-middle ">
 					<input
@@ -32,14 +32,13 @@ const QuizFormAnswer = ({
 							type="text"
 							name="optionText"
 							labelText="Answer"
-							onChange={answerRow}
-							value={answerValue}
-							defaultValue={answerDefault}
+							onChange={onOptionTextChange}
+							value={optionTextValue}
 						/>
 					</div>
 					<div
-						onClick={deleteClick}
-						className="mt-14 -ml-6 mr-1 text-3xl text-red-600 hover:cursor-pointer hover:text-red-700"
+						onClick={onDelete}
+						className="mt-2 -ml-10 mr-2 text-3xl text-red-600 hover:cursor-pointer hover:text-red-700"
 					>
 						<TiDelete />
 					</div>

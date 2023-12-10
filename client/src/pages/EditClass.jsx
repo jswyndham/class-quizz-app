@@ -64,10 +64,10 @@ const EditClass = () => {
 					classStatusRow={onClassStatusChanged}
 					subjectRow={onSubjectChanged}
 					schoolRow={onSchoolChanged}
-					classNameDefault={classGroup.className}
-					classStatusDefault={classGroup.classStatus}
-					subjectDefault={classGroup.subject}
-					schoolDefault={classGroup.school}
+					nameValue={className}
+					statusValue={classStatus}
+					subjectValue={subject}
+					schoolValue={school}
 				/>
 			</article>
 		</section>

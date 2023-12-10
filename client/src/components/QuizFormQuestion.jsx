@@ -4,9 +4,7 @@ import { Editor } from '@tinymce/tinymce-react';
 
 const QuizFormQuestion = ({
 	questionTypeOnChange,
-	questionTextValue,
 	questionTypeValue,
-	questionTypeDefault,
 	onQuestionTextChange,
 }) => {
 	// Handler for TinyMCE content change
@@ -23,7 +21,6 @@ const QuizFormQuestion = ({
 					list={Object.values(QUESTION_TYPE)}
 					onChange={questionTypeOnChange}
 					value={questionTypeValue}
-					defaultValue={questionTypeDefault}
 				/>
 			</div>
 
@@ -33,7 +30,6 @@ const QuizFormQuestion = ({
 				</label>
 				<Editor
 					apiKey="eqgzlv5pjy49jlvt19f5xsydn4ft70ik3ol07ntoienablzn"
-					value={questionTextValue}
 					init={{
 						height: 500,
 						selector: 'textarea#mediaembed',
@@ -47,7 +43,6 @@ const QuizFormQuestion = ({
 							'preview',
 							'insertdatetime',
 							'lists',
-							// Add other plugins as needed
 						],
 						toolbar:
 							'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | media code',
