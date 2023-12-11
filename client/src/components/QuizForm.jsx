@@ -86,13 +86,17 @@ const QuizForm = () => {
         className="flex flex-col justify-center items-center drop-shadow-lg w-full m-3 md:mx-5 my-4 lg:w-10/12 xl:w-max"
       >
         <div className="flex flex-col justify-center w-full md:mx-2 my-1">
-          <div className="w-full mx-4 my-2">
+          <label htmlFor="questionText" className="text-lg ml-4 my-4">
+            Quiz Title
+          </label>
+          <div>
             <input
               type="text"
               name="quizTitle"
               value={quiz.quizTitle}
               onChange={handleQuizTitleChange}
               placeholder="Quiz Title"
+              className="border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
           {quiz.questions.map((question, questionIndex) => (

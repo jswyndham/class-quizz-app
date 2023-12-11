@@ -33,7 +33,7 @@ const QuizContainer = () => {
       </div>
     );
   }
-
+  console.log("Quiz data for rendering:", quizData);
   // RETURN QUIZZES ARRAY
   return (
     <section className="flex justify-center h-screen w-screen pt-36 px-4">

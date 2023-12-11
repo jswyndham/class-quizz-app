@@ -1,27 +1,56 @@
 #root {
-	max-width: 100%;
-	margin: 0 auto;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 @keyframes logo-spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	a:nth-of-type(2) .logo {
-		animation: logo-spin infinite 20s linear;
-	}
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
 .card {
-	padding: 2em;
+  padding: 2em;
 }
 
 .read-the-docs {
-	color: #888;
+  color: #888;
+}
+
+.tox .tox-editor-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.tox-tinymce {
+  min-height: 300px; /* Adjust as needed */
+}
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+}
+
+.iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tox-tinymce iframe {
+  max-width: 100%;
+  height: auto;
 }
