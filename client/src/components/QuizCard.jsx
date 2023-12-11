@@ -12,10 +12,10 @@ import { deleteQuiz, fetchQuizzes } from "../features/quiz/quizAPI";
 
 dayjs.extend(advancedFormat);
 
-const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
-  //const date = day(createdAt).format('YYYY-MM-DD');
-
+const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
   const quizData = useSelector((state) => state.quiz.quiz);
+
+  const updatedData = dayjs(updatedAt).format("MMMM D, YYYY");
 
   // STATE
   const [isCardMenu, setIsCardMenu] = useState(false);
@@ -116,7 +116,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category }) => {
         </div>
         <div className="flex flex-col p-6">
           <ClassInfo icon={<FaSchool />} text={category} />
-          <ClassInfo icon={<FaCalendarAlt />} text={lastUpdated} />
+          <ClassInfo icon={<FaCalendarAlt />} text={updatedData} />
         </div>
         {/* CARD MENU */}
         <div onClick={handleMenuClick} className="absolute right-8 top-4">
