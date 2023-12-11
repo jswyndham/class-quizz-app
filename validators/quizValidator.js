@@ -57,22 +57,26 @@ export const validateQuizIdParam = withValidationErrors([
 export const validateQuizInput = withValidationErrors([
 	body('quizTitle')
 		.notEmpty()
-		.withMessage('A title for your quiz is required'),
+		.withMessage('A title for your quiz is required')
+		.isLength({ max: 200 })
+		.withMessage('Quiz title is too long'),
 	body('questions.*.questionText')
 		.notEmpty()
-		.withMessage('No questions prepared'),
+		.withMessage('Question text is required')
+		.isLength({ max: 1000 })
+		.withMessage('Question text is too long'),
 	body('questions.*.answerType')
 		.notEmpty()
-		.withMessage('Please choose a question type'),
-	body('questions.*.correctAnswer').optional(),
+		.withMessage('An answer type is required'),
 	body('questions.*.points')
 		.optional()
 		.isInt({ min: 1 })
-		.withMessage('Points must be a positive value'),
-	body('questions.*.options').optional().isArray(),
+		.withMessage('Points must be a positive integer'),
 	body('questions.*.options.*.optionText')
 		.notEmpty()
-		.withMessage('Option text is required'),
+		.withMessage('Option text is required')
+		.isLength({ max: 700 })
+		.withMessage('Answer text is too long'),
 	body('questions.*.options.*.isCorrect')
 		.isBoolean()
 		.withMessage('isCorrect must be a boolean'),
@@ -80,19 +84,40 @@ export const validateQuizInput = withValidationErrors([
 
 // QUESTION INPUT
 export const validateQuestionInput = withValidationErrors([
-	body('questionText').notEmpty().withMessage('Question text is required'),
+	body('questionText')
+		.notEmpty()
+		.withMessage('Question text is required')
+		.isLength({ max: 1000 })
+		.withMessage('Question text is too long'),
+
 	body('answerType').notEmpty().withMessage('Answer type is required'),
-	body('options').optional().isArray(),
+
+	body('options')
+		.optional()
+		.isArray()
+		.withMessage('Options must be an array')
+		.custom((options) => options.length > 0)
+		.withMessage('At least one option is required'),
+
 	body('options.*.optionText')
 		.notEmpty()
-		.withMessage('Option text is required'),
+		.withMessage('Answer text is required')
+		.isLength({ max: 700 })
+		.withMessage('Answer text is too long'),
+
 	body('options.*.isCorrect')
 		.isBoolean()
 		.withMessage('isCorrect must be a boolean'),
-	body('correctAnswer').optional(),
-	body('hints').optional().isArray(),
+
+	body('correctAnswer')
+		.optional()
+		.isInt({ min: 0 })
+		.withMessage('Correct answer index must be a non-negative integer'),
+
+	body('hints').optional().isArray().withMessage('Hints must be an array'),
+
 	body('points')
 		.optional()
 		.isInt({ min: 1 })
-		.withMessage('Points must be a positive value'),
+		.withMessage('All points must be a positive number'),
 ]);
