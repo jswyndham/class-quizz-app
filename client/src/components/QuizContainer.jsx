@@ -36,7 +36,7 @@ const QuizContainer = () => {
   console.log("Quiz data for rendering:", quizData);
   // RETURN QUIZZES ARRAY
   return (
-    <section className="flex justify-center h-screen w-screen pt-36 px-4">
+    <section className="flex justify-center h-screen w-screen pt-36 lg:px-4">
       <div className="2xl:w-7/12 w-full h-fit mx-2 md:mx-12 grid grid-cols-1 2xl:grid-rows-2 gap-4">
         {quizData.map((quiz) => {
           return <MemoizedQuizCard key={quiz._id} {...quiz} />;

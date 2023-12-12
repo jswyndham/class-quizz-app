@@ -18,7 +18,7 @@ const QuizFormQuestion = ({
     // Wrap each iframe with the responsive container
     iframes.forEach((iframe) => {
       let wrapper = doc.createElement("div");
-      wrapper.className = "iframe-container";
+      wrapper.className = "responsive-iframe";
       iframe.parentNode.insertBefore(wrapper, iframe);
       wrapper.appendChild(iframe);
     });
@@ -60,6 +60,13 @@ const QuizFormQuestion = ({
               toolbar: ["undo", "bold", "italic", "styleselect"],
             },
             menubar: true,
+            content_style: `
+    .responsive-iframe iframe {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9 !important;
+    }
+  `,
             plugins: [
               "link",
               "image",
