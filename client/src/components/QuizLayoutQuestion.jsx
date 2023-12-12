@@ -1,4 +1,5 @@
 const QuizLayoutQuestion = ({ points, question }) => {
+  console.log(question);
   return (
     <div className="w-full h-fit bg-blue-100">
       <div className="flex flex-row-reverse  pt-3 pr-6">
