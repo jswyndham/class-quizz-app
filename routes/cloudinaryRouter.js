@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import { uploadCloudinary } from '../controllers/cloudinaryController';
+import { uploadCloudinary } from '../controllers/cloudinaryController.js';
+import multer from 'multer';
+
+// 'uploads/' is a folder to temporarily store files
+const upload = multer({ dest: 'uploads/' });
 
 const router = Router();
 
-router.route('/').post(uploadCloudinary);
+router.post('/', upload.single('file'), uploadCloudinary);
 
-module.exports = router;
+export default router;

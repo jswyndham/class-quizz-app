@@ -1,5 +1,5 @@
 import './App.css';
-
+import { Cloudinary } from '@cloudinary/url-gen';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import {
 	HomeLayout,
@@ -127,6 +127,8 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+	const cld = new Cloudinary({ cloud: { cloudName: 'ducq9yzyn' } });
+
 	return <RouterProvider router={router} />;
 }
 

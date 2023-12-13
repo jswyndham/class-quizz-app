@@ -5,12 +5,9 @@ const BASE_URL = '/upload';
 
 export const uploadCloudinaryFile = createAsyncThunk(
 	'upload/uploadFile',
-	async (fileData, { rejectWithValue }) => {
+	async (formData, { rejectWithValue }) => {
 		try {
-			const formData = new FormData();
-			formData.append('file', fileData);
-
-			const response = await customFetch.post(BASE_URL, fileData);
+			const response = await customFetch.post(BASE_URL, formData);
 
 			if (!response.ok) {
 				throw new Error('Server error');
