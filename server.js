@@ -31,7 +31,7 @@ app.use('/api/v1/quiz', authenticateUser, quizRouter);
 app.use('/api/v1/class', authenticateUser, classRouter);
 app.use('/api/v1/users', authenticateUser, userRouter);
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/cloudinary', cloudinaryRouter);
+app.use('/api/v1/upload', cloudinaryRouter);
 
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));

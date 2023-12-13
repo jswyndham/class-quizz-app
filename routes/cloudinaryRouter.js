@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { uploadCloudinary } from "../controllers/cloudinaryController";
+import { Router } from 'express';
+import { uploadCloudinary } from '../controllers/cloudinaryController';
 
 const router = Router();
 
-router.route("/").post(uploadCloudinary);
+router.route('/').post(uploadCloudinary);
 
 module.exports = router;

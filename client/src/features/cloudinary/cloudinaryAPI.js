@@ -1,16 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import customFetch from '../../utils/customFetch';
 
-const BASE_URL = '/cloudinary';
+const BASE_URL = '/upload';
 
-export const uploadFile = createAsyncThunk(
-	'cloudinary/uploadFile',
+export const uploadCloudinaryFile = createAsyncThunk(
+	'upload/uploadFile',
 	async (fileData, { rejectWithValue }) => {
 		try {
 			const formData = new FormData();
 			formData.append('file', fileData);
 
-			const response = await customFetch.post(`${BASE_URL}/upload`);
+			const response = await customFetch.post(BASE_URL, fileData);
 
 			if (!response.ok) {
 				throw new Error('Server error');
