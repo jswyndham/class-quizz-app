@@ -9,6 +9,8 @@ const QuizHooks = (initialQuizData) => {
     ],
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const setQuizTitle = (quizTitle) => {
     setQuiz((prevQuiz) => ({ ...prevQuiz, quizTitle }));
   };
@@ -85,6 +87,8 @@ const QuizHooks = (initialQuizData) => {
 
   return {
     quiz,
+    selectedFile,
+    setSelectedFile,
     setQuizTitle,
     updateAnswerType,
     updateQuestion,
