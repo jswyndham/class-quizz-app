@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { QUESTION_TYPE } from '../utils/constants.js';
+import { QUESTION_TYPE } from '..//utils/constants';
 
 const optionSchema = new mongoose.Schema(
 	{

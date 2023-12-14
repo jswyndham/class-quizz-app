@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { QUESTION_TYPE } from '../../../utils/constants';
+import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizHooks = (initialQuizData) => {
 	const [quiz, setQuiz] = useState({

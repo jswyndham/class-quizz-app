@@ -1,7 +1,7 @@
 import { Form } from 'react-router-dom';
-import { CLASS_STATUS } from '../../../utils/constants';
 import { FormRow, FormRowSelect } from '.';
 import { useNavigation } from 'react-router-dom';
+import { CLASS_STATUS } from '../../../server/utils/constants';
 
 const ClassForm = ({
 	onSubmit,

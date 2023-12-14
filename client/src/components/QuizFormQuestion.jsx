@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { QUESTION_TYPE } from '../../../utils/constants';
 import { FormRowSelect } from '.';
 import { Editor } from '@tinymce/tinymce-react';
 import DOMPurify from 'dompurify';
+import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizFormQuestion = ({
 	questionTypeOnChange,
