@@ -1,6 +1,6 @@
-import Quiz from '../models/QuizModel';
 import { StatusCodes } from 'http-status-codes';
 import sanitizeHtml from 'sanitize-html';
+import Quiz from '../models/QuizModel.js';
 
 const sanitizeConfig = {
 	allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe', 'img']),
