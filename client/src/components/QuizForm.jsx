@@ -7,14 +7,13 @@ import { useDispatch } from 'react-redux';
 import { createQuiz } from '../features/quiz/quizAPI';
 import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
 import { useSelector } from 'react-redux';
-
+import { MdDeleteForever } from 'react-icons/md';
 const QuizForm = () => {
 	// STATE HOOKS
 	const {
 		quiz,
 		selectedFile,
 		setUploadedImageUrl,
-		setSelectedFile,
 		setQuizTitle,
 		updateQuestion,
 		addNewQuestion,
@@ -22,6 +21,7 @@ const QuizForm = () => {
 		updateAnswerType,
 		updateOption,
 		deleteOption,
+		deleteQuizForm,
 	} = QuizHooks({});
 
 	const navigate = useNavigate();
@@ -46,14 +46,7 @@ const QuizForm = () => {
 		updateQuestion(questionIndex, updatedQuestion);
 	};
 
-	// UPLOAD FILE TO CLOUDINARY
-	// const handleFileChange = (e) => {
-	// 	const file = e.target.files[0];
-	// 	if (file) {
-	// 		setSelectedFile(file);
-	// 	}
-	// };
-
+	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
 	const handleFileChange = async (e) => {
 		const file = e.target.files[0];
 		if (file) {
@@ -116,6 +109,8 @@ const QuizForm = () => {
 
 		try {
 			await dispatch(createQuiz(formData)).unwrap();
+			localStorage.removeItem('quizData');
+			localStorage.removeItem('editorContent');
 			console.log('The formData: ', { formData });
 			navigate('/dashboard/all-quizzes');
 			toast.success('Quiz successfully added');
@@ -136,6 +131,7 @@ const QuizForm = () => {
 					<label htmlFor="questionText" className="text-lg ml-4 my-4">
 						Quiz Title
 					</label>
+
 					<div>
 						<input
 							type="text"
@@ -151,13 +147,34 @@ const QuizForm = () => {
 							key={questionIndex}
 							className="flex flex-col justify-center align-middle bg-slate-100 lg:border border-slate-400 lg:p-6 my-4"
 						>
-							<input
-								type="file"
-								onChange={handleFileChange}
-								className="your-custom-styles"
-							/>
+							<div className="flex justify-between m-5">
+								<div className="flex flex-col">
+									<label
+										htmlFor="imageText"
+										className="mb-2 text-lg"
+									>
+										Image Upload
+									</label>
+									<input
+										type="file"
+										onChange={handleFileChange}
+										className="your-custom-styles"
+									/>
+								</div>
+
+								<div
+									onClick={() =>
+										deleteQuizForm(questionIndex)
+									}
+									className="text-3xl -mr-2 -mt-2 text-red-600 hover:cursor-pointer hover:text-red-700"
+								>
+									<MdDeleteForever />
+								</div>
+							</div>
 
 							<QuizFormQuestion
+								key={questionIndex}
+								questionIndex={questionIndex}
 								questionTextValue={question.questionText}
 								questionTypeValue={question.answerType}
 								uploadedImageUrl={uploadedImageUrl}

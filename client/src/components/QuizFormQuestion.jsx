@@ -9,6 +9,7 @@ const QuizFormQuestion = ({
 	questionTypeValue,
 	onQuestionTextChange,
 	uploadedImageUrl,
+	questionIndex,
 }) => {
 	const editorRef = useRef(null);
 
@@ -47,6 +48,7 @@ const QuizFormQuestion = ({
 		// Clean the content using DOMPurify to prevent XSS attacks
 		let cleanContent = DOMPurify.sanitize(newContent);
 
+		localStorage.setItem(`editorContent-${questionIndex}`, cleanContent);
 		// Call the original change handler with the updated content
 		onQuestionTextChange(cleanContent);
 	};
@@ -68,7 +70,15 @@ const QuizFormQuestion = ({
 					Question Text
 				</label>
 				<Editor
-					onInit={(evt, editor) => (editorRef.current = editor)}
+					onInit={(evt, editor) => {
+						editorRef.current = editor;
+						const savedContent = localStorage.getItem(
+							`editorContent-${questionIndex}`
+						);
+						if (savedContent) {
+							editorRef.current.setContent(savedContent);
+						}
+					}}
 					apiKey="eqgzlv5pjy49jlvt19f5xsydn4ft70ik3ol07ntoienablzn"
 					init={{
 						height: 500,
@@ -80,12 +90,15 @@ const QuizFormQuestion = ({
 						},
 						menubar: true,
 						content_style: `
-    .responsive-iframe iframe {
-      width: 100% !important;
-      height: auto !important;
-      aspect-ratio: 16 / 9 !important;
-    }
-  `,
+						.responsive-iframe iframe {
+							width: 100% !important;
+							height: auto !important;
+							aspect-ratio: 16 / 9 !important;
+					}
+					img { 
+							max-width: 100%;
+							height: auto;
+					}`,
 						plugins: [
 							'link',
 							'image',

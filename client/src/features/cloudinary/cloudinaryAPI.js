@@ -7,15 +7,17 @@ export const uploadCloudinaryFile = createAsyncThunk(
 	'upload/uploadFile',
 	async (formData, { rejectWithValue }) => {
 		try {
+			console.log('API formData: ', formData);
 			const response = await customFetch.post(BASE_URL, formData);
 
-			if (!response.ok) {
-				throw new Error('Server error');
-			}
+			console.log('API response: ', response);
 
-			return await response.json();
+			// Unlike the other redux API files, this function directly returns data, and lets Axios automatically handle the JSON conversion
+			return response.data;
 		} catch (error) {
-			return rejectWithValue(error.message);
+			console.error('Error in uploadCloudinaryFile: ', error);
+			const errorMessage = error.response.data || error.message;
+			return rejectWithValue(errorMessage);
 		}
 	}
 );

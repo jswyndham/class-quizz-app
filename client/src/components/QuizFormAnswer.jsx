@@ -20,11 +20,11 @@ const QuizFormAnswer = ({
 			<ul className="text-xl">
 				<li className="flex flex-row justify-center align-middle ">
 					<input
-						id={`${questionIndex} - ${index}`}
+						id={`${questionIndex}-${index}`}
 						type="radio"
 						checked={isCorrect}
 						onChange={handleRadioChange}
-						name={`correct answer: ${questionIndex}`}
+						name={`correct answer-${questionIndex}`}
 						className="w-5 h-5 mt-14 mx-2 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 					/>
 					<div className="w-full m-2">

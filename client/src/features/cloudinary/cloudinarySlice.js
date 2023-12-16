@@ -11,18 +11,19 @@ const cloudinarySlice = createSlice({
 	name: 'cloudinary',
 	initialState,
 	reducers: {},
-	extraReducers: {
-		[uploadCloudinaryFile.pending]: (state) => {
-			state.uploadStatus = 'loading';
-		},
-		[uploadCloudinaryFile.fulfilled]: (state, action) => {
-			state.uploadStatus = 'succeeded';
-			state.imageUrl = action.payload.url;
-		},
-		[uploadCloudinaryFile.rejected]: (state, action) => {
-			state.uploadStatus = 'failed';
-			state.error = action.payload;
-		},
+	extraReducers: (builder) => {
+		builder
+			.addCase(uploadCloudinaryFile.pending, (state) => {
+				state.uploadStatus = 'loading';
+			})
+			.addCase(uploadCloudinaryFile.fulfilled, (state, action) => {
+				state.uploadStatus = 'succeeded';
+				state.imageUrl = action.payload.url;
+			})
+			.addCase(uploadCloudinaryFile.rejected, (state, action) => {
+				state.uploadStatus = 'failed';
+				state.error = action.payload;
+			});
 	},
 });
 

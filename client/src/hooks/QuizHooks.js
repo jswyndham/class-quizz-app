@@ -1,17 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizHooks = (initialQuizData) => {
-	const [quiz, setQuiz] = useState({
-		quizTitle: initialQuizData.quizTitle || '',
-		questions: initialQuizData.questions || [
-			{ questionText: '', answerType: '', options: [] },
-		],
+	const [quiz, setQuiz] = useState(() => {
+		const savedQuiz = localStorage.getItem('quizData');
+		return savedQuiz
+			? JSON.parse(savedQuiz)
+			: {
+					quizTitle: initialQuizData.quizTitle || '',
+					questions: initialQuizData.questions || [
+						{
+							questionText: '',
+							answerType: '',
+							options: [],
+							points: '',
+						},
+					],
+			  };
 	});
 
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+
+	useEffect(() => {
+		localStorage.setItem('quizData', JSON.stringify(quiz));
+	}, [quiz]);
 
 	const setQuizTitle = (quizTitle) => {
 		setQuiz((prevQuiz) => ({ ...prevQuiz, quizTitle }));
@@ -90,6 +104,15 @@ const QuizHooks = (initialQuizData) => {
 		});
 	};
 
+	const deleteQuizForm = (questionIndex) => {
+		setQuiz((prevQuiz) => ({
+			...prevQuiz,
+			questions: prevQuiz.questions.filter(
+				(_, idx) => idx !== questionIndex
+			),
+		}));
+	};
+
 	return {
 		quiz,
 		selectedFile,
@@ -103,6 +126,7 @@ const QuizHooks = (initialQuizData) => {
 		addNewQuestion,
 		addOptionToQuestion,
 		deleteOption,
+		deleteQuizForm,
 	};
 };
 

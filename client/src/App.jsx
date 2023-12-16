@@ -11,6 +11,7 @@ import {
 	AddClass,
 	AllClasses,
 	EditClass,
+	EditQuiz,
 	Error,
 	Stats,
 	DashboardLayout,
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
 						path: 'all-quizzes',
 						element: <AllQuizzes />,
 						loader: quizLoader,
+					},
+					{
+						path: `edit-quiz/:id`,
+						element: <EditQuiz />,
 					},
 					{
 						path: 'add-quiz',

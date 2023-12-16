@@ -39,7 +39,7 @@ const EditClass = () => {
 		e.preventDefault();
 
 		const classData = { className, subject, classStatus, school };
-		console.log({ className, subject, classStatus, school });
+
 		try {
 			dispatch(updateClass({ id: classGroup._id, classData }));
 			navigate('/dashboard');

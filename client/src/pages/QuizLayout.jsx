@@ -25,29 +25,19 @@ const QuizLayout = () => {
 	if (loading) return <div>Loading class...</div>;
 	if (error) return <div>Error: {error}</div>;
 
-	// if (currentQuiz === 0) {
-	// 	return (
-	// 		<div className="h-screen w-screen flex justify-center">
-	// 			<h2 className="text-3xl font-display font-bold italic mt-44">
-	// 				No questions created, yet.
-	// 			</h2>
-	// 		</div>
-	// 	);
-	// }
-
 	return (
-		<section className="w-screen h-screen flex flex-col justify-center align-middle">
+		<section className="relative w-screen h-screen flex flex-col justify-center align-middle">
 			<div className="mt-56">
 				<h2 className="text-4xl font-serif text-blue-800 text-center">
 					{currentQuiz.quizTitle}
 				</h2>
 			</div>
-			<article className="w-screen h-screen flex justify-center">
-				<div className="flex flex-col justify-center items-center w-full lg:w-3/4 h-fit md:p-1 lg:p-6 lg:m-6 border border-slate-300 rounded-md drop-shadow-xl shadow-lg shadow-slate-400">
+			<article className="flex justify-center">
+				<div className="flex flex-col justify-center items-center w-full h-full sm:mx-2 md:mx-5 lg:w-10/12 2xl:w-8/12 md:p-1 lg:p-2 2xl:px-8 lg:m-6 border border-slate-300 rounded-md drop-shadow-xl shadow-lg shadow-slate-400">
 					{currentQuiz.questions.map((question) => (
 						<div
 							key={question._id}
-							className="w-full lg:w-11/12 my-6 border border-slate-400 rounded-sm"
+							className="w-full lg:w-10/12 2xl:w-8/12 m-4 border border-slate-400 rounded-sm"
 						>
 							<QuizLayoutQuestion
 								points={question.points}
