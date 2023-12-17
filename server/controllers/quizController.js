@@ -74,21 +74,31 @@ export const getQuiz = async (req, res) => {
 
 // CREATE QUIZ
 export const createQuiz = async (req, res) => {
-	req.body.createdBy = req.user.userId;
-	if (req.body.questions && req.body.questions.length > 0) {
-		req.body.questions = req.body.questions.map((question) => ({
-			...question,
-			questionText: sanitizeHtml(question.questionText, sanitizeConfig),
-		}));
-	}
-	req.body.questions.forEach((question) => {
-		question.options.forEach((option, index) => {
-			option.isCorrect = index === question.correctAnswer;
+	try {
+		req.body.createdBy = req.user.userId;
+		if (req.body.questions && req.body.questions.length > 0) {
+			req.body.questions = req.body.questions.map((question) => ({
+				...question,
+				questionText: sanitizeHtml(
+					question.questionText,
+					sanitizeConfig
+				),
+			}));
+		}
+		req.body.questions.forEach((question) => {
+			question.options.forEach((option, index) => {
+				option.isCorrect = index === question.correctAnswer;
+			});
 		});
-	});
 
-	const quiz = await Quiz.create(req.body);
-	return res.status(StatusCodes.CREATED).json({ quiz });
+		const quiz = await Quiz.create(req.body);
+		return res.status(StatusCodes.CREATED).json({ quiz });
+	} catch (error) {
+		console.error('Error creating quiz:', error);
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message,
+		});
+	}
 };
 
 // UPDATE QUIZ

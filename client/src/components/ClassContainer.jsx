@@ -25,7 +25,6 @@ const ClassContainer = () => {
 	}, [userData, dispatch]);
 
 	useEffect(() => {
-		console.log('Rendering with classData:', classData);
 		dispatch(fetchClasses());
 	}, [dispatch]);
 

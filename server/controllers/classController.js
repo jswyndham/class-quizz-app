@@ -16,8 +16,35 @@ export const createClass = async (req, res) => {
 
 // GET SINGLE CLASS
 export const getClass = async (req, res) => {
-	const classGroup = await ClassGroup.findById(req.params.id);
-	res.status(StatusCodes.OK).json({ classGroup });
+	try {
+		const classGroup = await ClassGroup.findById(req.params.id)
+			.populate({
+				path: 'quizzes',
+				match: { class: { $in: [req.params.id] } }, // Check if class ID is in the array
+			})
+			.exec();
+
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Class not found' });
+		}
+
+		// strict filtering
+		if (req.query.includeQuizzes === 'true') {
+			classGroup.quizzes = classGroup.quizzes.filter((quiz) =>
+				quiz.class.some(
+					(classId) => classId.toString() === req.params.id
+				)
+			);
+		}
+
+		res.status(StatusCodes.OK).json({ classGroup });
+	} catch (error) {
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message,
+		});
+	}
 };
 
 // UPDATE CLASS

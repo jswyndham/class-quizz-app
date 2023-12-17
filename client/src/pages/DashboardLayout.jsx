@@ -18,13 +18,19 @@ const DashboardLayout = () => {
 	const [showLogout, setShowLogout] = useState(false);
 
 	useEffect(() => {
-		if (!user) {
+		let isMounted = true;
+
+		if (!user && isMounted) {
 			dispatch(fetchCurrentUser())
 				.unwrap()
 				.catch(() => {
-					navigate('/');
+					if (isMounted) navigate('/');
 				});
 		}
+
+		return () => {
+			isMounted = false;
+		};
 	}, [user, dispatch, navigate]);
 
 	// TOGGLE DARK THEME

@@ -29,13 +29,15 @@ export const fetchQuizById = createAsyncThunk(
 // CREATE QUIZ
 export const createQuiz = createAsyncThunk(
 	'quiz/createQuiz',
-	async (quizData) => {
+	async (quizData, { rejectWithValue }) => {
 		try {
 			const response = await customFetch.post(BASE_URL, quizData);
-			console.log(quizData);
 			return response.data;
 		} catch (error) {
-			return error.message;
+			console.error('Error in createQuiz:', error);
+			return rejectWithValue(
+				error.response ? error.response.data : error.message
+			);
 		}
 	}
 );

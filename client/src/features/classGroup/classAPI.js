@@ -15,12 +15,11 @@ export const fetchClassById = createAsyncThunk(
 	'class/fetchClassById',
 	async (_id, { rejectWithValue }) => {
 		try {
-			const response = await customFetch.get(`${BASE_URL}/${_id}`);
+			const response = await customFetch.get(
+				`${BASE_URL}/${_id}?includeQuizzes=true`
+			);
 			return response.data;
 		} catch (error) {
-			if (!error.response) {
-				throw error;
-			}
 			return rejectWithValue(error.response.data);
 		}
 	}
@@ -32,7 +31,6 @@ export const createClass = createAsyncThunk(
 	async (classData) => {
 		try {
 			const response = await customFetch.post(BASE_URL, classData);
-			console.log(classData);
 			return response.data;
 		} catch (error) {
 			return error.message;

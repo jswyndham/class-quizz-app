@@ -38,7 +38,12 @@ const QuizSchema = new mongoose.Schema(
 		lastUpdated: Date,
 		duration: Number, // Duration in minutes
 		category: String,
-		// tags: [String],
+		class: [
+			{
+				type: mongoose.Types.ObjectId,
+				ref: 'Class',
+			},
+		],
 	},
 	{ timestamps: true }
 );
