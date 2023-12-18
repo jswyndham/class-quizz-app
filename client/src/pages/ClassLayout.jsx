@@ -30,8 +30,8 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="w-screen h-screen flex flex-col justify-center align-middle">
-			<div className="mt-72 text-center">
+		<section className="w-screen h-fit flex flex-col justify-center align-middle">
+			<div className="mt-40 text-center">
 				<h2 className="text-4xl font-serif text-blue-800">
 					{currentClass.className}
 				</h2>

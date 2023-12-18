@@ -80,7 +80,7 @@ const DashboardLayout = () => {
 		<DashboardContext.Provider value={value}>
 			<section>
 				<article className="flex flex-row">
-					<div className="flex">
+					<div className="relative flex">
 						<Navbar />
 						<div>
 							<SmallSidebar />

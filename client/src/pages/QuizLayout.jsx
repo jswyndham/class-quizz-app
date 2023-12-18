@@ -26,8 +26,8 @@ const QuizLayout = () => {
 	if (error) return <div>Error: {error}</div>;
 
 	return (
-		<section className="relative w-screen h-screen flex flex-col justify-center align-middle">
-			<div className="mt-56">
+		<section className="w-screen h-fit flex flex-col justify-center align-middle">
+			<div className="mt-36 mb-6">
 				<h2 className="text-4xl font-serif text-blue-800 text-center">
 					{currentQuiz.quizTitle}
 				</h2>

@@ -2,7 +2,7 @@ import { FaTimes } from 'react-icons/fa';
 import { useDashboardContext } from '../pages/DashboardLayout';
 import NavLinks from './NavLinks';
 import ThemeToggle from './ThemeToggle';
-import logo from '../assets/images/slogan_main.png';
+import logo from '../assets/images/quizgate-logo.png';
 
 const SmallSidebar = () => {
 	const { showSidebar, toggleSidebar } = useDashboardContext();
@@ -14,7 +14,7 @@ const SmallSidebar = () => {
 				<div
 					className={
 						showSidebar
-							? 'w-80 h-screen bg-blue-300 shadow-xl shadow-gray-800 transition-all ease-in-out duration-300 left-0 z-50 fixed'
+							? 'w-80 h-screen bg-third shadow-xl shadow-gray-800 transition-all ease-in-out duration-300 left-0 z-50 fixed'
 							: 'w-96 h-screen transition-all ease-in-out duration-300 -left-96 z-50 fixed'
 					}
 				>
@@ -23,7 +23,7 @@ const SmallSidebar = () => {
 						<header className="flex text-center text-3xl text-blue-700 m-6 font-extrabold">
 							<img
 								src={logo}
-								alt="teacher test creator slogan"
+								alt="QuizGate logo"
 								className="flex h-8 md:h-16 md:-mt-4"
 							/>
 						</header>
