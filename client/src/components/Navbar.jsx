@@ -15,11 +15,7 @@ const Navbar = () => {
 				<FaAlignLeft />
 			</button>
 
-			<img
-				src={logo}
-				alt="QuizGate logo"
-				className="flex h-8 md:h-16 md:-mt-4"
-			/>
+			<img src={logo} alt="QuizGate logo" className="flex h-8 md:h-16" />
 
 			<div className="mx-4">
 				<LogoutContainer />

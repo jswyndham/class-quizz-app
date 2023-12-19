@@ -24,6 +24,7 @@ import {
 
 import { loader as allClassesLoader } from './pages/AllClasses';
 import { loader as editClassLoader } from './pages/EditClass';
+import { loader as editQuizLoader } from './pages/EditQuiz';
 import { loader as adminLoader } from './pages/Admin';
 import { loader as quizLoader } from './pages/AllQuizzes';
 
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
 					{
 						path: `edit-quiz/:id`,
 						element: <EditQuiz />,
+						loader: editQuizLoader,
 					},
 					{
 						path: 'add-quiz',

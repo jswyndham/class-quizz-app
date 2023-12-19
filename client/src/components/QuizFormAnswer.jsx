@@ -7,13 +7,14 @@ const QuizFormAnswer = ({
 	index,
 	questionIndex,
 	setCorrectAnswer,
-	isCorrect,
+	answerOnChange,
+	checkedIsCorrect,
 	onDelete,
 }) => {
-	// HANDLE RADIO BUTTON
-	const handleRadioChange = () => {
-		setCorrectAnswer(questionIndex, index);
-	};
+	// HANDLE CHANGES TO THE RADIO BUTTON
+	// const handleRadioChange = () => {
+	// 	setCorrectAnswer(questionIndex, index);
+	// };
 
 	return (
 		<div className="flex flex-col md:px-4 bg-primary my-2 drop-shadow-xl border border-slate-300">
@@ -22,8 +23,8 @@ const QuizFormAnswer = ({
 					<input
 						id={`${questionIndex}-${index}`}
 						type="radio"
-						checked={isCorrect}
-						onChange={handleRadioChange}
+						checked={checkedIsCorrect}
+						onChange={answerOnChange}
 						name={`correct answer-${questionIndex}`}
 						className="w-5 h-5 mt-14 mx-2 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 					/>

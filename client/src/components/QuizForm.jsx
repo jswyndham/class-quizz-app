@@ -15,6 +15,7 @@ const QuizForm = () => {
 		setQuizTitle,
 		updateQuestion,
 		addNewQuestion,
+		setCorrectAnswer,
 		addOptionToQuestion,
 		updateAnswerType,
 		updateOption,
@@ -41,9 +42,7 @@ const QuizForm = () => {
 			...quiz.questions[questionIndex],
 			questionText: newText,
 		};
-		console.log('UPDATED QUESTION: ', updatedQuestion);
-		console.log('QUESTION INDEX: ', questionIndex);
-		console.log('NEW TEXT: ', newText);
+
 		updateQuestion(questionIndex, updatedQuestion);
 	};
 
@@ -56,6 +55,11 @@ const QuizForm = () => {
 		};
 
 		updateQuestion(questionIndex, updatedQuestion);
+	};
+
+	// HANDLE CHANGES TO THE RADIO BUTTON
+	const handleRadioChange = () => {
+		setCorrectAnswer(questionIndex, index);
 	};
 
 	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
@@ -174,6 +178,7 @@ const QuizForm = () => {
 									<input
 										type="number"
 										className="w-20 h-7 p-2 rounded-md mb-6"
+										value={question.points || 0}
 										onChange={(e) =>
 											updateQuestionPoints(
 												questionIndex,
@@ -201,8 +206,9 @@ const QuizForm = () => {
 									onClick={() =>
 										deleteQuizForm(questionIndex)
 									}
-									className="text-3xl -mr-2 -mt-2 text-red-600 hover:cursor-pointer hover:text-red-700"
+									className="h-fit flex flex-row text-xl -mr-2 -mt-4 text-red-600 hover:cursor-pointer hover:text-red-800"
 								>
+									<p className="mx-1 -mt-2">remove</p>
 									<MdDeleteForever />
 								</div>
 							</div>
@@ -231,6 +237,11 @@ const QuizForm = () => {
 								<QuizFormAnswer
 									key={optionIndex}
 									optionTextValue={option.optionText}
+									setCorrectAnswer={setCorrectAnswer}
+									answerOnChange={(e) => {
+										handleRadioChange(e.target.value);
+									}}
+									checkedIsCorrect={option.isCorrect}
 									onOptionTextChange={(newText) =>
 										handleOptionTextChange(
 											questionIndex,

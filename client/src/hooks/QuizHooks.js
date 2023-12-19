@@ -3,22 +3,14 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizHooks = (initialQuizData) => {
 	const [quiz, setQuiz] = useState(() => {
-		const savedQuiz = localStorage.getItem('quizData');
-		return savedQuiz
-			? JSON.parse(savedQuiz)
-			: {
-					quizTitle: initialQuizData.quizTitle || '',
-					questions: initialQuizData.questions || [
-						{
-							questionText: '',
-							answerType: '',
-							options: [],
-							points: '',
-						},
-					],
-					class: initialQuizData.class || [],
-			  };
+		return {
+			quizTitle: initialQuizData.quizTitle || '',
+			questions: initialQuizData.questions || [],
+			class: initialQuizData.class || [],
+		};
 	});
+
+	console.log('initialQuizData: ', initialQuizData);
 
 	const [selectedFile, setSelectedFile] = useState(null);
 
@@ -29,10 +21,12 @@ const QuizHooks = (initialQuizData) => {
 		localStorage.setItem('quizData', JSON.stringify(quiz));
 	}, [quiz]);
 
+	// QUIZ TITLE
 	const setQuizTitle = (quizTitle) => {
 		setQuiz((prevQuiz) => ({ ...prevQuiz, quizTitle }));
 	};
 
+	// UPDATE ANSWER TYPE
 	const updateAnswerType = (index, answerType) => {
 		setQuiz((prevQuiz) => {
 			const newQuestions = [...prevQuiz.questions];
@@ -48,17 +42,16 @@ const QuizHooks = (initialQuizData) => {
 		});
 	};
 
-	const updateQuestion = (index, updatedQuestion) => {
-		setQuiz((prevQuiz) => {
-			const updatedQuestions = prevQuiz.questions.map((q, i) =>
-				i === index ? updatedQuestion : q
-			);
-			return { ...prevQuiz, questions: updatedQuestions };
+	// UPDATE QUESTION PARAMETER
+	const updateQuestion = (questionIndex, updatedQuestion) => {
+		setQuiz((prev) => {
+			const updatedQuestions = [...prev.questions];
+			updatedQuestions[questionIndex] = updatedQuestion;
+			return { ...prev, questions: updatedQuestions };
 		});
-		console.log('QUIZ: ', quiz);
 	};
 
-	// ON CHANGE HANDLER
+	// UPDATE ANSWER OPTIONS
 	const updateOption = (questionIndex, optionIndex, updatedOption) => {
 		setQuiz((prevQuiz) => {
 			const updatedQuestions = prevQuiz.questions.map(
@@ -77,16 +70,38 @@ const QuizHooks = (initialQuizData) => {
 		});
 	};
 
+	// SET CORRECT ANSWER
+	const setCorrectAnswer = (questionIndex, optionIndex) => {
+		setQuiz((prevQuiz) => {
+			const newQuestions = prevQuiz.questions.map((question, qIdx) => {
+				if (qIdx === questionIndex) {
+					const newOptions = question.options.map((option, oIdx) => ({
+						...option,
+						isCorrect: oIdx === optionIndex,
+					}));
+					return { ...question, options: newOptions };
+				}
+				return question;
+			});
+			return { ...prevQuiz, questions: newQuestions };
+		});
+	};
+
+	// ADD A NEW QUESTION IN THE QUIZ FORM
 	const addNewQuestion = () => {
-		setQuiz((prevQuiz) => ({
-			...prevQuiz,
-			questions: [
-				...prevQuiz.questions,
-				{ questionText: '', answerType: '', options: [] },
-			],
+		const newQuestion = {
+			questionText: '',
+			answerType: '',
+			options: [],
+			points: 0,
+		};
+		setQuiz((prev) => ({
+			...prev,
+			questions: [...prev.questions, newQuestion],
 		}));
 	};
 
+	// ADD AN ANSWER COMPONENT TO THE QUESTION
 	const addOptionToQuestion = (questionIndex) => {
 		updateQuestion(questionIndex, {
 			...quiz.questions[questionIndex],
@@ -97,6 +112,7 @@ const QuizHooks = (initialQuizData) => {
 		});
 	};
 
+	// DELETE QUIZ ANSWER OPTIONS
 	const deleteOption = (questionIndex, optionIndex) => {
 		const updatedOptions = quiz.questions[questionIndex].options.filter(
 			(_, idx) => idx !== optionIndex
@@ -107,6 +123,7 @@ const QuizHooks = (initialQuizData) => {
 		});
 	};
 
+	// DELETE THE QUESTION AND ANSWER QUIZ FORM COMPONENT
 	const deleteQuizForm = (questionIndex) => {
 		setQuiz((prevQuiz) => ({
 			...prevQuiz,
@@ -120,12 +137,14 @@ const QuizHooks = (initialQuizData) => {
 		quiz,
 		selectedFile,
 		uploadedImageUrl,
+		setQuiz,
 		setUploadedImageUrl,
 		setSelectedFile,
 		setQuizTitle,
 		updateAnswerType,
 		updateQuestion,
 		updateOption,
+		setCorrectAnswer,
 		addNewQuestion,
 		addOptionToQuestion,
 		deleteOption,

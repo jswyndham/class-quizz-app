@@ -68,7 +68,12 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 
 	const handleEditClick = (e) => {
 		e.stopPropagation();
-		navigate(`/dashboard/edit-class/${_id}`);
+		try {
+			navigate(`/dashboard/edit-quiz/${_id}`);
+		} catch (error) {
+			toast.error(error?.response?.data?.msg);
+			console.error('ERROR: ', msg.error);
+		}
 	};
 
 	const handleDeleteClick = async (e) => {
