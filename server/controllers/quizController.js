@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import sanitizeHtml from 'sanitize-html';
 import Quiz from '../models/QuizModel.js';
 
+// Configuration for HTML sanitization
 const sanitizeConfig = {
 	allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe', 'img']),
 	allowedAttributes: {
@@ -9,8 +10,11 @@ const sanitizeConfig = {
 		iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen'],
 		img: ['src', 'alt'],
 	},
+
+	// Custom transformations for specific tags
 	transformTags: {
 		iframe: (tagName, attribs) => {
+			// Regex to validate YouTube URLs in iframe
 			// Regular expression to match YouTube URL in iframe src
 			const iframeRegex =
 				/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/embed\/[\w-]+(\?.*)?$/;
@@ -60,7 +64,7 @@ const sanitizeConfig = {
 	},
 };
 
-// GET ALL QUIZZES
+// Controller to get a single quiz
 export const getAllQuizzes = async (req, res) => {
 	const allQuizzes = await Quiz.find({ createdBy: req.user.userId });
 	res.status(StatusCodes.OK).json({ allQuizzes });
@@ -72,11 +76,13 @@ export const getQuiz = async (req, res) => {
 	res.status(StatusCodes.OK).json({ quiz });
 };
 
-// CREATE QUIZ
+// Controller to create a new quiz
 export const createQuiz = async (req, res) => {
 	try {
+		// Set the creator of the quiz
 		req.body.createdBy = req.user.userId;
-		console.log('Received createQuiz data:', req.body);
+
+		// Sanitize and prepare questions data
 		if (req.body.questions && req.body.questions.length > 0) {
 			req.body.questions = req.body.questions.map((question) => {
 				const correctOption = question.options.find(
@@ -95,6 +101,7 @@ export const createQuiz = async (req, res) => {
 			});
 		}
 
+		// Create and store the new quiz
 		const quiz = await Quiz.create(req.body);
 		return res.status(StatusCodes.CREATED).json({ quiz });
 	} catch (error) {
@@ -105,11 +112,12 @@ export const createQuiz = async (req, res) => {
 	}
 };
 
-// UPDATE QUIZ
+// Controller to update an existing quiz
 export const updateQuiz = async (req, res) => {
 	try {
 		const updateData = { ...req.body };
-		console.log('Received updateQuiz data:', req.body);
+
+		// Sanitize and update questions data
 		if (updateData.questions && updateData.questions.length > 0) {
 			updateData.questions = updateData.questions.map((question) => {
 				const correctOption = question.options.find(
@@ -128,6 +136,7 @@ export const updateQuiz = async (req, res) => {
 			});
 		}
 
+		// Update and return the modified quiz
 		const quiz = await Quiz.findByIdAndUpdate(req.params.id, updateData, {
 			new: true,
 		});
@@ -142,7 +151,7 @@ export const updateQuiz = async (req, res) => {
 	}
 };
 
-// DELETE QUIZ
+// Controller to delete a quiz
 export const deleteQuiz = async (req, res) => {
 	const quiz = await Quiz.findByIdAndDelete(req.params.id);
 	res.status(StatusCodes.OK).json({
@@ -151,13 +160,13 @@ export const deleteQuiz = async (req, res) => {
 	});
 };
 
-// ADD QUESTIONS
+// Controller to add a question to a quiz
 export const addQuestionToQuiz = async (req, res) => {
 	try {
 		const quizId = req.params.id;
 		const questionData = { ...req.body };
 
-		// Sanitize question text
+		// Sanitize question and option texts
 		if (questionData.questionText) {
 			questionData.questionText = sanitizeHtml(
 				questionData.questionText,
@@ -176,6 +185,7 @@ export const addQuestionToQuiz = async (req, res) => {
 			);
 		}
 
+		// Update quiz with the new question
 		const updatedQuiz = await Quiz.findByIdAndUpdate(
 			quizId,
 			{ $push: { questions: questionData } },
