@@ -5,10 +5,18 @@ const QuizHooks = (initialQuizData) => {
   const [quiz, setQuiz] = useState(() => {
     return {
       quizTitle: initialQuizData.quizTitle || "",
-      questions: initialQuizData.questions || [],
+      questions: initialQuizData.questions || [
+        {
+          questionText: "",
+          answerType: "",
+          options: [],
+        },
+      ],
       class: initialQuizData.class || [],
     };
   });
+
+  console.log("QUIZ STATE: ", quiz);
 
   const [selectedFile, setSelectedFile] = useState(null);
 

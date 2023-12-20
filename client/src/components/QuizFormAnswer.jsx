@@ -12,11 +12,6 @@ const QuizFormAnswer = ({
   handleRadioChange,
   onDelete,
 }) => {
-  // HANDLE CHANGES TO THE RADIO BUTTON
-  // const handleRadioChange = (questionIndex, optionIndex) => {
-  //   setCorrectAnswer(questionIndex, optionIndex);
-  // };
-
   return (
     <div className="flex flex-col md:px-4 bg-primary my-2 drop-shadow-xl border border-slate-300">
       <ul className="text-xl">
