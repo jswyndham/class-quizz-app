@@ -76,6 +76,7 @@ export const getQuiz = async (req, res) => {
 export const createQuiz = async (req, res) => {
 	try {
 		req.body.createdBy = req.user.userId;
+		console.log('Received createQuiz data:', req.body);
 		if (req.body.questions && req.body.questions.length > 0) {
 			req.body.questions = req.body.questions.map((question) => ({
 				...question,
@@ -105,7 +106,7 @@ export const createQuiz = async (req, res) => {
 export const updateQuiz = async (req, res) => {
 	try {
 		const updateData = { ...req.body };
-
+		console.log('Received updateQuiz data:', req.body);
 		if (updateData.questions && updateData.questions.length > 0) {
 			updateData.questions = updateData.questions.map((question) => ({
 				...question,
