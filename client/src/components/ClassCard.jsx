@@ -90,19 +90,19 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 
 			<article
 				onClick={() => handleLink(_id)}
-				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
+				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 rounded-b-md hover:cursor-pointer"
 			>
-				<header className="relative flex flex-row justify-between h-fit bg-third px-12 py-5">
+				<header className="relative flex flex-row justify-between h-fit bg-forth px-12 py-5 rounded-t-md">
 					<div className="">
-						<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
+						<h3 className="mb-2 text-2xl lg:text-3xl text-primary font-bold">
 							{className}
 						</h3>
-						<p className="text-lg lg:text-xl italic font-sans ml-4">
+						<p className="text-lg lg:text-xl text-secondary italic font-sans ml-4">
 							{subject}
 						</p>
 					</div>
 				</header>
-				<div className="absolute w-14 h-8 right-8 top-5 bg-black bg-opacity-20 rounded-md">
+				<div className="absolute w-14 h-8 right-8 top-5 bg-black bg-opacity-40 rounded-md">
 					<button
 						ref={menuRef}
 						className="absolute z-10 text-white -mt-2 ml-1 text-5xl font-bold hover:cursor-pointer"
@@ -115,7 +115,8 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 					<ClassInfo icon={<FaSchool />} text={school} />
 					<ClassInfo icon={<FaCalendarAlt />} text={classStatus} />
 				</div>
-				{/* CARD MENU */}
+
+				{/* DROP DOWN CARD MENU */}
 				<div
 					onClick={handleMenuClick}
 					className="absolute right-8 top-4"

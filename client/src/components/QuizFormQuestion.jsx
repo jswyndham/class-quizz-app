@@ -27,14 +27,6 @@ const QuizFormQuestion = ({
 		}
 	};
 
-	// USEEFFECT HOOKS
-	// useEffect(() => {
-	// 	if (editorRef.current) {
-	// 		editorRef.current.setContent(questionTextValue || '');
-	// 		console.log('EDITOR VALUE: ', questionTextValue);
-	// 	}
-	// }, [questionTextValue]);
-
 	useEffect(() => {
 		if (uploadedImageUrl) {
 			insertImageIntoEditor(uploadedImageUrl);
@@ -43,11 +35,27 @@ const QuizFormQuestion = ({
 
 	// HANDLER
 	const handleEditorChange = (content) => {
+		console.log('QuizFormQuestion - Editor Content:', content);
 		// Sanitize the content
-		let cleanContent = DOMPurify.sanitize(content);
-		// Update the question text in the parent component
+		// Extend DOMPurify configuration to allow iframes
+		let cleanContent = DOMPurify.sanitize(content, {
+			ADD_TAGS: ['iframe'],
+			ADD_ATTR: [
+				'allowfullscreen',
+				'frameborder',
+				'height',
+				'width',
+				'src',
+			],
+		}); // Update the question text in the parent component
 		onQuestionTextChange(questionIndex, cleanContent);
 	};
+
+	console.log(
+		'questionTextValue:',
+		questionTextValue,
+		typeof questionTextValue
+	);
 
 	return (
 		<div className="flex flex-col justify-center align-middle">
@@ -68,23 +76,16 @@ const QuizFormQuestion = ({
 				<Editor
 					onInit={(evt, editor) => {
 						editorRef.current = editor;
-						if (questionTextValue) {
-							editorRef.current.setContent(questionTextValue);
-						}
-						const savedContent = localStorage.getItem(
-							`editorContent-${questionIndex}`
-						);
-						console.log('Saved Content:', savedContent);
-						if (savedContent) {
-							editor.setContent(savedContent);
-						}
 					}}
 					apiKey="eqgzlv5pjy49jlvt19f5xsydn4ft70ik3ol07ntoienablzn"
-					key={`editor-${questionIndex}`} // Unique key for each editor instance
-					value={questionTextValue}
+					key={`editor-${questionIndex}`}
+					// Unique key for each editor instance
+					value={String(questionTextValue)}
 					init={{
 						height: 500,
-						selector: 'textarea#mediaembed',
+						selector: 'textarea',
+						extended_valid_elements:
+							'iframe[src|frameborder|allowfullscreen|width|height]',
 						mobile: {
 							theme: 'mobile',
 							plugins: ['autosave', 'lists', 'autolink'],
