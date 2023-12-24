@@ -97,3 +97,29 @@ export const deleteClass = async (req, res) => {
     });
   }
 };
+
+// A controller to allow students to join a class.
+export const joinClass = async (req, res) => {
+  const classId = req.params.id;
+  const userId = req.user.userId;
+
+  try {
+    // Add student to the class
+    const updatedClass = await ClassGroup.findByIdAndUpdate(
+      classId,
+      // The $addToSet operator is used to add a value to an array only if the value does not already exist in the array.
+      { $addToSet: { students: userId } },
+      { new: true }
+    );
+
+    if (!updatedClass) {
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: "Class not found" });
+    }
+
+    res.status(StatusCodes.OK).json({ msg: "Joined class successfully" });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};

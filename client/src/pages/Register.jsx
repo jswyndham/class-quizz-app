@@ -1,4 +1,3 @@
-import React from "react";
 import { Form, redirect, useNavigation, Link } from "react-router-dom";
 import { FormRow, FormRowSelect } from "../components";
 import customFetch from "../utils/customFetch.js";
