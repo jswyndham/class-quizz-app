@@ -1,9 +1,3 @@
-export const CLASS_STATUS = {
-	CURRENT: 'current',
-	UPCOMING: 'upcoming',
-	FINISHED: 'finished',
-};
-
 export const CLASS_SORT_BY = {
 	NEWEST_FIRST: 'newest',
 	OLDEST_FIRST: 'oldest',
@@ -12,13 +6,13 @@ export const CLASS_SORT_BY = {
 };
 
 export const USER_STATUS = {
-	STUDENT: 'student',
-	TEACHER: 'teacher',
-	ADMIN: 'admin',
+	STUDENT: { value: 'STUDENT', label: 'student' },
+	TEACHER: { value: 'TEACHER', label: 'teacher' },
+	ADMIN: { value: 'ADMIN', label: 'admin' },
 };
 
 export const QUESTION_TYPE = {
-	MULTIPLE_CHOICE: 'multiple choice',
-	SHORT_ANSWER: 'short answer',
-	LONG_ANSWER: 'long answer',
+	MULTIPLE_CHOICE: { value: 'MULTIPLE_CHOICE', label: 'multiple choice' },
+	SHORT_ANSWER: { value: 'SHORT_ANSWER', label: 'short answer' },
+	LONG_ANSWER: { value: 'LONG_ANSWER', label: 'long answer' },
 };

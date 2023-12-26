@@ -136,4 +136,12 @@ export const validateQuestionInput = withValidationErrors([
 		.optional()
 		.isInt({ min: 1 })
 		.withMessage('All points must be a positive number'),
+
+	body('class')
+		.optional()
+		.isArray()
+		.custom((classes) => {
+			return classes.every((cls) => mongoose.Types.ObjectId.isValid(cls));
+		})
+		.withMessage('Each class must be a valid ObjectId'),
 ]);
