@@ -95,7 +95,7 @@ export const getQuiz = async (req, res) => {
 export const createQuiz = async (req, res) => {
 	try {
 		// Extract classId from the request body
-		const { classId, ...quizData } = req.body;
+		let { class: classIds, ...quizData } = req.body;
 
 		// Set the creator of the quiz
 		const createdBy = req.user.userId;
@@ -119,26 +119,28 @@ export const createQuiz = async (req, res) => {
 			});
 		}
 
-		// Prepare quiz data including classId
-		const preparedQuizData = {
+		// Ensure classIds is an array and contains valid MongoDB ObjectId
+		classIds = Array.isArray(classIds) ? classIds : [classIds];
+
+		// Create new quiz with classIds
+		const newQuiz = await Quiz.create({
 			...quizData,
 			createdBy,
-			class: classId ? [classId] : [], // Ensure classId is in an array
-		};
+			class: classIds,
+		});
 
-		// Create new quiz
-		const newQuiz = await Quiz.create(preparedQuizData);
+		// Update the corresponding class(es)
+		await Promise.all(
+			classIds.map(async (classId) => {
+				await ClassGroup.findByIdAndUpdate(
+					classId,
+					{ $push: { quizzes: newQuiz._id } },
+					{ new: true }
+				);
+			})
+		);
 
-		// If classId is provided, update the corresponding class
-		if (classId) {
-			await ClassGroup.findByIdAndUpdate(
-				classId,
-				{ $push: { quizzes: newQuiz._id } },
-				{ new: true }
-			);
-		}
-
-		return res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
+		res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
 	} catch (error) {
 		console.error('Error creating quiz:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
