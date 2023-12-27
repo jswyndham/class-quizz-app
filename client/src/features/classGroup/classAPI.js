@@ -4,23 +4,21 @@ import customFetch from '../../utils/customFetch';
 // Base URL for class-related operations
 const BASE_URL = '/class';
 
-// GET ALL CLASSES
+// Get all classes
 export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
 	const response = await customFetch.get(BASE_URL);
 	return response.data;
 });
 
-// GET SINGLE CLASS
+// Get single class by id
 export const fetchClassById = createAsyncThunk(
 	'class/fetchClassById',
-	async (_id, { rejectWithValue }) => {
+	async (_id) => {
 		try {
-			const response = await customFetch.get(
-				`${BASE_URL}/${_id}?includeQuizzes=true`
-			);
+			const response = await customFetch.get(`${BASE_URL}/${_id}`);
 			return response.data;
 		} catch (error) {
-			return rejectWithValue(error.response.data);
+			return error.message;
 		}
 	}
 );
@@ -41,9 +39,9 @@ export const createClass = createAsyncThunk(
 // EDIT CLASS
 export const updateClass = createAsyncThunk(
 	'class/updateClass',
-	async ({ id, classData }) => {
+	async ({ _id, classData }) => {
 		const response = await customFetch.patch(
-			`${BASE_URL}/${id}`,
+			`${BASE_URL}/${_id}`,
 			classData
 		);
 		return response.data;

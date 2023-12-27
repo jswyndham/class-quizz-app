@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchClassById } from '../features/classGroup/classAPI';
-import QuizContainer from '../components/QuizContainer';
 import { useParams } from 'react-router-dom';
+import { QuizCard } from '../components';
+
+const MemoizedQuizCard = memo(QuizCard);
 
 const ClassLayout = () => {
 	const { id } = useParams();
@@ -12,9 +14,11 @@ const ClassLayout = () => {
 
 	useEffect(() => {
 		dispatch(fetchClassById(id));
-	}, [dispatch, id]);
+	}, [id, dispatch]);
 
-	console.log('Current Class:', currentClass);
+	useEffect(() => {
+		console.log('Current Class Updated:', currentClass);
+	}, [currentClass]);
 
 	if (loading) return <div>Loading class...</div>;
 	if (error) return <div>Error: {error}</div>;
@@ -30,16 +34,16 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="w-screen h-fit flex flex-col justify-center align-middle">
-			<div className="text-center">
-				<h2 className="text-4xl font-serif text-blue-800">
+		<section className="flex flex-col items-center w-screen h-screen overflow-hidden">
+			<div className="w-full bg-primary text-center mt-32 border-t-4 border-t-forth border-b-4 border-b-forth">
+				<h2 className="my-2 text-3xl font-bold text-forth">
 					{currentClass.className}
 				</h2>
 			</div>
-			<div>
-				{currentClass.quizzes && currentClass.quizzes.length > 0 && (
-					<QuizContainer quizzes={currentClass.quizzes} />
-				)}
+			<div className="2xl:w-8/12 md:w-10/12 xl:9/12 w-full h-fit px-2 mt-8 md:mx-6 grid grid-cols-1 xl:grid-cols-2 2xl:grid-rows-2 gap-4">
+				{currentClass.quizzes.map((quiz) => (
+					<MemoizedQuizCard key={quiz._id} {...quiz} />
+				))}
 			</div>
 		</section>
 	);

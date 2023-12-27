@@ -1,7 +1,6 @@
 import { Form } from 'react-router-dom';
 import { FormRow, FormRowSelect } from '.';
 import { useNavigation } from 'react-router-dom';
-import { CLASS_STATUS } from '../../../server/utils/constants';
 
 const ClassForm = ({
 	onSubmit,
@@ -27,29 +26,18 @@ const ClassForm = ({
 				onSubmit={onSubmit}
 				className="flex flex-col p-24 drop-shadow-lg 2xl:ml-20"
 			>
-				<div className="flex flex-col 2xl:flex-row mx-4 my-1">
-					<div className="w-fit mx-4 my-2">
-						<FormRow
-							type="text"
-							name="className"
-							labelText="Class Title"
-							placeholder="class title"
-							onChange={nameRow}
-							value={nameValue}
-							defaultValue={classNameDefault}
-						/>
-					</div>
-					<div className="mx-4 my-2">
-						<FormRowSelect
-							labelText="Class Status"
-							name="classStatus"
-							list={Object.values(CLASS_STATUS)}
-							onChange={classStatusRow}
-							value={statusValue}
-							defaultValue={classStatusDefault}
-						/>
-					</div>
+				<div className="w-fit mx-4 my-2">
+					<FormRow
+						type="text"
+						name="className"
+						labelText="Class Title"
+						placeholder="class title"
+						onChange={nameRow}
+						value={nameValue}
+						defaultValue={classNameDefault}
+					/>
 				</div>
+
 				<div className="flex flex-col 2xl:flex-row mx-4">
 					<div className="mx-4 my-2">
 						<FormRow

@@ -5,7 +5,7 @@ const FormRow = ({ type, name, labelText, defaultValue, value, onChange }) => {
 		<div className="flex flex-col m-1">
 			<label
 				htmlFor={name}
-				className="block mb-2 ml-4 text-xl font-medium text-gray-900 dark:text-white"
+				className="block mb-2 ml-4 text-xl font-medium text-gray-600 dark:text-white"
 			>
 				{labelText || name}
 			</label>

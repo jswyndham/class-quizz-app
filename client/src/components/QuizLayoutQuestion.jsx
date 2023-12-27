@@ -1,7 +1,16 @@
-const QuizLayoutQuestion = ({ points, question, uploadedImageUrl }) => {
-	console.log(question);
+const QuizLayoutQuestion = ({
+	questionNumber,
+	points,
+	question,
+	uploadedImageUrl,
+}) => {
 	return (
 		<div className="w-full h-fit bg-blue-100">
+			<div className="mb-2 mx-4 pt-1">
+				<p className="underline underline-offset-2">
+					Question {questionNumber}
+				</p>
+			</div>
 			<div className="flex flex-row-reverse  pt-3 pr-6">
 				<p className="text-lg italic">
 					{points} {points === 1 ? 'point' : 'points'}

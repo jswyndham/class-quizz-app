@@ -31,11 +31,24 @@ const QuizFormQuestion = ({
 		if (uploadedImageUrl) {
 			insertImageIntoEditor(uploadedImageUrl);
 		}
-	}, [uploadedImageUrl]);
+	}, []);
+
+	// useEffect(() => {
+	// 	if (uploadedImageUrl) {
+	// 		insertImageIntoEditor(uploadedImageUrl);
+	// 	}
+	// }, [uploadedImageUrl]);
+
+	// Transform QUESTION_TYPE object to array for FormRowSelect access
+	const questionTypeOptions = Object.entries(QUESTION_TYPE).map(
+		([value, label]) => ({
+			value: value,
+			label: label,
+		})
+	);
 
 	// HANDLER
 	const handleEditorChange = (content) => {
-		console.log('QuizFormQuestion - Editor Content:', content);
 		// Sanitize the content
 		// Extend DOMPurify configuration to allow iframes
 		let cleanContent = DOMPurify.sanitize(content, {
@@ -51,19 +64,16 @@ const QuizFormQuestion = ({
 		onQuestionTextChange(questionIndex, cleanContent);
 	};
 
-	console.log(
-		'questionTextValue:',
-		questionTextValue,
-		typeof questionTextValue
-	);
-
 	return (
 		<div className="flex flex-col justify-center align-middle">
 			<div className="flex flex-col 2xl:flex-row md:mx-4 my-3">
 				<FormRowSelect
 					name="answerType"
 					labelText="Question Type"
-					list={Object.values(QUESTION_TYPE)}
+					list={Object.values(QUESTION_TYPE).map((type) => ({
+						label: type.label,
+						value: type.value,
+					}))}
 					onChange={questionTypeOnChange}
 					value={questionTypeValue}
 				/>

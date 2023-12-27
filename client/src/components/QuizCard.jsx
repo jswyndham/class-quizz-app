@@ -33,7 +33,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 	useEffect(() => {
 		console.log('Rendering with quizData:', quizData);
 		dispatch(fetchQuizzes());
-	}, [dispatch]);
+	}, []);
 
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
@@ -98,9 +98,9 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 
 			<article
 				onClick={() => handleLink(_id)}
-				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
+				className="relative w-full h-44 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
 			>
-				<header className="relative flex flex-row justify-between h-fit bg-third px-12 py-5">
+				<header className="relative flex flex-row justify-between h-fit bg-third px-12 py-4">
 					<div className="">
 						<h3 className="mb-2 text-2xl lg:text-3xl text-white font-bold">
 							{quizTitle}
@@ -119,7 +119,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 						<PiDotsThreeBold />
 					</button>
 				</div>
-				<div className="flex flex-col p-6">
+				<div className="flex flex-col m-4 pb-2">
 					<ClassInfo icon={<FaSchool />} text={category} />
 					<ClassInfo icon={<FaCalendarAlt />} text={updatedData} />
 				</div>

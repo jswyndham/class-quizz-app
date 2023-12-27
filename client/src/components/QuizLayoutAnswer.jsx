@@ -58,10 +58,10 @@ const QuizLayoutAnswer = ({ index, answerType, answers, correctAnswer }) => {
 
 	return (
 		<div>
-			{answerType === QUESTION_TYPE.MULTIPLE_CHOICE
+			{answerType === QUESTION_TYPE.MULTIPLE_CHOICE.value
 				? renderMultipleChoiceAnswer()
 				: null}
-			{answerType === QUESTION_TYPE.LONG_ANSWER
+			{answerType === QUESTION_TYPE.LONG_ANSWER.value
 				? renderLongAnswer()
 				: null}
 		</div>

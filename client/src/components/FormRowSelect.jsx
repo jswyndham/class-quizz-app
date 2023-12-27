@@ -22,10 +22,10 @@ const FormRowSelect = ({
 				value={value}
 				onChange={onChange}
 			>
-				<option value="">-- select --</option> {/* Add this line */}
-				{list.map((itemValue) => (
-					<option key={itemValue} value={itemValue}>
-						{itemValue}
+				<option value="">-- select --</option>
+				{list.map((item) => (
+					<option key={item.value} value={item.value}>
+						{item.label}
 					</option>
 				))}
 			</select>

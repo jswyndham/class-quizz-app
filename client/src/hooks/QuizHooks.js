@@ -2,23 +2,23 @@ import { useState, useEffect } from 'react';
 import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizHooks = (initialQuizData) => {
-	const [quiz, setQuiz] = useState(() => {
-		return {
-			quizTitle: initialQuizData.quizTitle || '',
-			questions: initialQuizData.questions || [
-				{
-					questionText: '',
-					answerType: '',
-					options: [],
-				},
-			],
-			class: initialQuizData.class || [],
-		};
+	const [quiz, setQuiz] = useState({
+		quizTitle: initialQuizData.quizTitle || '',
+		questions: initialQuizData.questions || [
+			{
+				questionText: '',
+				answerType: '',
+				options: [],
+			},
+		],
+		class: initialQuizData.class || [],
 	});
 
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+
+	const [selectedClassId, setSelectedClassId] = useState('');
 
 	useEffect(() => {
 		localStorage.setItem('quizData', JSON.stringify(quiz));
@@ -140,6 +140,8 @@ const QuizHooks = (initialQuizData) => {
 		quiz,
 		selectedFile,
 		uploadedImageUrl,
+		selectedClassId,
+		setSelectedClassId,
 		setQuiz,
 		setUploadedImageUrl,
 		setSelectedFile,

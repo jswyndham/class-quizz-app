@@ -1,17 +1,21 @@
-import { Form } from 'react-router-dom';
-import { QuizFormAnswer, QuizFormQuestion } from '.';
+import { useEffect } from 'react';
+import { FormRowSelect, QuizFormAnswer, QuizFormQuestion } from '.';
 import QuizHooks from '../hooks/QuizHooks';
-import { useNavigate, useNavigation } from 'react-router-dom';
+import { useNavigate, useNavigation, Form } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createQuiz } from '../features/quiz/quizAPI';
 import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
-import { useSelector } from 'react-redux';
 import { MdDeleteForever } from 'react-icons/md';
+import { FaRegImage } from 'react-icons/fa6';
+import { fetchClasses } from '../features/classGroup/classAPI';
+
 const QuizForm = () => {
 	// STATE HOOKS
 	const {
 		quiz,
+		selectedClassId,
+		setSelectedClassId,
 		setQuizTitle,
 		updateQuestion,
 		addNewQuestion,
@@ -29,7 +33,16 @@ const QuizForm = () => {
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === 'submitting';
 
-	const uploadedImageUrl = useSelector((state) => state.cloudinary.imageUrl);
+	// Accessing classes from Redux store for dropdown menu selection
+	const classData = useSelector((state) => state.class.class);
+
+	// const uploadedImageUrl = useSelector((state) => state.cloudinary.imageUrl);
+
+	// Dispatch the action to fetch all classes for dropdown menu
+	useEffect(() => {
+		dispatch(fetchClasses());
+	}, []);
+	console.log('FETCH CLASSES: ', classData);
 
 	// ADD QUIZ TITLE
 	const handleQuizTitleChange = (e) => {
@@ -89,8 +102,6 @@ const QuizForm = () => {
 				toast.error('Failed to upload file');
 			}
 		}
-		console.log('FILE: ', file);
-		console.log('Question Index: ', questionIndex);
 	};
 
 	// ADD NEW QUESTION
@@ -121,13 +132,17 @@ const QuizForm = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		const formData = { ...quiz };
-
-		console.log('Quiz Submission Data:', JSON.stringify(formData, null, 2));
+		// Add the selected class ID to the quiz data
+		const formData = {
+			...quiz,
+			class: selectedClassId ? [selectedClassId] : [],
+		};
 
 		try {
-			// Handle create quiz (redux API)
-			await dispatch(createQuiz(formData)).unwrap();
+			console.log('Submitting Quiz Data:', formData);
+			// Handle create quiz with dispatch
+			await dispatch(createQuiz(formData)).then(() => {});
+
 			console.log('The formData: ', { formData });
 			navigate('/dashboard/all-quizzes');
 			toast.success('Quiz successfully added');
@@ -165,52 +180,88 @@ const QuizForm = () => {
 							className="border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						/>
 					</div>
+
+					<div>
+						{classData && classData.length > 0 && (
+							<div className="flex flex-col 2xl:flex-row md:mx-4 my-3">
+								<FormRowSelect
+									name="classId"
+									labelText="Add a class"
+									list={classData.map((cls) => ({
+										key: cls._id,
+										value: cls._id,
+										label: cls.className,
+									}))}
+									value={selectedClassId} // The state variable to hold the selected class ID
+									onChange={(e) =>
+										setSelectedClassId(e.target.value)
+									} // Function to update the state variable
+								/>
+							</div>
+						)}
+					</div>
+
 					{quiz.questions.map((question, questionIndex) => (
 						<div
 							key={questionIndex}
-							className="flex flex-col justify-center align-middle bg-slate-100 lg:border border-slate-400 lg:p-6 my-4"
+							className="flex flex-col justify-center align-middle bg-slate-100 lg:border border-slate-400 lg:p-6 my-3"
 						>
+							<div className="my-3 mx-4">
+								{/* Used the map index to number the questions */}
+								<p className="underline underline-offset-2 italic">
+									Question {questionIndex + 1}
+								</p>
+							</div>
 							<div className="flex justify-between m-5">
 								<div className="flex flex-col">
-									<label
-										htmlFor="imageText"
-										className="mb-2 text-lg"
-									>
-										Question Points
-									</label>
+									<div className="flex justify-center items-center bg-zinc-100 p-2 my-4 rounded-md drop-shadow-xl">
+										<label
+											htmlFor="imageText"
+											className="mr-4 text-lg"
+										>
+											Question Points
+										</label>
 
-									<input
-										type="number"
-										className="w-20 h-7 p-2 rounded-md mb-6"
-										value={question.points || 0}
-										onChange={(e) =>
-											updateQuestionPoints(
-												questionIndex,
-												e
-											)
-										}
-									/>
-
-									<label
-										htmlFor="imageText"
-										className="mb-2 text-lg"
-									>
-										Image Upload
-									</label>
-									<input
-										type="file"
-										onChange={(e) =>
-											handleFileChange(e, questionIndex)
-										}
-										className="your-custom-styles"
-									/>
+										<input
+											type="number"
+											className="w-20 h-7 p-3 rounded-md"
+											value={question.points || 0}
+											onChange={(e) =>
+												updateQuestionPoints(
+													questionIndex,
+													e
+												)
+											}
+										/>
+									</div>
+									<div className="flex flex-col justify-start bg-zinc-100 p-3 my-3 rounded-md drop-shadow-xl">
+										<label
+											htmlFor="imageText"
+											className="mb-2 text-lg flex flex-row"
+										>
+											<FaRegImage />{' '}
+											<p className="ml-2 -mt-1">
+												Image Upload
+											</p>
+										</label>
+										<input
+											type="file"
+											onChange={(e) =>
+												handleFileChange(
+													e,
+													questionIndex
+												)
+											}
+											className="your-custom-styles"
+										/>
+									</div>
 								</div>
 
 								<div
 									onClick={() =>
 										deleteQuizForm(questionIndex)
 									}
-									className="h-fit flex flex-row text-xl -mr-2 -mt-4 text-red-600 hover:cursor-pointer hover:text-red-800"
+									className="h-fit flex flex-row text-xl -mr-2 -mt-2 text-red-600 hover:cursor-pointer hover:text-red-800"
 								>
 									<p className="mx-1 -mt-2">remove</p>
 									<MdDeleteForever />

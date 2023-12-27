@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { isEqual } from 'lodash';
 import {
 	fetchClasses,
 	fetchClassById,
@@ -22,15 +21,13 @@ const classSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 
-			// GET ALL CLASSES
+			// Get all classes
 			.addCase(fetchClasses.pending, (state) => {
 				state.loading = true;
 				state.error = null;
 			})
 			.addCase(fetchClasses.fulfilled, (state, action) => {
-				if (!isEqual(state.class, action.payload.classGroups)) {
-					state.class = action.payload.classGroups;
-				}
+				state.class = action.payload.classGroups;
 				state.loading = false;
 			})
 			.addCase(fetchClasses.rejected, (state, action) => {
@@ -38,20 +35,20 @@ const classSlice = createSlice({
 				state.error = action.error.message;
 			})
 
-			// FETCH CLASS BY ID
+			// Fetch single class by id
 			.addCase(fetchClassById.pending, (state) => {
 				state.loading = true;
 			})
 			.addCase(fetchClassById.fulfilled, (state, action) => {
 				state.loading = false;
-				state.currentClass = action.payload.classGroup;
+				state.currentClass = action.payload.class;
 			})
 			.addCase(fetchClassById.rejected, (state, action) => {
 				state.error = action.error.message;
 				state.loading = false;
 			})
 
-			// CREATE NEW CLASS
+			// Crate a new class
 			.addCase(createClass.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -66,7 +63,7 @@ const classSlice = createSlice({
 				state.error = action.error.message;
 			})
 
-			// UPDATE CLASS
+			// Update existing class
 			.addCase(updateClass.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -84,7 +81,7 @@ const classSlice = createSlice({
 				state.error = action.error.message;
 			})
 
-			// DELETE CLASS
+			// Delete a class
 			.addCase(deleteClass.pending, (state) => {
 				state.loading = true;
 				state.error = null;
