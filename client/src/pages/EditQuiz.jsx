@@ -7,11 +7,11 @@ import {
 } from "react-router-dom";
 import { toast } from "react-toastify";
 import customFetch from "../utils/customFetch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import QuizHooks from "../hooks/QuizHooks";
 import { updateQuiz } from "../features/quiz/quizAPI";
 import { MdDeleteForever } from "react-icons/md";
-import { QuizFormAnswer, QuizFormQuestion } from "../components";
+import { FormRowSelect, QuizFormAnswer, QuizFormQuestion } from "../components";
 import { uploadCloudinaryFile } from "../features/cloudinary/cloudinaryAPI";
 
 export const loader = async ({ params }) => {
@@ -32,6 +32,8 @@ const EditQuiz = () => {
   // STATE HOOKS
   const {
     quiz,
+    selectedClassId,
+    setSelectedClassId,
     setQuiz,
     updateOption,
     setQuizTitle,
@@ -48,12 +50,15 @@ const EditQuiz = () => {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
+  // Accessing classes from Redux store for dropdown menu selection
+  const classData = useSelector((state) => state.class.class);
+
   if (!quizForm) {
     return (
       <div className="pt-36 text-3xl font-extrabold text-center">
         <p>Loading...</p>
       </div>
-    ); // or any error message
+    );
   }
 
   // HANDLE TITLE
@@ -81,7 +86,7 @@ const EditQuiz = () => {
   };
 
   // UPDATE QUESTION TEXT
-  //This function replaces initial text value with the new text value in the tinyMCE editor. This must be done outside of the Editor component due to a bug in tinyMCE that causes conflict between the initial and new values, which triggers new text to output in reverse.
+  //This function replaces initial text value with the new text value in the tinyMCE editor. This must be done outside of the Editor component due to a bug in tinyMCE that causes conflict between the initialState and new values, which triggers new text to output in reverse.
   const updateQuestionText = (questionIndex, newText) => {
     setQuiz((prevQuiz) => {
       const updatedQuestions = prevQuiz.questions.map((question, idx) => {
@@ -171,6 +176,25 @@ const EditQuiz = () => {
               className="border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
+
+          <div>
+            {classData && classData.length > 0 && (
+              <div className="flex flex-col 2xl:flex-row md:mx-4 my-3">
+                <FormRowSelect
+                  name="classId"
+                  labelText="Add a class"
+                  list={classData.map((cls) => ({
+                    key: cls._id,
+                    value: cls._id,
+                    label: cls.className,
+                  }))}
+                  value={selectedClassId} // The state variable to hold the selected class ID
+                  onChange={(e) => setSelectedClassId(e.target.value)} // Function to update the state variable
+                />
+              </div>
+            )}
+          </div>
+
           {quiz.questions.map((question, questionIndex) => (
             <div
               key={questionIndex}
