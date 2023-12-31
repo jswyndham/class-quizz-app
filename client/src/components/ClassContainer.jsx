@@ -3,7 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import ClassCard from './ClassCard';
 import { fetchClasses } from '../features/classGroup/classAPI';
 import { fetchCurrentUser } from '../features/users/userAPI';
-import { useParams } from 'react-router';
+import LoadingSpinner from './LoadingSpinner';
 
 const MemoizedClassCard = memo(ClassCard);
 
@@ -30,6 +30,11 @@ const ClassContainer = () => {
 	useEffect(() => {
 		dispatch(fetchClasses());
 	}, []);
+
+	// Loading spinner
+	if (loading) {
+		return <LoadingSpinner />;
+	}
 
 	// NO CLASSES TO DISPLAY
 	if (classData.length === 0) {

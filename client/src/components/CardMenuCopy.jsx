@@ -1,9 +1,13 @@
-const CardMenuCopy = ({
-	isShowClassMenu,
-	handleCopy,
-	handleEdit,
-	handleDelete,
-}) => {
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchClasses } from '../features/classGroup/classAPI';
+
+const CardMenuCopy = ({ classCopyKey, classCopy }) => {
+	const classList = useSelector((state) => state.class);
+
+	useEffect(() => {
+		useDispatch(fetchClasses());
+	}, []);
+
 	return (
 		<div
 			className={
@@ -13,18 +17,15 @@ const CardMenuCopy = ({
 			}
 		>
 			<ul className="text-xl">
-				<li className="m-2 hover:text-gray-500">
-					<button onClick={handleCopy}>Copy</button>
-				</li>
-				<li
-					onClick={handleEdit}
-					className="m-2 text-yellow-600 hover:text-yellow-400"
-				>
-					Edit
-				</li>
-				<li className="m-2 hover:text-red-500 text-red-700">
-					<button onClick={() => handleDelete(true)}>Delete</button>
-				</li>
+				{classList.map((classes) => (
+					<li
+						key={classCopyKey}
+						onClick={classCopy}
+						className="m-2 hover:text-gray-500"
+					>
+						{classList.className}
+					</li>
+				))}
 			</ul>
 		</div>
 	);

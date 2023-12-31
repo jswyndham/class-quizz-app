@@ -9,7 +9,7 @@ import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClassInfo, ConfirmDeleteModal } from './';
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'; // Date formatting
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { useNavigate } from 'react-router-dom';
 import CardMenu from './CardMenu';
