@@ -6,6 +6,7 @@ import {
 	updateQuiz,
 	deleteQuiz,
 	addQuestionToQuiz,
+	copyQuizToClass,
 } from '../controllers/quizController.js';
 import {
 	validateQuizIdParam,
@@ -27,5 +28,6 @@ router.patch(
 	validateQuestionInput,
 	addQuestionToQuiz
 );
+router.post('/:id/copy-to-class', validateQuizIdParam, copyQuizToClass);
 
 export default router;

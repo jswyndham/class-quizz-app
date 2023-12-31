@@ -5,6 +5,7 @@ import {
 	fetchQuizById,
 	createQuiz,
 	updateQuiz,
+	copyQuizToClass,
 	deleteQuiz,
 	addQuestionToQuiz,
 } from './quizAPI';
@@ -29,9 +30,7 @@ const quizSlice = createSlice({
 				state.error = null;
 			})
 			.addCase(fetchQuizzes.fulfilled, (state, action) => {
-				if (!isEqual(state.quiz, action.payload.allQuizzes)) {
-					state.quiz = action.payload.allQuizzes;
-				}
+				state.quiz = action.payload.allQuizzes;
 				state.loading = false;
 			})
 			.addCase(fetchQuizzes.rejected, (state, action) => {
@@ -81,6 +80,24 @@ const quizSlice = createSlice({
 				}
 			})
 			.addCase(updateQuiz.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message;
+			})
+
+			// Copy a quiz and place in a new class
+			.addCase(copyQuizToClass.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(copyQuizToClass.fulfilled, (state, action) => {
+				const index = state.quiz.findIndex(
+					(c) => c._id === action.payload._id
+				);
+				if (index !== -1) {
+					state.quiz[index] = action.payload;
+				}
+			})
+			.addCase(copyQuizToClass.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message;
 			})

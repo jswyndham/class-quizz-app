@@ -12,7 +12,7 @@ const CardMenu = ({
 					: 'absolute invisible'
 			}
 		>
-			<ul className="text-xl">
+			<ul className="text-lg md:text-xl">
 				<li className="m-2 hover:text-gray-500">
 					<button onClick={handleCopy}>Copy</button>
 				</li>

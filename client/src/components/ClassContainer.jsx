@@ -8,7 +8,7 @@ import LoadingSpinner from './LoadingSpinner';
 const MemoizedClassCard = memo(ClassCard);
 
 const ClassContainer = () => {
-	const { userData, classData } = useSelector(
+	const { userData, classData, loading } = useSelector(
 		(state) => ({
 			userData: state.class.currentUser,
 			classData: state.class.class,

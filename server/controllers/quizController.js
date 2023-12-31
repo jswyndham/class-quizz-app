@@ -230,6 +230,48 @@ export const updateQuiz = async (req, res) => {
 	}
 };
 
+// Controller to copy a quiz to a class
+export const copyQuizToClass = async (req, res) => {
+	try {
+		const { _id, classId } = req.body;
+
+		// Validate if the class exists
+		const classGroup = await ClassGroup.findById(classId);
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Class not found' });
+		}
+
+		// Validate if the quiz exists
+		const quiz = await Quiz.findById(_id);
+		if (!quiz) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Quiz not found' });
+		}
+
+		// Add the class to the quiz's class array
+		await Quiz.findByIdAndUpdate(_id, {
+			$addToSet: { class: classId },
+		});
+
+		// Add the quiz to the class's quizzes array
+		await ClassGroup.findByIdAndUpdate(classId, {
+			$addToSet: { quizzes: _id },
+		});
+
+		res.status(StatusCodes.OK).json({
+			msg: 'Quiz added to class successfully',
+		});
+	} catch (error) {
+		console.error('Error adding quiz to class:', error);
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message,
+		});
+	}
+};
+
 // Controller to delete a quiz
 export const deleteQuiz = async (req, res) => {
 	try {

@@ -3,7 +3,7 @@ import customFetch from '../../utils/customFetch';
 
 const BASE_URL = '/quiz';
 
-// GET ALL QUIZZES
+// Retreive all quizzes
 export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async () => {
 	try {
 		const response = await customFetch.get(BASE_URL);
@@ -13,7 +13,7 @@ export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async () => {
 	}
 });
 
-// GET SINGLE QUIZ
+// Find a quiz by its id
 export const fetchQuizById = createAsyncThunk(
 	'quiz/fetchQuizById',
 	async (_id) => {
@@ -26,7 +26,7 @@ export const fetchQuizById = createAsyncThunk(
 	}
 );
 
-// CREATE QUIZ
+// Create new quiz
 export const createQuiz = createAsyncThunk(
 	'quiz/createQuiz',
 	async (quizData, { rejectWithValue }) => {
@@ -42,7 +42,7 @@ export const createQuiz = createAsyncThunk(
 	}
 );
 
-// EDIT QUIZ
+// Edit existing quiz
 export const updateQuiz = createAsyncThunk(
 	'quiz/updateQuiz',
 	async ({ _id, formData }) => {
@@ -58,7 +58,28 @@ export const updateQuiz = createAsyncThunk(
 	}
 );
 
-// DELETE QUIZ
+// Copy a quiz and place in a new class
+export const copyQuizToClass = createAsyncThunk(
+	'quiz/copyQuizToClass',
+	async ({ _id, classId }, { rejectWithValue }) => {
+		try {
+			const response = await customFetch.post(
+				`${BASE_URL}/${_id}/copy-to-class`,
+				{
+					_id,
+					classId,
+				}
+			);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(
+				error.response ? error.response.data : error.message
+			);
+		}
+	}
+);
+
+// Delete a quiz
 export const deleteQuiz = createAsyncThunk('quiz/deleteQuiz', async (id) => {
 	try {
 		await customFetch.delete(`${BASE_URL}/${id}`);
@@ -68,7 +89,7 @@ export const deleteQuiz = createAsyncThunk('quiz/deleteQuiz', async (id) => {
 	}
 });
 
-// EDIT QUESTIONS
+// Edit questions inside a quiz
 export const addQuestionToQuiz = createAsyncThunk(
 	'quiz/addQuestionToQuiz',
 	async ({ id, quizData }) => {
