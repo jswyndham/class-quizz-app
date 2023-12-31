@@ -1,6 +1,6 @@
-const CardModal = ({
+const CardMenu = ({
 	isShowClassMenu,
-	handleDuplicate,
+	handleCopy,
 	handleEdit,
 	handleDelete,
 }) => {
@@ -14,7 +14,7 @@ const CardModal = ({
 		>
 			<ul className="text-xl">
 				<li className="m-2 hover:text-gray-500">
-					<button onClick={handleDuplicate}>Duplicate</button>
+					<button onClick={handleCopy}>Copy</button>
 				</li>
 				<li
 					onClick={handleEdit}
@@ -30,4 +30,4 @@ const CardModal = ({
 	);
 };
 
-export default CardModal;
+export default CardMenu;

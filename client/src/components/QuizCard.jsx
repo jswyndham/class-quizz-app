@@ -1,3 +1,9 @@
+/**
+ * QuizCard Component
+ * Displays a card representing a quiz with options to edit, delete, and view details.
+ * It includes interactive elements like a menu for editing and deleting, and a modal for delete confirmation.
+ */
+
 import { FaSchool, FaCalendarAlt } from 'react-icons/fa';
 import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -6,7 +12,7 @@ import { ClassInfo, ConfirmDeleteModal } from './';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { useNavigate } from 'react-router-dom';
-import CardModal from './CardModal';
+import CardMenu from './CardMenu';
 import { toast } from 'react-toastify';
 import { deleteQuiz, fetchQuizzes } from '../features/quiz/quizAPI';
 
@@ -17,9 +23,11 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 
 	const updatedData = dayjs(updatedAt).format('MMMM D, YYYY');
 
-	// STATE
+	// STATE HOOKS
+	// Manage the visibility of the card menu
 	const [isCardMenu, setIsCardMenu] = useState(false);
 
+	// Manage the delete confirmation modal
 	const [confirmModalState, setConfirmModalState] = useState({
 		isOpen: false,
 		classId: null,
@@ -29,12 +37,13 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 	const dispatch = useDispatch();
 	const menuRef = useRef();
 
-	// USEEFFECT
+	// Fetches quiz data on component mount
 	useEffect(() => {
 		console.log('Rendering with quizData:', quizData);
 		dispatch(fetchQuizzes());
 	}, []);
 
+	// Closes the delete confirmation modal
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
 			if (
@@ -50,22 +59,26 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 		return () => {
 			document.removeEventListener('click', checkOutsideMenu);
 		};
-	}, []);
+	}, [isCardMenu]);
 
-	// HANDLERS
+	// EVENT HANDLERS
+	// Opens the delete confirmation modal
 	const openConfirmModal = useCallback((classId) => {
 		setConfirmModalState({ isOpen: true, classId });
 	}, []);
 
+	// Closes the delete confirmation modal
 	const closeConfirmModal = useCallback(() => {
 		setConfirmModalState({ isOpen: false, classId: null });
 	}, []);
 
+	// Toggles the card menu visibility
 	const handleMenuClick = (e) => {
 		e.stopPropagation();
 		setIsCardMenu(!isCardMenu);
 	};
 
+	// Navigates to the edit quiz page
 	const handleEditClick = (e) => {
 		e.stopPropagation();
 		try {
@@ -76,6 +89,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 		}
 	};
 
+	// Handles the deletion of the quiz
 	const handleDeleteClick = async (e) => {
 		e.stopPropagation();
 		try {
@@ -88,6 +102,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 		}
 	};
 
+	// Navigates to the quiz detail page
 	const handleLink = () => {
 		navigate(`/dashboard/quiz/${_id}`);
 	};
@@ -128,7 +143,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 					onClick={handleMenuClick}
 					className="absolute right-8 top-4"
 				>
-					<CardModal
+					<CardMenu
 						isShowClassMenu={isCardMenu}
 						handleEdit={handleEditClick}
 						handleDelete={openConfirmModal}

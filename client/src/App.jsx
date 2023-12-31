@@ -18,23 +18,22 @@ import {
 	ClassLayout,
 	QuizLayout,
 	AddQuiz,
+	AllQuizzes,
 } from './pages';
 
-// PAGE LOADERS
-
+// Page loaders
 import { loader as allClassesLoader } from './pages/AllClasses';
 import { loader as editClassLoader } from './pages/EditClass';
 import { loader as editQuizLoader } from './pages/EditQuiz';
 import { loader as adminLoader } from './pages/Admin';
 import { loader as quizLoader } from './pages/AllQuizzes';
 
-// PAGE ACTIONS
+// Page actions
 import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
 import { action as deleteClassAction } from './pages/DeleteClass';
-import AllQuizzes from './pages/AllQuizzes';
 
-// DEFAULT THEME
+// Default theme
 export const checkDefaultTheme = () => {
 	const isDarkTheme = localStorage.getItem('darkMode') === 'true';
 	document.documentElement.classList.toggle('dark', isDarkTheme);
@@ -44,7 +43,7 @@ export const checkDefaultTheme = () => {
 
 checkDefaultTheme();
 
-// ROUTES
+// Routes
 const router = createBrowserRouter([
 	{
 		path: '/',

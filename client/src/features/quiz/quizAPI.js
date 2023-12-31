@@ -45,11 +45,11 @@ export const createQuiz = createAsyncThunk(
 // EDIT QUIZ
 export const updateQuiz = createAsyncThunk(
 	'quiz/updateQuiz',
-	async ({ _id, quizData }) => {
+	async ({ _id, formData }) => {
 		try {
 			const response = await customFetch.patch(
 				`${BASE_URL}/${_id}`,
-				quizData
+				formData
 			);
 			return response.data;
 		} catch (error) {

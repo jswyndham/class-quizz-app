@@ -66,6 +66,8 @@ const quizSlice = createSlice({
 				state.loading = false;
 				state.error = action.error.message;
 			})
+
+			// Update existing quiz
 			.addCase(updateQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -82,6 +84,8 @@ const quizSlice = createSlice({
 				state.loading = false;
 				state.error = action.error.message;
 			})
+
+			// Delete quiz
 			.addCase(deleteQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -93,6 +97,8 @@ const quizSlice = createSlice({
 				state.loading = false;
 				state.error = action.error.message;
 			})
+
+			// Add question to quiz
 			.addCase(addQuestionToQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;

@@ -27,12 +27,6 @@ const ClassContainer = () => {
 		}
 	}, []);
 
-	// useEffect(() => {
-	// 	if (!userData) {
-	// 		dispatch(fetchCurrentUser());
-	// 	}
-	// }, [userData, dispatch]);
-
 	useEffect(() => {
 		dispatch(fetchClasses());
 	}, []);

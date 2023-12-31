@@ -18,7 +18,11 @@ const QuizHooks = (initialQuizData) => {
 
 	const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
 
-	const [selectedClassId, setSelectedClassId] = useState('');
+	const [selectedClassId, setSelectedClassId] = useState(
+		initialQuizData.class && initialQuizData.class.length > 0
+			? initialQuizData.class[0]
+			: ''
+	);
 
 	useEffect(() => {
 		localStorage.setItem('quizData', JSON.stringify(quiz));

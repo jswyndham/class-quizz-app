@@ -36,13 +36,10 @@ const QuizForm = () => {
 	// Accessing classes from Redux store for dropdown menu selection
 	const classData = useSelector((state) => state.class.class);
 
-	// const uploadedImageUrl = useSelector((state) => state.cloudinary.imageUrl);
-
 	// Dispatch the action to fetch all classes for dropdown menu
 	useEffect(() => {
 		dispatch(fetchClasses());
 	}, []);
-	console.log('FETCH CLASSES: ', classData);
 
 	// ADD QUIZ TITLE
 	const handleQuizTitleChange = (e) => {
@@ -51,11 +48,9 @@ const QuizForm = () => {
 
 	// ADD QUESTION TEXT
 	const updateQuestionText = (questionIndex, newText, e) => {
-		console.log('QuizForm - updateQuestionText:', newText);
 		// Ensure newText is a string
 		newText = String(newText);
 
-		console.log('QuizForm - updateQuestionText:', newText);
 		const updatedQuestion = {
 			...quiz.questions[questionIndex],
 
@@ -139,9 +134,8 @@ const QuizForm = () => {
 		};
 
 		try {
-			console.log('Submitting Quiz Data:', formData);
 			// Handle create quiz with dispatch
-			await dispatch(createQuiz(formData)).then(() => {});
+			await dispatch(createQuiz(formData));
 
 			console.log('The formData: ', { formData });
 			navigate('/dashboard/all-quizzes');

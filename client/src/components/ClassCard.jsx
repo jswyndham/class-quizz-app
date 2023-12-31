@@ -6,7 +6,7 @@ import { ClassInfo, ConfirmDeleteModal } from './';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { useNavigate } from 'react-router-dom';
-import CardModal from './CardModal';
+import CardMenu from './CardMenu';
 import { deleteClass, fetchClasses } from '../features/classGroup/classAPI';
 import { toast } from 'react-toastify';
 
@@ -121,7 +121,7 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 					onClick={handleMenuClick}
 					className="absolute right-8 top-4"
 				>
-					<CardModal
+					<CardMenu
 						isShowClassMenu={isClassCardMenu}
 						handleEdit={handleEditClick}
 						handleDelete={openConfirmModal}

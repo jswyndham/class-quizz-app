@@ -44,6 +44,4 @@ const QuizSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-//QuizSchema.index({ createdBy: 1, class: 1 }, { unique: false });
-
 export default mongoose.model('Quiz', QuizSchema);

@@ -18,20 +18,22 @@ const DashboardLayout = () => {
 	const [showLogout, setShowLogout] = useState(false);
 
 	useEffect(() => {
-		let isMounted = true;
+		const abortController = new AbortController();
 
-		if (!user && isMounted) {
+		if (!user) {
 			dispatch(fetchCurrentUser())
 				.unwrap()
 				.catch(() => {
-					if (isMounted) navigate('/');
+					if (!abortController.signal.aborted) {
+						navigate('/');
+					}
 				});
 		}
 
 		return () => {
-			isMounted = false;
+			abortController.abort();
 		};
-	}, [user, dispatch, navigate]);
+	}, [dispatch, navigate, user]);
 
 	// TOGGLE DARK THEME
 	const toggleDarkTheme = () => {
