@@ -1,10 +1,8 @@
 import { FaAlignLeft } from 'react-icons/fa';
 import LogoutContainer from './LogoutContainer';
 import logo from '../assets/images/quizgate-logo.png';
-import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
 
-const Navbar = () => {
-	const { toggleSidebar } = DashboardLayoutHooks();
+const Navbar = ({ toggleSidebar }) => {
 	return (
 		<nav className="fixed top-0 flex justify-between h-32 w-screen bg-third text-forth dark:bg-gray-800 pl-12 py-9 font-extrabold z-40">
 			<button

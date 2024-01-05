@@ -1,4 +1,11 @@
-import { useEffect, createContext, useContext, useMemo, useRef } from 'react';
+import {
+	useEffect,
+	createContext,
+	useContext,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SmallSidebar, Navbar } from '../components';
 import customFetch from '../utils/customFetch';
@@ -14,16 +21,12 @@ const DashboardLayout = () => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.currentUser);
 
-	const menuRef = useRef();
+	const [showSidebar, setShowSidebar] = useState(false);
 
-	const {
-		showSidebar,
-		setShowSidebar,
-		isDarkTheme,
-		setisDarkTheme,
-		showLogout,
-		setShowLogout,
-	} = DashboardLayoutHooks({});
+	const sidebarRef = useRef();
+
+	const { isDarkTheme, setisDarkTheme, showLogout, setShowLogout } =
+		DashboardLayoutHooks({});
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -37,29 +40,31 @@ const DashboardLayout = () => {
 					}
 				});
 		}
-
 		return () => {
 			abortController.abort();
 		};
 	}, [dispatch, navigate, user]);
 
+	const toggleSidebar = () => {
+		setShowSidebar(!showSidebar);
+	};
+
 	// Detect click outside the sidebar and close
 	useEffect(() => {
-		const checkOutsideMenu = (e) => {
-			if (
-				showSidebar &&
-				menuRef.current &&
-				!menuRef.current.contains(e.target)
-			) {
+		const handleClickOutside = (e) => {
+			if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
 				setShowSidebar(false);
 			}
 		};
 
-		document.addEventListener('click', checkOutsideMenu);
+		// Attach the listener
+		document.addEventListener('mousedown', handleClickOutside);
+
 		return () => {
-			document.removeEventListener('click', checkOutsideMenu);
+			// Remove the listener on cleanup
+			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [showSidebar, setShowSidebar]);
+	}, [showSidebar]);
 
 	// TOGGLE DARK THEME
 	const toggleDarkTheme = () => {
@@ -67,11 +72,6 @@ const DashboardLayout = () => {
 		setisDarkTheme(newDarkTheme);
 		document.body.classList.toggle('dark', newDarkTheme);
 		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
-	};
-
-	// TOGGLE MENU
-	const toggleSidebar = () => {
-		setShowSidebar(!showSidebar);
 	};
 
 	// LOGOUT
@@ -93,15 +93,7 @@ const DashboardLayout = () => {
 			toggleSidebar,
 			logoutUser,
 		}),
-		[
-			user,
-			showSidebar,
-			isDarkTheme,
-			showLogout,
-			logoutUser,
-			toggleDarkTheme,
-			toggleSidebar,
-		]
+		[user]
 	);
 
 	console.log('Context value: ', value);
@@ -112,9 +104,13 @@ const DashboardLayout = () => {
 			<section>
 				<article className="flex flex-row">
 					<div className="relative flex">
-						<Navbar />
+						<Navbar toggleSidebar={toggleSidebar} />
 						<div>
-							<SmallSidebar ref={menuRef} />
+							<SmallSidebar
+								showSidebar={showSidebar}
+								toggleSidebar={toggleSidebar}
+								sidebarRef={sidebarRef}
+							/>
 							<Outlet context={{ user }} />
 						</div>
 					</div>

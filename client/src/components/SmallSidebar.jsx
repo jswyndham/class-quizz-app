@@ -1,18 +1,16 @@
 import { FaTimes } from 'react-icons/fa';
-import { forwardRef } from 'react';
 import NavLinks from './NavLinks';
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/images/quizgate-logo.png';
-import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
 
 // Passing the sideMenuRef down to the root DOM element (DashboardLayout) using forwardRef (must accept two arguments).
-const SmallSidebar = forwardRef((props, sideMenuRef) => {
-	const { showSidebar, toggleSidebar } = DashboardLayoutHooks({});
+const SmallSidebar = ({ showSidebar, toggleSidebar, sidebarRef }) => {
+	console.log('showSidebar in SmallSidebar component:', showSidebar);
 
 	return (
 		<section
-			ref={sideMenuRef}
-			className={showSidebar ? 'visible ' : 'invisible '}
+			ref={sidebarRef}
+			className={showSidebar ? 'visible' : 'invisible'}
 		>
 			<article className="relative">
 				<div className="fixed h-full w-full top-0 left-0 bg-gray-700 inset-0 opacity-70 z-40"></div>
@@ -47,11 +45,11 @@ const SmallSidebar = forwardRef((props, sideMenuRef) => {
 					<ThemeToggle />
 
 					{/* LINK LIST in NavLinks component*/}
-					<NavLinks />
+					<NavLinks closeSidebar={toggleSidebar} />
 				</div>
 			</article>
 		</section>
 	);
-});
+};
 
 export default SmallSidebar;
