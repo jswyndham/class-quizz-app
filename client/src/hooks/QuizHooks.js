@@ -24,6 +24,8 @@ const QuizHooks = (initialQuizData) => {
 			: ''
 	);
 
+	const [quizBackgroundColor, setQuizBackgroundColor] = useState('#2D9596'); // default color
+
 	useEffect(() => {
 		localStorage.setItem('quizData', JSON.stringify(quiz));
 	}, [quiz]);
@@ -145,6 +147,8 @@ const QuizHooks = (initialQuizData) => {
 		selectedFile,
 		uploadedImageUrl,
 		selectedClassId,
+		quizBackgroundColor,
+		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuiz,
 		setUploadedImageUrl,

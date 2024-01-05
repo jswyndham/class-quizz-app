@@ -11,6 +11,13 @@ export default {
 				forth: '#265073',
 				white: '#ffffff',
 			},
+			backgroundColor: {
+				'custom-blue': '#007bff',
+				'custom-green': '#28a745',
+				'custom-red': '#dc3545',
+				'custom-pink': '#f472b6',
+				'custom-purple': '#a78bfa',
+			},
 		},
 		screens: {
 			sm: '640px',

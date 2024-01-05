@@ -9,12 +9,15 @@ import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegImage } from 'react-icons/fa6';
 import { fetchClasses } from '../features/classGroup/classAPI';
+import QuizFormColorSelector from './QuizFormColorSelection';
 
 const QuizForm = () => {
 	// STATE HOOKS
 	const {
 		quiz,
 		selectedClassId,
+		quizBackgroundColor,
+		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuizTitle,
 		updateQuestion,
@@ -76,6 +79,11 @@ const QuizForm = () => {
 		setCorrectAnswer(questionIndex, optionIndex);
 	};
 
+	// Update this state based on the input change
+	const handleBackgroundColorChange = (color) => {
+		setQuizBackgroundColor(color);
+	};
+
 	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
 	const handleFileChange = async (e, questionIndex) => {
 		const file = e.target.files[0];
@@ -130,11 +138,11 @@ const QuizForm = () => {
 		// Add the selected class ID to the quiz data
 		const formData = {
 			...quiz,
+			backgroundColor: quizBackgroundColor,
 			class: selectedClassId ? [selectedClassId] : [],
 		};
 
 		try {
-			// Handle create quiz with dispatch
 			await dispatch(createQuiz(formData));
 
 			console.log('The formData: ', { formData });
@@ -164,6 +172,7 @@ const QuizForm = () => {
 						Quiz Title
 					</label>
 
+					{/* Input for quiz title */}
 					<div>
 						<input
 							type="text"
@@ -175,6 +184,17 @@ const QuizForm = () => {
 						/>
 					</div>
 
+					{/* Select background color for quiz card display */}
+					<div className="mx-1 my-3">
+						<p className="my-1">Choose a color for the quiz: </p>
+
+						<QuizFormColorSelector
+							selectedColor={quizBackgroundColor}
+							onSelectColor={setQuizBackgroundColor}
+						/>
+					</div>
+
+					{/* Select a class to add quiz */}
 					<div>
 						{classData && classData.length > 0 && (
 							<div className="flex flex-col 2xl:flex-row md:mx-4 my-3">
@@ -195,6 +215,7 @@ const QuizForm = () => {
 						)}
 					</div>
 
+					{/* Quiz question section */}
 					{quiz.questions.map((question, questionIndex) => (
 						<div
 							key={questionIndex}
@@ -277,6 +298,7 @@ const QuizForm = () => {
 								onQuestionTextChange={updateQuestionText}
 							/>
 
+							{/* Dynamic answer section */}
 							{question.options.map((option, optionIndex) => (
 								<QuizFormAnswer
 									key={optionIndex}

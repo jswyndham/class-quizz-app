@@ -9,7 +9,7 @@ import { authorizePermissions } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
 const router = Router();
 
-router.get('/current-user', getCurrentUser);
+router.route('/:id').get(getCurrentUser);
 router.get(
 	'/admin/app-stats',
 	authorizePermissions(USER_STATUS.ADMIN),

@@ -92,7 +92,7 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 				onClick={() => handleLink(_id)}
 				className="relative w-full h-60 my-4 shadow-lg shadow-gray-400 rounded-b-md hover:cursor-pointer"
 			>
-				<header className="relative flex flex-row justify-between h-fit bg-forth px-12 py-5 rounded-t-md">
+				<header className="relative flex flex-row justify-between h-fit bg-forth px-12 py-5">
 					<div className="">
 						<h3 className="mb-2 text-2xl lg:text-3xl text-primary font-bold">
 							{className}
@@ -111,7 +111,7 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 						<PiDotsThreeBold />
 					</button>
 				</div>
-				<div className="flex flex-col p-6">
+				<div className="flex flex-col p-6 bg-white">
 					<ClassInfo icon={<FaSchool />} text={school} />
 					<ClassInfo icon={<FaCalendarAlt />} text={classStatus} />
 				</div>

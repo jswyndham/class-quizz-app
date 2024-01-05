@@ -37,3 +37,33 @@ img.responsive {
 	max-width: 100%;
 	height: auto;
 }
+
+/* Quiz Card background color options */
+.gradient-blue {
+	background: linear-gradient(to right, #6dd5ed, #2193b0);
+}
+
+.gradient-green {
+	background: linear-gradient(to right, #11998e, #9eecbc);
+}
+
+.gradient-red {
+	background: linear-gradient(to right, #f05f5f, #e0bf64);
+}
+
+.gradient-pink {
+	background: linear-gradient(to right, #d8637c, #e79ab9);
+}
+
+.gradient-purple {
+	background: linear-gradient(to right, #a761ee, #e27bf0);
+}
+
+.color-option {
+	width: 50px;
+	height: 50px;
+	cursor: pointer;
+	border: 2px solid white; /* For visibility */
+	margin: 5px;
+	border-radius: 10px; /* Optional for rounded corners */
+}

@@ -40,6 +40,14 @@ const QuizSchema = new mongoose.Schema(
 				ref: 'Class',
 			},
 		],
+		backgroundColor: {
+			type: String,
+			default: '#FFFFFF',
+		},
+		wallpaper: {
+			type: String,
+			default: '', // URL or path to the wallpaper image
+		},
 	},
 	{ timestamps: true }
 );

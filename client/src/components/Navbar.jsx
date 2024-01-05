@@ -1,15 +1,15 @@
 import { FaAlignLeft } from 'react-icons/fa';
-import { useDashboardContext } from '../pages/DashboardLayout';
 import LogoutContainer from './LogoutContainer';
 import logo from '../assets/images/quizgate-logo.png';
+import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
 
 const Navbar = () => {
-	const { toggleSidebar } = useDashboardContext();
+	const { toggleSidebar } = DashboardLayoutHooks();
 	return (
-		<nav className="absolute flex justify-between h-32 w-screen bg-third text-forth dark:bg-gray-800 pl-12 py-9 font-extrabold">
+		<nav className="fixed top-0 flex justify-between h-32 w-screen bg-third text-forth dark:bg-gray-800 pl-12 py-9 font-extrabold z-40">
 			<button
 				type="button"
-				className="relative text-primary text-2xl hover:cursor-pointer"
+				className="text-primary text-2xl hover:cursor-pointer"
 				onClick={toggleSidebar}
 			>
 				<FaAlignLeft />

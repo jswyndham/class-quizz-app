@@ -23,7 +23,14 @@ import CardMenuCopy from './CardMenuCopy';
 
 dayjs.extend(advancedFormat);
 
-const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
+const QuizCard = ({
+	_id,
+	quizTitle,
+	lastUpdated,
+	category,
+	updatedAt,
+	gradientClass,
+}) => {
 	const quizData = useSelector((state) => state.quiz.quiz);
 
 	const updatedData = dayjs(updatedAt).format('MMMM D, YYYY');
@@ -49,7 +56,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 		dispatch(fetchQuizzes());
 	}, [dispatch]);
 
-	// Closes the delete confirmation modal
+	// Cllick outside the card menu to close
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
 			if (
@@ -58,6 +65,24 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 				!menuRef.current.contains(e.currentTarget)
 			) {
 				setIsCardMenu(false);
+			}
+		};
+
+		document.addEventListener('click', checkOutsideMenu);
+		return () => {
+			document.removeEventListener('click', checkOutsideMenu);
+		};
+	}, []);
+
+	// Cllick outside the 'copy-class list' to close
+	useEffect(() => {
+		const checkOutsideMenu = (e) => {
+			if (
+				!isClassList &&
+				menuRef.current &&
+				!menuRef.current.contains(e.currentTarget)
+			) {
+				setIsClassList(false);
 			}
 		};
 
@@ -101,7 +126,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 		e.stopPropagation();
 		try {
 			await dispatch(copyQuizToClass({ _id: _id, classId }));
-
+			handleClassListClose(e);
 			toast.success('Quiz copied to class successfully');
 		} catch (error) {
 			toast.error('Failed to copy quiz to class');
@@ -144,16 +169,15 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 
 			<article
 				onClick={() => handleLink(_id)}
-				className="relative w-full h-44 my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
+				className="relative w-full h-fit my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
 			>
-				<header className="relative flex flex-row justify-between h-fit bg-third px-6 lg:px-8 py-4">
+				<header
+					className={`relative flex flex-row justify-between h-fit px-6 lg:px-8 py-4 border-b border-slate-300 rounded-t-md ${gradientClass}`}
+				>
 					<div className="">
-						<h3 className="mb-2 text-xl lg:text-3xl text-white font-bold">
+						<h3 className="mb-2 text-xl lg:text-3xl text-black font-bold">
 							{quizTitle}
 						</h3>
-						<p className="text-lg lg:text-xl italic font-sans ml-4">
-							{lastUpdated}
-						</p>
 					</div>
 				</header>
 				<div className="absolute w-14 h-7 lg:h-8 right-2 lg:right-4 top-5 bg-black bg-opacity-20 rounded-md">
@@ -165,7 +189,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 						<PiDotsThreeBold />
 					</button>
 				</div>
-				<div className="flex flex-col m-4 pb-2">
+				<div className="flex flex-col p-4 bg-white rounded-b-md">
 					<ClassInfo icon={<FaSchool />} text={category} />
 					<ClassInfo icon={<FaCalendarAlt />} text={updatedData} />
 				</div>
@@ -173,7 +197,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 				{/* Quiz card menu */}
 				<div
 					onClick={handleMenuClick}
-					className="absolute right-8 top-4"
+					className="absolute right-4 top-2"
 				>
 					<CardMenu
 						isShowClassMenu={isCardMenu}
@@ -185,7 +209,7 @@ const QuizCard = ({ _id, quizTitle, lastUpdated, category, updatedAt }) => {
 				</div>
 
 				{/* Class List for menu "copy" */}
-				<div className="absolute w-full top-10 right-8">
+				<div className="absolute w-full top-2 right-4">
 					<CardMenuCopy
 						isShowClassList={isClassList}
 						classListClose={handleClassListClose}

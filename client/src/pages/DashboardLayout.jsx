@@ -1,21 +1,29 @@
-import { useEffect, useState, createContext, useContext, useMemo } from 'react';
+import { useEffect, createContext, useContext, useMemo, useRef } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SmallSidebar, Navbar } from '../components';
-import { checkDefaultTheme } from '../App';
 import customFetch from '../utils/customFetch';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCurrentUser } from '../features/users/userAPI';
+import { fetchCurrentUser } from '../features/user/userAPI';
+import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
 
 const DashboardContext = createContext();
 
 const DashboardLayout = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const user = useSelector((state) => state.class.currentUser);
-	const [showSidebar, setShowSidebar] = useState(false);
-	const [isDarkTheme, setisDarkTheme] = useState(checkDefaultTheme());
-	const [showLogout, setShowLogout] = useState(false);
+	const user = useSelector((state) => state.user.currentUser);
+
+	const menuRef = useRef();
+
+	const {
+		showSidebar,
+		setShowSidebar,
+		isDarkTheme,
+		setisDarkTheme,
+		showLogout,
+		setShowLogout,
+	} = DashboardLayoutHooks({});
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -34,6 +42,24 @@ const DashboardLayout = () => {
 			abortController.abort();
 		};
 	}, [dispatch, navigate, user]);
+
+	// Detect click outside the sidebar and close
+	useEffect(() => {
+		const checkOutsideMenu = (e) => {
+			if (
+				showSidebar &&
+				menuRef.current &&
+				!menuRef.current.contains(e.target)
+			) {
+				setShowSidebar(false);
+			}
+		};
+
+		document.addEventListener('click', checkOutsideMenu);
+		return () => {
+			document.removeEventListener('click', checkOutsideMenu);
+		};
+	}, [showSidebar, setShowSidebar]);
 
 	// TOGGLE DARK THEME
 	const toggleDarkTheme = () => {
@@ -78,6 +104,9 @@ const DashboardLayout = () => {
 		]
 	);
 
+	console.log('Context value: ', value);
+	console.log('Current user: ', user);
+
 	return (
 		<DashboardContext.Provider value={value}>
 			<section>
@@ -85,7 +114,7 @@ const DashboardLayout = () => {
 					<div className="relative flex">
 						<Navbar />
 						<div>
-							<SmallSidebar />
+							<SmallSidebar ref={menuRef} />
 							<Outlet context={{ user }} />
 						</div>
 					</div>
