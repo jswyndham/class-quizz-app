@@ -1,5 +1,5 @@
 import { Editor } from '@tinymce/tinymce-react';
-import { QUESTION_TYPE } from '../../../server/utils/constants';
+import { QUESTION_TYPE } from '../../../../server/utils/constants';
 
 const QuizLayoutAnswer = ({ index, answerType, answers, correctAnswer }) => {
 	const isCorrect = answers === correctAnswer;

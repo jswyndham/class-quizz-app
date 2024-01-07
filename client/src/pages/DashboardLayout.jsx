@@ -74,7 +74,7 @@ const DashboardLayout = () => {
 		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
 	};
 
-	// LOGOUT
+	// Handle user logout
 	const logoutUser = async () => {
 		navigate('/');
 		await customFetch.get('/auth/logout');

@@ -8,12 +8,12 @@ import { MdAdminPanelSettings } from 'react-icons/md';
 
 const links = [
 	{
-		text: 'all class',
+		text: 'all classes',
 		path: '.',
 		icon: <FaWpforms />,
 	},
 	{
-		text: 'all quiz',
+		text: 'all quizzes',
 		path: 'all-quizzes',
 		icon: <FaWpforms />,
 	},
@@ -33,7 +33,7 @@ const links = [
 		icon: <IoBarChartSharp />,
 	},
 	{
-		text: 'profile',
+		text: 'settings',
 		path: 'profile',
 		icon: <ImProfile />,
 	},

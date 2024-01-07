@@ -1,15 +1,19 @@
 import { useEffect } from 'react';
-import { FormRowSelect, QuizFormAnswer, QuizFormQuestion } from '.';
-import QuizHooks from '../hooks/QuizHooks';
+import { FormRowSelect } from '../';
+import QuizHooks from '../../hooks/QuizHooks';
 import { useNavigate, useNavigation, Form } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { createQuiz } from '../features/quiz/quizAPI';
-import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
+import { createQuiz } from '../../features/quiz/quizAPI';
+import { uploadCloudinaryFile } from '../../features/cloudinary/cloudinaryAPI';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegImage } from 'react-icons/fa6';
-import { fetchClasses } from '../features/classGroup/classAPI';
-import QuizFormColorSelector from './QuizFormColorSelection';
+import { fetchClasses } from '../../features/classGroup/classAPI';
+import {
+	QuizFormColorSelection,
+	QuizFormAnswer,
+	QuizFormQuestion,
+} from '../quizComponents';
 
 const QuizForm = () => {
 	// STATE HOOKS
@@ -188,7 +192,7 @@ const QuizForm = () => {
 					<div className="mx-1 my-3">
 						<p className="my-1">Choose a color for the quiz: </p>
 
-						<QuizFormColorSelector
+						<QuizFormColorSelection
 							selectedColor={quizBackgroundColor}
 							onSelectColor={setQuizBackgroundColor}
 						/>

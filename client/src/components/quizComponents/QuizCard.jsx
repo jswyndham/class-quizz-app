@@ -8,18 +8,19 @@ import { FaSchool, FaCalendarAlt } from 'react-icons/fa';
 import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClassInfo, ConfirmDeleteModal } from './';
+import { ClassInfo } from '../classComponents';
+import { ConfirmDeleteModal } from '../';
 import dayjs from 'dayjs'; // Date formatting
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { useNavigate } from 'react-router-dom';
-import CardMenu from './CardMenu';
+import CardMenu from '../CardMenu';
 import { toast } from 'react-toastify';
 import {
 	deleteQuiz,
 	fetchQuizzes,
 	copyQuizToClass,
-} from '../features/quiz/quizAPI';
-import CardMenuCopy from './CardMenuCopy';
+} from '../../features/quiz/quizAPI';
+import CopyItem from '../CopyItem';
 
 dayjs.extend(advancedFormat);
 
@@ -210,7 +211,7 @@ const QuizCard = ({
 
 				{/* Class List for menu "copy" */}
 				<div className="absolute w-full top-2 right-4">
-					<CardMenuCopy
+					<CopyItem
 						isShowClassList={isClassList}
 						classListClose={handleClassListClose}
 						quizOnClick={(e, classId) =>

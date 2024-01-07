@@ -1,9 +1,9 @@
 import { useEffect, memo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import ClassCard from './ClassCard';
-import { fetchClasses } from '../features/classGroup/classAPI';
-import { fetchCurrentUser } from '../features/user/userAPI';
-import LoadingSpinner from './LoadingSpinner';
+import { fetchClasses } from '../../features/classGroup/classAPI';
+import { fetchCurrentUser } from '../../features/user/userAPI';
+import LoadingSpinner from '../LoadingSpinner';
 import { useParams } from 'react-router';
 
 const MemoizedClassCard = memo(ClassCard);

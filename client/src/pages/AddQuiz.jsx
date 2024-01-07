@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import QuizForm from '../components/QuizForm';
+import QuizForm from '../components/quizComponents/QuizForm';
 
 const AddQuiz = (_id) => {
 	// HANDLE LOADING AND ERROR

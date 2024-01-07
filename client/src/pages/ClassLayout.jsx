@@ -2,8 +2,8 @@ import { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchClassById } from '../features/classGroup/classAPI';
 import { useParams } from 'react-router-dom';
-import { QuizCard } from '../components';
-import QuizCardGradientValues from '../components/QuizCardGradientValues';
+import { QuizCard } from '../components/quizComponents';
+import QuizCardGradientValues from '../components/quizComponents/QuizCardGradientValues';
 
 const MemoizedQuizCard = memo(QuizCard);
 

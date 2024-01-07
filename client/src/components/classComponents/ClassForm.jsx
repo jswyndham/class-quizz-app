@@ -1,5 +1,5 @@
 import { Form } from 'react-router-dom';
-import { FormRow, FormRowSelect } from '.';
+import { FormRow, FormRowSelect } from '..';
 import { useNavigation } from 'react-router-dom';
 
 const ClassForm = ({

@@ -4,7 +4,6 @@ import {
 	useNavigation,
 	redirect,
 	Form,
-	useParams,
 } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
@@ -12,7 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import QuizHooks from '../hooks/QuizHooks';
 import { updateQuiz } from '../features/quiz/quizAPI';
 import { MdDeleteForever } from 'react-icons/md';
-import { FormRowSelect, QuizFormAnswer, QuizFormQuestion } from '../components';
+import { FormRowSelect } from '../components';
+import { QuizFormAnswer, QuizFormQuestion } from '../components/quizComponents';
 import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
 import { fetchClasses } from '../features/classGroup/classAPI';
 import { useEffect } from 'react';

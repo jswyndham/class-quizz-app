@@ -1,4 +1,4 @@
-import { ClassContainer } from '../components';
+import { ClassContainer } from '../components/classComponents';
 import { useLoaderData } from 'react-router';
 import { useContext, createContext, useMemo } from 'react';
 import customFetch from '../utils/customFetch';

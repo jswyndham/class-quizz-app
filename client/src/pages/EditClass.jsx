@@ -2,7 +2,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
-import ClassForm from '../components/ClassForm';
+import ClassForm from '../components/classComponents/ClassForm';
 import { useDispatch } from 'react-redux';
 import classHooks from '../hooks/ClassHooks';
 import { updateClass } from '../features/classGroup/classAPI';

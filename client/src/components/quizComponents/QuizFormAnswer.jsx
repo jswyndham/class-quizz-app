@@ -1,4 +1,4 @@
-import { FormRow } from '.';
+import { FormRow } from '..';
 import { TiDelete } from 'react-icons/ti';
 
 const QuizFormAnswer = ({

@@ -2,12 +2,13 @@ import { FaSchool, FaCalendarAlt } from 'react-icons/fa';
 import { PiDotsThreeBold } from 'react-icons/pi';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClassInfo, ConfirmDeleteModal } from './';
+import ClassInfo from '../classComponents/ClassInfo';
+import ConfirmDeleteModal from '../ConfirmDeleteModal';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { useNavigate } from 'react-router-dom';
-import CardMenu from './CardMenu';
-import { deleteClass, fetchClasses } from '../features/classGroup/classAPI';
+import CardMenu from '../CardMenu';
+import { deleteClass, fetchClasses } from '../../features/classGroup/classAPI';
 import { toast } from 'react-toastify';
 
 dayjs.extend(advancedFormat);

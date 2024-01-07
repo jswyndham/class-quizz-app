@@ -1,4 +1,4 @@
-import { QuizContainer } from '../components';
+import { QuizContainer } from '../components/quizComponents';
 import { useLoaderData } from 'react-router';
 import { useContext, createContext, useMemo } from 'react';
 import customFetch from '../utils/customFetch';

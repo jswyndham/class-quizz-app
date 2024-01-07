@@ -3,7 +3,7 @@ import { fetchClasses } from '../features/classGroup/classAPI';
 import { useEffect } from 'react';
 import { TiDelete } from 'react-icons/ti';
 
-const CardMenuCopy = ({ quizOnClick, isShowClassList, classListClose }) => {
+const CopyItem = ({ quizOnClick, isShowClassList, classListClose }) => {
 	const classList = useSelector((state) => state.class.class);
 
 	const dispatch = useDispatch();
@@ -50,4 +50,4 @@ const CardMenuCopy = ({ quizOnClick, isShowClassList, classListClose }) => {
 	);
 };
 
-export default CardMenuCopy;
+export default CopyItem;

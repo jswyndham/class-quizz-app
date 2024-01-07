@@ -1,8 +1,8 @@
 import { useEffect, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import QuizCard from './QuizCard';
-import { fetchQuizzes } from '../features/quiz/quizAPI';
-import { fetchCurrentUser } from '../features/user/userAPI';
+import { fetchQuizzes } from '../../features/quiz/quizAPI';
+import { fetchCurrentUser } from '../../features/user/userAPI';
 
 const MemoizedQuizCard = memo(QuizCard);
 

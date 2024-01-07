@@ -2,7 +2,10 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchQuizById } from '../features/quiz/quizAPI';
 import { useParams } from 'react-router-dom';
-import { QuizLayoutQuestion, QuizLayoutAnswer } from '../components';
+import {
+	QuizLayoutQuestion,
+	QuizLayoutAnswer,
+} from '../components/quizComponents';
 import { QUESTION_TYPE } from '../../../server/utils/constants';
 
 const QuizLayout = () => {
