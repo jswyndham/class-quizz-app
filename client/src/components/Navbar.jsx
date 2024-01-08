@@ -1,25 +1,20 @@
-import { FaAlignRight } from 'react-icons/fa';
-import LogoutContainer from './LogoutContainer';
+import { FiMenu } from 'react-icons/fi';
 import logo from '../assets/images/quizgate-logo.png';
 
 const Navbar = ({ toggleSidebar }) => {
 	return (
-		<nav className="fixed top-0 flex justify-between h-32 w-screen bg-third text-forth dark:bg-gray-800 pl-12 py-9 font-extrabold z-40">
-			<div>
-				<img
-					src={logo}
-					alt="QuizGate logo"
-					className="flex h-8 md:h-16"
-				/>
+		<nav className="fixed top-0 flex justify-between h-32 w-screen bg-third text-forth dark:bg-gray-800 font-extrabold z-30">
+			<div className="flex items-center ml-4 lg:ml-8">
+				<img src={logo} alt="QuizGate logo" className="h-12 md:h-16" />
 			</div>
 
-			<div className="flex justify-end mr-6">
+			<div className="flex items-center mr-8">
 				<button
 					type="button"
-					className="text-primary text-2xl hover:cursor-pointer"
+					className="text-primary text-4xl hover:cursor-pointer"
 					onClick={toggleSidebar}
 				>
-					<FaAlignRight />
+					<FiMenu />
 				</button>
 			</div>
 		</nav>

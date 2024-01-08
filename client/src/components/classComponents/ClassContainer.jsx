@@ -51,8 +51,8 @@ const ClassContainer = () => {
 
 	// RETURN CLASSES ARRAY
 	return (
-		<section className="flex justify-center h-screen w-screen pt-36 px-4">
-			<div className="2xl:w-7/12 w-full h-fit mx-2 md:mx-12 grid grid-cols-1 2xl:grid-rows-2 gap-4">
+		<section className="flex justify-center h-screen w-full pt-36 md:px-4">
+			<div className="lg:w-10/12 w-full h-fit md:mx-2 grid grid-cols-1 2xl:grid-cols-2 gap-4">
 				{classData.map((classGroup) => (
 					<MemoizedClassCard key={classGroup._id} {...classGroup} />
 				))}

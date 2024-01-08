@@ -170,18 +170,18 @@ const QuizCard = ({
 
 			<article
 				onClick={() => handleLink(_id)}
-				className="relative w-full h-fit my-4 shadow-lg shadow-gray-400 hover:cursor-pointer"
+				className="relative w-full h-fit my-4 shadow-lg shadow-gray-400 rounded-b-md hover:cursor-pointer"
 			>
 				<header
-					className={`relative flex flex-row justify-between h-fit px-6 lg:px-8 py-4 border-b border-slate-300 rounded-t-md ${gradientClass}`}
+					className={`relative flex flex-row justify-between h-fit px-4 lg:px-6 py-1 border-2 border-slate-400 rounded-t-md ${gradientClass}`}
 				>
 					<div className="">
-						<h3 className="mb-2 text-xl lg:text-3xl text-black font-bold">
+						<h3 className="mb-1 text-xl lg:text-2xl text-white font-bold">
 							{quizTitle}
 						</h3>
 					</div>
 				</header>
-				<div className="absolute w-14 h-7 lg:h-8 right-2 lg:right-4 top-5 bg-black bg-opacity-20 rounded-md">
+				<div className="absolute w-14 h-7 lg:h-8 right-3 lg:right-5 top-2 bg-black bg-opacity-20 rounded-md hover:bg-opacity-40">
 					<button
 						ref={menuRef}
 						className="absolute text-white -top-1 lg:-top-2 right-2 lg:right-1 mr-0.5 lg:mr-0 text-4xl lg:text-5xl font-bold hover:cursor-pointer"
@@ -190,7 +190,9 @@ const QuizCard = ({
 						<PiDotsThreeBold />
 					</button>
 				</div>
-				<div className="flex flex-col p-4 bg-white rounded-b-md">
+				<div
+					className={`flex flex-col p-4 bg-white rounded-b-md border-2 border-slate-400`}
+				>
 					<ClassInfo icon={<FaSchool />} text={category} />
 					<ClassInfo icon={<FaCalendarAlt />} text={updatedData} />
 				</div>
@@ -198,7 +200,7 @@ const QuizCard = ({
 				{/* Quiz card menu */}
 				<div
 					onClick={handleMenuClick}
-					className="absolute right-4 top-2"
+					className="absolute right-2 top-2"
 				>
 					<CardMenu
 						isShowClassMenu={isCardMenu}
@@ -210,7 +212,7 @@ const QuizCard = ({
 				</div>
 
 				{/* Class List for menu "copy" */}
-				<div className="absolute w-full top-2 right-4">
+				<div className="absolute w-full top-2 right-2">
 					<CopyItem
 						isShowClassList={isClassList}
 						classListClose={handleClassListClose}
@@ -227,7 +229,7 @@ const QuizCard = ({
 					isOpen={confirmModalState.isOpen}
 					onConfirm={handleDeleteClick}
 					onCancel={closeConfirmModal}
-					message="Are you sure you want to delete this class?"
+					message="Are you sure you want to delete this quiz?"
 				/>
 			)}
 		</>

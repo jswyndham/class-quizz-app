@@ -8,7 +8,7 @@ const CardMenu = ({
 		<div
 			className={
 				isShowClassMenu
-					? 'absolute visible w-fit h-fit bg-white rounded-lg shadow-xl shadow-gray-500 drop-shadow-lg transition-all ease-in-out duration-200 top-10 right-0 z-10'
+					? 'absolute visible w-fit h-fit bg-white rounded-lg shadow-xl shadow-gray-500 drop-shadow-lg transition-all ease-in-out duration-100 top-7 right-1 lg:top-8 lg:right-3 z-20'
 					: 'absolute invisible'
 			}
 		>

@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCurrentUser } from '../features/user/userAPI';
 import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
+import ClassListMenu from '../components/classComponents/ClassListMenu';
 
 const DashboardContext = createContext();
 
@@ -101,20 +102,22 @@ const DashboardLayout = () => {
 
 	return (
 		<DashboardContext.Provider value={value}>
-			<section>
-				<article className="flex flex-row">
-					<div className="relative flex">
-						<Navbar toggleSidebar={toggleSidebar} />
-						<div>
-							<SmallSidebar
-								showSidebar={showSidebar}
-								toggleSidebar={toggleSidebar}
-								sidebarRef={sidebarRef}
-							/>
-							<Outlet context={{ user }} />
-						</div>
-					</div>
-				</article>
+			<section className="flex flex-row min-h-screen">
+				<div>
+					<ClassListMenu />
+					<SmallSidebar
+						showSidebar={showSidebar}
+						toggleSidebar={toggleSidebar}
+						sidebarRef={sidebarRef}
+					/>
+				</div>
+				<div className="flex flex-col flex-grow">
+					<Navbar toggleSidebar={toggleSidebar} />
+
+					<main className="flex-grow md:pl-64">
+						<Outlet context={{ user }} />
+					</main>
+				</div>
 			</section>
 		</DashboardContext.Provider>
 	);

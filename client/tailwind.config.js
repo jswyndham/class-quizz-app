@@ -18,6 +18,9 @@ export default {
 				'custom-pink': '#f472b6',
 				'custom-purple': '#a78bfa',
 			},
+			fontFamily: {
+				quizgate: ['Bebas Neue', 'sans-serif'],
+			},
 		},
 		screens: {
 			sm: '640px',
@@ -44,9 +47,6 @@ export default {
 
 			'4xl': '2100px',
 		},
-		// fontFamily: {
-		// 	display: ['Oswald', sans - serif],
-		// },
 	},
 
 	plugins: [],

@@ -33,12 +33,6 @@ const QuizFormQuestion = ({
 		}
 	}, []);
 
-	// useEffect(() => {
-	// 	if (uploadedImageUrl) {
-	// 		insertImageIntoEditor(uploadedImageUrl);
-	// 	}
-	// }, [uploadedImageUrl]);
-
 	// Transform QUESTION_TYPE object to array for FormRowSelect access
 	const questionTypeOptions = Object.entries(QUESTION_TYPE).map(
 		([value, label]) => ({

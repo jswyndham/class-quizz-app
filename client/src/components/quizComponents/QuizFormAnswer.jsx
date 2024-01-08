@@ -1,3 +1,5 @@
+// This component ouputs the the multiple choice options from the QuizForm component
+
 import { FormRow } from '..';
 import { TiDelete } from 'react-icons/ti';
 
@@ -11,9 +13,10 @@ const QuizFormAnswer = ({
 	onDelete,
 }) => {
 	return (
-		<div className="flex flex-col md:px-4 bg-primary my-1 drop-shadow-xl border border-slate-300">
+		<div className="flex flex-col md:px-4 bg-primary my-1 drop-shadow-sm border border-slate-300">
 			<ul className="text-xl">
 				<li className="flex flex-row justify-center align-middle">
+					{/* Id for the "correct answer" radio button must have two options to connect the 'isCorrect' schema parameter with the 'correctAnswer' string parameter. Therefore, the selected answer will connect the text to correctAnswer which can be output to the user */}
 					<input
 						id={`${questionIndex}-${index}`}
 						type="radio"
@@ -26,7 +29,7 @@ const QuizFormAnswer = ({
 						<FormRow
 							type="text"
 							name="optionText"
-							labelText="Answer"
+							labelText="Answer option"
 							onChange={onOptionTextChange}
 							value={optionTextValue}
 						/>

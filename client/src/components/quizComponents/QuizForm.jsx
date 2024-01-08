@@ -9,6 +9,7 @@ import { uploadCloudinaryFile } from '../../features/cloudinary/cloudinaryAPI';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegImage } from 'react-icons/fa6';
 import { fetchClasses } from '../../features/classGroup/classAPI';
+import { CiCirclePlus } from 'react-icons/ci';
 import {
 	QuizFormColorSelection,
 	QuizFormAnswer,
@@ -21,6 +22,8 @@ const QuizForm = () => {
 		quiz,
 		selectedClassId,
 		quizBackgroundColor,
+		selectedQuestionIndex,
+		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuizTitle,
@@ -78,7 +81,7 @@ const QuizForm = () => {
 		updateQuestion(questionIndex, updatedQuestion);
 	};
 
-	// HANDLE CHANGES TO THE RADIO BUTTON
+	// Handles the changes to the radio button which triggers changes to the 'isCorrect' boolean parameter in the Quiz schema
 	const handleRadioChange = (questionIndex, optionIndex) => {
 		setCorrectAnswer(questionIndex, optionIndex);
 	};
@@ -165,14 +168,14 @@ const QuizForm = () => {
 	};
 
 	return (
-		<div className="flex justify-center align-middle w-screen h-fit">
+		<div className="flex justify-center items-center w-full h-fit">
 			<Form
 				method="post"
 				onSubmit={handleSubmit}
-				className="flex flex-col justify-center items-center drop-shadow-lg w-full m-3 md:mx-5 my-4 lg:w-10/12 xl:w-max"
+				className="flex flex-col w-full lg:max-w-4xl justify-center items-center drop-shadow-lg my-4 px-2"
 			>
-				<div className="flex flex-col justify-center w-full md:mx-2 my-1">
-					<label htmlFor="questionText" className="text-lg ml-4 my-4">
+				<div className="flex flex-col justify-center w-full my-1">
+					<label htmlFor="questionText" className="text-lg my-4">
 						Quiz Title
 					</label>
 
@@ -201,7 +204,7 @@ const QuizForm = () => {
 					{/* Select a class to add quiz */}
 					<div>
 						{classData && classData.length > 0 && (
-							<div className="flex flex-col 2xl:flex-row md:mx-4 my-3">
+							<div className="flex flex-col md:mx-4 my-3">
 								<FormRowSelect
 									name="classId"
 									labelText="Add a class"
@@ -224,6 +227,7 @@ const QuizForm = () => {
 						<div
 							key={questionIndex}
 							className="flex flex-col justify-center align-middle bg-slate-100 lg:border border-slate-400 lg:p-6 my-3"
+							onClick={() => selectQuestion(questionIndex)}
 						>
 							<div className="my-3 mx-4">
 								{/* Used the map index to number the questions */}
@@ -233,6 +237,7 @@ const QuizForm = () => {
 							</div>
 							<div className="flex justify-between m-5">
 								<div className="flex flex-col">
+									{/* Input for question points */}
 									<div className="flex justify-center items-center bg-zinc-100 p-2 my-4 rounded-md drop-shadow-xl">
 										<label
 											htmlFor="imageText"
@@ -253,6 +258,8 @@ const QuizForm = () => {
 											}
 										/>
 									</div>
+
+									{/* Input for image upload */}
 									<div className="flex flex-col justify-start bg-zinc-100 p-3 my-3 rounded-md drop-shadow-xl">
 										<label
 											htmlFor="imageText"
@@ -276,17 +283,19 @@ const QuizForm = () => {
 									</div>
 								</div>
 
+								{/* Button to remove the question from the form */}
 								<div
 									onClick={() =>
 										deleteQuizForm(questionIndex)
 									}
-									className="h-fit flex flex-row text-xl -mr-2 -mt-2 text-red-600 hover:cursor-pointer hover:text-red-800"
+									className="h-fit flex flex-row text-xl -mr-2 -mt-14 text-red-600 hover:cursor-pointer hover:text-red-800"
 								>
 									<p className="mx-1 -mt-2">remove</p>
 									<MdDeleteForever />
 								</div>
 							</div>
 
+							{/* The question section, which includes the 'Question Type' and the 'Question Text' rich text editor (tinyMCE) */}
 							<QuizFormQuestion
 								key={questionIndex}
 								questionIndex={questionIndex}
@@ -302,7 +311,7 @@ const QuizForm = () => {
 								onQuestionTextChange={updateQuestionText}
 							/>
 
-							{/* Dynamic answer section */}
+							{/* Multiple choice answer section */}
 							{question.options.map((option, optionIndex) => (
 								<QuizFormAnswer
 									key={optionIndex}
@@ -330,14 +339,27 @@ const QuizForm = () => {
 									}
 								/>
 							))}
-							<button
-								type="button"
-								onClick={() => handleAddOption(questionIndex)}
-							>
-								Add Option
-							</button>
+
+							{/* Button to add an extra answer option. Conditionally render the "Add Option" button */}
+							{selectedQuestionIndex === questionIndex && (
+								<div
+									className="relative flex flex-row justify-center items-center my-5 lg:mt-6 lg:mb-4 h-14 w-56 hover:cursor-pointer"
+									onClick={() =>
+										handleAddOption(questionIndex)
+									}
+								>
+									<div className="absolute right-0 flex text-center px-2 border h-10 w-52 border-slate-400 bg-third text-primary rounded-r-full drop-shadow-xl shadow-md shadow-slate-400">
+										<p className="mt-1 ml-8 font-quizgate text-2xl">
+											Add answer option
+										</p>
+									</div>
+									<CiCirclePlus className="absolute left-0 text-5xl text-primary bg-third rounded-full" />
+								</div>
+							)}
 						</div>
 					))}
+
+					{/* Button to add another question to the form */}
 					<button
 						type="button"
 						onClick={handleAddNewQuestion}
@@ -346,7 +368,8 @@ const QuizForm = () => {
 						Add New Question
 					</button>
 				</div>
-				{/* SUBMIT FORM */}
+
+				{/* Button to submit the form */}
 				<div className="flex justify-center w-8/12 mx-4 my-12">
 					<button
 						type="submit"

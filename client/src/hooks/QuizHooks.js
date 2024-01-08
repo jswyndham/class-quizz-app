@@ -21,8 +21,11 @@ const QuizHooks = (initialQuizData) => {
 	const [selectedClassId, setSelectedClassId] = useState(
 		initialQuizData.class && initialQuizData.class.length > 0
 			? initialQuizData.class[0]
-			: ''
+			: []
 	);
+
+	// State to control the selected question index when a QuizFormAnswer is interacted with in a Form.
+	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
 
 	const [quizBackgroundColor, setQuizBackgroundColor] = useState('#2D9596'); // default color
 
@@ -35,7 +38,7 @@ const QuizHooks = (initialQuizData) => {
 		setQuiz((prevQuiz) => ({ ...prevQuiz, quizTitle }));
 	};
 
-	// UPDATE ANSWER TYPE
+	// This function provides the answer options when 'multiple choice' is selected in the question component of a Form
 	const updateAnswerType = (index, answerType) => {
 		setQuiz((prevQuiz) => {
 			const newQuestions = [...prevQuiz.questions];
@@ -45,7 +48,11 @@ const QuizHooks = (initialQuizData) => {
 				options:
 					answerType === QUESTION_TYPE.MULTIPLE_CHOICE
 						? Array(4).fill({ optionText: '', isCorrect: false })
-						: [],
+						: [
+								{ optionText: '', isCorrect: false },
+								{ optionText: '', isCorrect: false },
+								{ optionText: '', isCorrect: false },
+						  ],
 			};
 			return { ...prevQuiz, questions: newQuestions };
 		});
@@ -58,6 +65,11 @@ const QuizHooks = (initialQuizData) => {
 			updatedQuestions[questionIndex] = updatedQuestion;
 			return { ...prev, questions: updatedQuestions };
 		});
+	};
+
+	// Function to set the selected question index (connected to the answer option "add answer option" button in Form)
+	const selectQuestion = (index) => {
+		setSelectedQuestionIndex(index);
 	};
 
 	// UPDATE ANSWER OPTIONS
@@ -148,6 +160,8 @@ const QuizHooks = (initialQuizData) => {
 		uploadedImageUrl,
 		selectedClassId,
 		quizBackgroundColor,
+		selectedQuestionIndex,
+		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuiz,
