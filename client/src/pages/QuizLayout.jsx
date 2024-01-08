@@ -31,7 +31,7 @@ const QuizLayout = () => {
 	console.log('Current Quiz:', currentQuiz);
 
 	return (
-		<section className="w-screen h-fit flex flex-col justify-center align-middle">
+		<section className="w-full h-fit flex flex-col justify-center align-middle">
 			<div className="mt-36 mb-6">
 				<h2 className="text-4xl font-serif text-blue-800 text-center">
 					{currentQuiz.quizTitle}

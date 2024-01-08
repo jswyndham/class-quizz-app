@@ -170,7 +170,7 @@ const QuizCard = ({
 
 			<article
 				onClick={() => handleLink(_id)}
-				className="relative w-full h-fit my-4 shadow-lg shadow-gray-400 rounded-b-md hover:cursor-pointer"
+				className="relative w-full h-fit my-2 shadow-lg shadow-gray-400 rounded-b-md hover:cursor-pointer"
 			>
 				<header
 					className={`relative flex flex-row justify-between h-fit px-4 lg:px-6 py-1 border-2 border-slate-400 rounded-t-md ${gradientClass}`}

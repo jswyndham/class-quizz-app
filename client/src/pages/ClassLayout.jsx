@@ -23,7 +23,7 @@ const ClassLayout = () => {
 
 	if (!classItem) {
 		return (
-			<div className="h-screen w-screen flex justify-center">
+			<div className="h-screen w-full flex justify-center">
 				<h2 className="text-3xl font-display font-bold italic mt-44">
 					No class data available.
 				</h2>
@@ -32,13 +32,13 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="flex flex-col items-center w-screen h-screen">
+		<section className="w-full h-fit flex flex-col justify-center align-middle overflow-hidden">
 			<div className="w-full bg-primary text-center mt-32 border-t-4 border-t-forth border-b-4 border-b-forth">
 				<h2 className="my-2 text-3xl font-bold text-forth">
 					{classItem.className}
 				</h2>
 			</div>
-			<div className="2xl:w-8/12 md:w-10/12 xl:9/12 w-full h-fit px-2 mt-8 md:mx-6 grid grid-cols-1 xl:grid-cols-2 2xl:grid-rows-2 gap-4">
+			<div className="2xl:max-w-7xl w-full h-fit px-4 mt-6 grid grid-cols-1 xl:grid-cols-2 2xl:grid-rows-2 gap-4">
 				{classItem.quizzes.map((quiz) => (
 					<MemoizedQuizCard
 						key={quiz._id}

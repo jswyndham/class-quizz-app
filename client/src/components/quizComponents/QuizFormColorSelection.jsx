@@ -5,6 +5,7 @@ const QuizFormColorSelector = ({ selectedColor, onSelectColor }) => {
 		{ name: 'Red', class: 'gradient-red', value: '#dc3545' },
 		{ name: 'Pink', class: 'gradient-pink', value: '#f472b6' },
 		{ name: 'Purple', class: 'gradient-purple', value: '#a78bfa' },
+		{ name: 'Orange', class: 'gradient-orange', value: '#bb976d' },
 	];
 
 	return (
