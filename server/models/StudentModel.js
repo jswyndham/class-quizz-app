@@ -3,15 +3,16 @@ import mongoose from 'mongoose';
 const StudentSchema = new mongoose.Schema(
 	{
 		studentNumber: Number,
-		class: {
+		classGroup: {
 			type: mongoose.Types.ObjectId,
-			ref: 'Class',
+			ref: 'ClassGroup',
+			required: true,
 		},
-		student: {
+		user: {
 			type: mongoose.Types.ObjectId,
 			ref: 'User',
+			required: true,
 		},
-		classMember: Boolean,
 	},
 	{ timestamps: true }
 );

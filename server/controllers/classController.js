@@ -1,4 +1,5 @@
 import ClassGroup from '../models/ClassModel.js';
+import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
 
 // Controller to retrieve all classes

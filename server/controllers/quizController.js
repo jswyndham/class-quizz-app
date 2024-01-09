@@ -233,7 +233,7 @@ export const updateQuiz = async (req, res) => {
 // Controller to copy a quiz to a class
 export const copyQuizToClass = async (req, res) => {
 	try {
-		const { _id, classId } = req.body;
+		const { quizId, classId } = req.body; // Assuming you pass quizId and classId in the request body
 
 		// Validate if the class exists
 		const classGroup = await ClassGroup.findById(classId);
@@ -243,29 +243,34 @@ export const copyQuizToClass = async (req, res) => {
 				.json({ msg: 'Class not found' });
 		}
 
-		// Validate if the quiz exists
-		const quiz = await Quiz.findById(_id);
-		if (!quiz) {
+		// Fetch the original quiz
+		const originalQuiz = await Quiz.findById(quizId);
+		if (!originalQuiz) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ msg: 'Quiz not found' });
 		}
 
-		// Add the class to the quiz's class array
-		await Quiz.findByIdAndUpdate(_id, {
-			$addToSet: { class: classId },
-		});
+		// Deep clone the quiz and prepare for new quiz creation. The 'toObject()' method creates a new object, which is filled with 'JSON.parse(JSON.stringify(...))'
+		const newQuizData = JSON.parse(JSON.stringify(originalQuiz.toObject()));
+		delete newQuizData._id; // Remove the original ID
+		newQuizData.class = [classId]; // Set the new class ID
 
-		// Add the quiz to the class's quizzes array
+		// Create and save the new quiz
+		const newQuiz = new Quiz(newQuizData);
+		await newQuiz.save();
+
+		// Update the class with the new quiz in the 'quizzes' parameter array.
 		await ClassGroup.findByIdAndUpdate(classId, {
-			$addToSet: { quizzes: _id },
+			$addToSet: { quizzes: newQuiz._id },
 		});
 
 		res.status(StatusCodes.OK).json({
-			msg: 'Quiz added to class successfully',
+			msg: 'Quiz copied to class successfully',
+			newQuizId: newQuiz._id,
 		});
 	} catch (error) {
-		console.error('Error adding quiz to class:', error);
+		console.error('Error copying quiz to class:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

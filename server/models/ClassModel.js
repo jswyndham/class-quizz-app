@@ -17,6 +17,12 @@ const ClassSchema = new mongoose.Schema(
 				ref: 'Quiz',
 			},
 		],
+		students: [
+			{
+				type: mongoose.Types.ObjectId,
+				ref: 'Student',
+			},
+		],
 	},
 	{ timestamps: true }
 );
