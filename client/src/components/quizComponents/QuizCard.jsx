@@ -128,6 +128,7 @@ const QuizCard = ({
 		try {
 			await dispatch(copyQuizToClass({ _id: _id, classId }));
 			handleClassListClose(e);
+			handleMenuClick(e);
 			toast.success('Quiz copied to class successfully');
 		} catch (error) {
 			toast.error('Failed to copy quiz to class');

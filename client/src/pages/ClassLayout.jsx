@@ -32,8 +32,8 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="w-full h-fit flex flex-col justify-center align-middle overflow-hidden">
-			<div className="w-full bg-primary text-center mt-32 border-t-4 border-t-forth border-b-4 border-b-forth">
+		<section className="w-full h-full flex flex-col justify-center overflow-hidden">
+			<div className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth">
 				<h2 className="my-2 text-3xl font-bold text-forth">
 					{classItem.className}
 				</h2>

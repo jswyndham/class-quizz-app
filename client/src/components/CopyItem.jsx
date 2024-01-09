@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchClasses } from '../features/classGroup/classAPI';
 import { useEffect } from 'react';
 import { TiDelete } from 'react-icons/ti';
+import { FaCopy } from 'react-icons/fa';
 
 const CopyItem = ({ quizOnClick, isShowClassList, classListClose }) => {
 	const classList = useSelector((state) => state.class.class);
@@ -21,6 +22,9 @@ const CopyItem = ({ quizOnClick, isShowClassList, classListClose }) => {
 						? 'scale-100 opacity-100 visible'
 						: 'scale-0 opacity-0 invisible'
 				} top-7 right-1 lg:top-8 lg:right-3 z-30`}
+				onClick={(e) => {
+					e.stopPropagation();
+				}}
 			>
 				<div className="flex justify-between bg-third w-full text-end px-6 py-2 rounded-t-lg">
 					<div className="absolute w-3 h-3 bg-primary top-5 left-4"></div>
@@ -30,9 +34,10 @@ const CopyItem = ({ quizOnClick, isShowClassList, classListClose }) => {
 					>
 						<TiDelete />
 					</div>
-					<h4 className="text-lg md:text-xl mr-2 mt-1 text-primary">
-						Copy
-					</h4>
+					<div className="flex flex-row text-lg md:text-xl text-primary">
+						<FaCopy className="mt-2 mr-6" />
+						<p className="mr-2 mt-1 ">Copy</p>
+					</div>
 				</div>
 				<div className="ml-3 mt-2 italic text-red-800">
 					<p>Choose your class</p>

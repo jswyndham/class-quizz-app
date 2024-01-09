@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import QuizCard from './QuizCard';
 import { fetchQuizzes } from '../../features/quiz/quizAPI';
 import { fetchCurrentUser } from '../../features/user/userAPI';
+import QuizCardGradientValues from './QuizCardGradientValues';
 
 const MemoizedQuizCard = memo(QuizCard);
 
@@ -23,22 +24,7 @@ const QuizContainer = ({ _id }) => {
 	}, []);
 
 	// Defines the color value and returns the gradient in the css
-	const determineGradientClass = (colorValue) => {
-		switch (colorValue) {
-			case '#007bff':
-				return 'gradient-blue';
-			case '#28a745':
-				return 'gradient-green';
-			case '#dc3545':
-				return 'gradient-red';
-			case '#f472b6':
-				return 'gradient-pink';
-			case '#a78bfa':
-				return 'gradient-purple';
-			default:
-				return ''; // default case if needed
-		}
-	};
+	const { determineGradientClass } = QuizCardGradientValues({});
 
 	// NO QUIZZES TO DISPLAY
 	if (quizData.length === 0) {
@@ -52,7 +38,7 @@ const QuizContainer = ({ _id }) => {
 	}
 
 	return (
-		<section className="flex justify-center h-screen w-full pt-36 md:px-4">
+		<section className="flex justify-center h-full w-full pt-36 md:px-4 pb-8 overflow-hidden">
 			<div className="lg:w-10/12 w-full h-fit md:mx-2 grid grid-cols-1 2xl:grid-cols-2 gap-4">
 				{quizData.map((quiz) => (
 					<MemoizedQuizCard

@@ -12,6 +12,8 @@ const QuizCardGradientValues = () => {
 				return 'gradient-pink';
 			case '#a78bfa':
 				return 'gradient-purple';
+			case '#bb976d':
+				return 'gradient-orange';
 			default:
 				return ''; // default case if needed
 		}
