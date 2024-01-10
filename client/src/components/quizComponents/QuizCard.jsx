@@ -1,6 +1,6 @@
 /**
  * QuizCard Component
- * Displays a card representing a quiz with options to edit, delete, and view details.
+ * Displays a card representing a quiz with options to copy, edit, delete, and view details.
  * It includes interactive elements like a menu for editing and deleting, and a modal for delete confirmation.
  */
 
@@ -28,8 +28,7 @@ dayjs.extend(advancedFormat);
 const QuizCard = ({
   _id,
   quizTitle,
-  lastUpdated,
-  category,
+  questionCount,
   updatedAt,
   gradientClass,
 }) => {
@@ -195,7 +194,10 @@ const QuizCard = ({
         <div
           className={`flex flex-col p-4 bg-white rounded-b-md border-2 border-slate-400`}
         >
-          <ClassInfo icon={<MdFormatListNumbered />} />
+          <div className="flex flex-row text-lg">
+            <ClassInfo icon={<MdFormatListNumbered />} />
+            <p className="mt-2">Questions: {questionCount}</p>
+          </div>
           <ClassInfo icon={<FaCalendarAlt />} text={updatedData} />
         </div>
 
