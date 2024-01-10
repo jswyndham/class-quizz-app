@@ -32,7 +32,7 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="pt-32 w-full h-screen flex flex-col justify-center overflow-hidden">
+		<section className="pt-32 w-full h-full flex flex-col items-center overflow-hidden">
 			<div className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth mb-6">
 				<h2 className="my-2 text-3xl font-bold text-forth">
 					{classItem.className}
@@ -41,8 +41,8 @@ const ClassLayout = () => {
 			<div
 				className={
 					classItem.quizzes.length === 1
-						? 'lg:w-10/12 w-full h-full md:mx-2 grid grid-cols-1'
-						: 'lg:w-10/12 w-full h-full md:mx-2 grid grid-cols-1 2xl:grid-cols-2 gap-4'
+						? 'lg:w-10/12 w-full h-fit mx-2 px-2 grid grid-cols-1'
+						: 'lg:w-11/12 w-full h-fit mx-2 2xl:mx-0  px-2 grid grid-cols-1 2xl:grid-cols-2 gap-4'
 				}
 			>
 				{classItem.quizzes.map((quiz) => (
