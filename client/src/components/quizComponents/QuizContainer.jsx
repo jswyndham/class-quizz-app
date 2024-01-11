@@ -3,13 +3,15 @@ import { useSelector, useDispatch } from "react-redux";
 import QuizCard from "./QuizCard";
 import { fetchQuizzes } from "../../features/quiz/quizAPI";
 import { fetchCurrentUser } from "../../features/user/userAPI";
+import { fetchClasses } from "../../features/classGroup/classAPI";
 import QuizCardGradientValues from "./QuizCardGradientValues";
 
 const MemoizedQuizCard = memo(QuizCard);
 
-const QuizContainer = ({ _id }) => {
+const QuizContainer = () => {
   const userData = useSelector((state) => state.class.currentUser);
   const quizData = useSelector((state) => state.quiz.quiz);
+  const classData = useSelector((state) => state.class.class);
 
   const dispatch = useDispatch();
 
@@ -22,6 +24,10 @@ const QuizContainer = ({ _id }) => {
   useEffect(() => {
     dispatch(fetchQuizzes());
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchClasses());
+  }, [dispatch]);
 
   // Defines the color value and returns the gradient in the css
   const { determineGradientClass } = QuizCardGradientValues({});
@@ -37,23 +43,33 @@ const QuizContainer = ({ _id }) => {
     );
   }
 
+  console.log("CLASSDATA: ", classData);
+
   return (
     <section className="flex justify-center h-full w-full pt-36 md:px-4 pb-8 overflow-hidden">
-      <div
+      {/* <div
         className={
           quizData.length === 1
             ? "lg:w-10/12 w-full h-fit md:mx-2 grid grid-cols-1"
             : "lg:w-10/12 w-full h-fit md:mx-2 grid grid-cols-1 2xl:grid-cols-2 gap-4"
         }
-      >
-        {quizData.map((quiz) => (
-          <MemoizedQuizCard
-            key={quiz._id}
-            {...quiz}
-            gradientClass={determineGradientClass(quiz.backgroundColor)}
-          />
+      > */}
+      <div className="w-full flex justify-start">
+        {classData.map((classes) => (
+          <div key={classes._id} className="">
+            <h2 className="text-2xl">{classes.className}</h2>
+
+            {classes.quizzes?.map((quiz) => (
+              <MemoizedQuizCard
+                key={quiz._id}
+                {...quiz}
+                gradientClass={determineGradientClass(quiz.backgroundColor)}
+              />
+            ))}
+          </div>
         ))}
       </div>
+      {/* </div> */}
     </section>
   );
 };
