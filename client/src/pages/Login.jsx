@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../features/auth/authAPI";
+import { loginUser } from "../features/authenticate/authAPI";
 import { FormRow } from "../components";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

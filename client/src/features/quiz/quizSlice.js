@@ -42,6 +42,7 @@ const quizSlice = createSlice({
       // FETCH QUIZ BY ID
       .addCase(fetchQuizById.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchQuizById.fulfilled, (state, action) => {
         state.loading = false;

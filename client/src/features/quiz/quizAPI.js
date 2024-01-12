@@ -1,106 +1,106 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import customFetch from '../../utils/customFetch';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import customFetch from "../../utils/customFetch";
 
-const BASE_URL = '/quiz';
+const BASE_URL = "/quiz";
 
-// Retreive all quizzes
-export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async () => {
-	try {
-		const response = await customFetch.get(BASE_URL);
-		return response.data;
-	} catch (error) {
-		return error.message;
-	}
-});
+// Retrieve all quizzes
+export const fetchQuizzes = createAsyncThunk(
+  "quiz/fetchQuizzes",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.get(BASE_URL);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
+);
 
 // Find a quiz by its id
 export const fetchQuizById = createAsyncThunk(
-	'quiz/fetchQuizById',
-	async (_id) => {
-		try {
-			const response = await customFetch.get(`${BASE_URL}/${_id}`);
-			return response.data;
-		} catch (error) {
-			return error.message;
-		}
-	}
+  "quiz/fetchQuizById",
+  async (_id, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.get(`${BASE_URL}/${_id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
 );
 
 // Create new quiz
 export const createQuiz = createAsyncThunk(
-	'quiz/createQuiz',
-	async (quizData, { rejectWithValue }) => {
-		try {
-			const response = await customFetch.post(BASE_URL, quizData);
-			return response.data;
-		} catch (error) {
-			console.error('Error in createQuiz:', error);
-			return rejectWithValue(
-				error.response ? error.response.data : error.message
-			);
-		}
-	}
+  "quiz/createQuiz",
+  async (quizData, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.post(BASE_URL, quizData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
 );
 
 // Edit existing quiz
 export const updateQuiz = createAsyncThunk(
-	'quiz/updateQuiz',
-	async ({ _id, formData }) => {
-		try {
-			const response = await customFetch.patch(
-				`${BASE_URL}/${_id}`,
-				formData
-			);
-			return response.data;
-		} catch (error) {
-			return error.message;
-		}
-	}
+  "quiz/updateQuiz",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.patch(`${BASE_URL}/${id}`, formData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
 );
 
 // Copy a quiz and place in a new class
 export const copyQuizToClass = createAsyncThunk(
-	'quiz/copyQuizToClass',
-	async ({ _id, classId }, { rejectWithValue }) => {
-		try {
-			const response = await customFetch.post(
-				`${BASE_URL}/${_id}/copy-to-class`,
-				{
-					_id,
-					classId,
-				}
-			);
-			return response.data;
-		} catch (error) {
-			return rejectWithValue(
-				error.response ? error.response.data : error.message
-			);
-		}
-	}
+  "quiz/copyQuizToClass",
+  async ({ _id, classId }, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.post(
+        `${BASE_URL}/${_id}/copy-to-class`,
+        {
+          _id,
+          classId,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
 );
 
 // Delete a quiz
-export const deleteQuiz = createAsyncThunk('quiz/deleteQuiz', async (id) => {
-	try {
-		await customFetch.delete(`${BASE_URL}/${id}`);
-		return id;
-	} catch (error) {
-		return error.message;
-	}
-});
+export const deleteQuiz = createAsyncThunk(
+  "quiz/deleteQuiz",
+  async (id, { rejectWithValue }) => {
+    try {
+      await customFetch.delete(`${BASE_URL}/${id}`);
+      return id; // Return the id of the deleted quiz for reducer to handle
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
+);
 
-// Edit questions inside a quiz
+// Add question to a quiz
 export const addQuestionToQuiz = createAsyncThunk(
-	'quiz/addQuestionToQuiz',
-	async ({ id, quizData }) => {
-		try {
-			const response = await customFetch.patch(
-				`${BASE_URL}/${id}/add-question`,
-				quizData
-			);
-			return response.data;
-		} catch (error) {
-			return error.message;
-		}
-	}
+  "quiz/addQuestionToQuiz",
+  async ({ id, questionData }, { rejectWithValue }) => {
+    try {
+      const response = await customFetch.patch(
+        `${BASE_URL}/${id}/add-question`,
+        questionData
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || error.message);
+    }
+  }
 );
