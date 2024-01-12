@@ -48,15 +48,6 @@ export const getClass = async (req, res) => {
         .json({ message: "Class not found" });
     }
 
-    // // strict filtering
-    // if (req.query.includeQuizzes === 'true') {
-    // 	classGroup.quizzes = classGroup.quizzes.filter((quiz) =>
-    // 		quiz.class.some(
-    // 			(classId) => classId.toString() === req.params.id
-    // 		)
-    // 	);
-    // }
-
     res.status(StatusCodes.OK).json({
       class: classGroup,
       msg: "Class was found",

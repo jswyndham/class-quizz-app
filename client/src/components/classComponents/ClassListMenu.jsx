@@ -30,7 +30,7 @@ const ClassListMenu = () => {
 
   useEffect(() => {
     dispatch(fetchClasses());
-  }, []);
+  }, [dispatch]);
 
   // Loading spinner
   if (loading) {

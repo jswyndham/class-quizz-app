@@ -23,7 +23,7 @@ const QuizContainer = () => {
 
   useEffect(() => {
     dispatch(fetchQuizzes());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchClasses());
@@ -54,10 +54,14 @@ const QuizContainer = () => {
             : "lg:w-10/12 w-full h-fit md:mx-2 grid grid-cols-1 2xl:grid-cols-2 gap-4"
         }
       > */}
-      <div className="w-full flex justify-start">
+      <div className="w-full flex flex-col justify-start">
         {classData.map((classes) => (
-          <div key={classes._id} className="">
-            <h2 className="text-2xl">{classes.className}</h2>
+          <div key={classes._id} className="my-4">
+            <div className="w-full h-fit bg-forth text-primary p-2 my-4">
+              <h2 className="text-2xl font-roboto font-bold italic">
+                {classes.className}
+              </h2>
+            </div>
 
             {classes.quizzes?.map((quiz) => (
               <MemoizedQuizCard
