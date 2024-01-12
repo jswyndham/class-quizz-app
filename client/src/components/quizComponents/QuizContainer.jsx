@@ -35,7 +35,7 @@ const QuizContainer = () => {
   // NO QUIZZES TO DISPLAY
   if (quizData.length === 0) {
     return (
-      <div className="h-screen w-screen flex justify-center">
+      <div className="h-screen w-full flex justify-center">
         <h2 className="text-3xl font-display font-bold italic mt-44">
           You currently have no quizzes to display.
         </h2>

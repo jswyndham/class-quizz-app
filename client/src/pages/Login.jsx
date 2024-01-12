@@ -1,40 +1,34 @@
-import {
-  Form,
-  Link,
-  redirect,
-  useActionData,
-  useNavigation,
-} from "react-router-dom";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../features/auth/authAPI";
 import { FormRow } from "../components";
-import customFetch from "../utils/customFetch";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import logo from "../assets/images/quizgate-logo.png";
 import loginBackGround from "../assets/images/quizLogIn.jpg";
 
-// REACT ROUTER ACTION
-export const action = async ({ request }) => {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  const errors = { msg: "" };
-  if (data.password.length < 4) {
-    errors.msg = "password must be more that 4 characters";
-    return errors;
-  }
-  try {
-    await customFetch.post("/auth/login", data);
-    toast.success("Login successful");
-    return redirect("/dashboard");
-  } catch (error) {
-    //toast.error(error?.response?.data?.msg);
-    errors.msg = error?.response?.data?.msg;
-    return errors;
-  }
-};
-
 const Login = () => {
-  const errors = useActionData();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(loginUser(formData))
+      .unwrap()
+      .then(() => {
+        navigate("/dashboard");
+        toast.success("Login successful");
+      })
+      .catch(() => {
+        toast.error(error || "Login failed");
+      });
+  };
 
   return (
     <section className="flex flex-row justify-center align-middle h-full w-screen bg-third">
@@ -43,19 +37,19 @@ const Login = () => {
         alt="QuizGate logo"
         className="hidden lg:flex lg:bg-contain"
       />
-
       <article className="flex flex-col justify-start pl-4 align-middle lg:min-w-1/2 pt-40 rounded-xl">
         <div className="mx-8 my-12 h-12 w-96">
           <img src={logo} alt="QuizGate logo" />
         </div>
         <div className="flex items-center align-middle w-fit">
-          <Form method="post" className="w-fit p-8 md:p-16">
+          <form onSubmit={handleSubmit} className="w-fit p-8 md:p-16">
             {/* EMAIL */}
             <FormRow
               type="email"
               name="email"
               labelText="email"
-              defaultValue="jsw@email.com"
+              value={formData.email}
+              onChange={handleChange}
             />
 
             {/* PASSWORD */}
@@ -63,19 +57,20 @@ const Login = () => {
               type="password"
               name="password"
               labelText="password"
-              defaultValue="password1234"
+              value={formData.password}
+              onChange={handleChange}
             />
 
             {/* BUTTON */}
             <div className="flex flex-col justify-center w-fit">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={loading}
                 className="h-8 w-96 mt-10 mb-4 bg-white text-secondary font-bold border-solid border-2 border-secondary rounded-lg drop-shadow-lg hover:bg-secondary hover:text-white hover:font-bold hover:shadow-2xl hover:drop-shadow-xl active:shadow-sm active:bg-third"
               >
-                {isSubmitting ? "submitting..." : "login"}
+                {loading ? "submitting..." : "login"}
               </button>
-              {errors?.msg && <p style={{ color: "red" }}>{errors.msg}</p>}
+              {error && <p style={{ color: "red" }}>{error}</p>}
               <div className="flex flex-row justify-center mt-6">
                 <p className="mx-2 text-xl">Not yet a member?</p>
                 <Link to="/register" className="text-blue-400">
@@ -83,7 +78,7 @@ const Login = () => {
                 </Link>
               </div>
             </div>
-          </Form>
+          </form>
         </div>
       </article>
     </section>
