@@ -46,13 +46,9 @@ const QuizHooks = (initialQuizData) => {
 				...newQuestions[index],
 				answerType: answerType,
 				options:
-					answerType === QUESTION_TYPE.MULTIPLE_CHOICE
-						? Array(4).fill({ optionText: '', isCorrect: false })
-						: [
-								{ optionText: '', isCorrect: false },
-								{ optionText: '', isCorrect: false },
-								{ optionText: '', isCorrect: false },
-						  ],
+					answerType === QUESTION_TYPE.MULTIPLE_CHOICE.value
+						? Array(3).fill({ optionText: '', isCorrect: false })
+						: [],
 			};
 			return { ...prevQuiz, questions: newQuestions };
 		});

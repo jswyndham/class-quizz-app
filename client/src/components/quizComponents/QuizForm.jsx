@@ -15,6 +15,7 @@ import {
 	QuizFormAnswer,
 	QuizFormQuestion,
 } from '../quizComponents';
+import { QUESTION_TYPE } from '../../../../server/utils/constants';
 
 const QuizForm = () => {
 	// STATE HOOKS
@@ -23,6 +24,7 @@ const QuizForm = () => {
 		selectedClassId,
 		quizBackgroundColor,
 		selectedQuestionIndex,
+		setSelectedQuestionIndex,
 		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
@@ -153,7 +155,7 @@ const QuizForm = () => {
 			await dispatch(createQuiz(formData));
 
 			console.log('The formData: ', { formData });
-			navigate('/dashboard/all-quizzes');
+			navigate('/dashboard');
 			toast.success('Quiz successfully added');
 
 			// Clear local storage
@@ -341,39 +343,42 @@ const QuizForm = () => {
 							))}
 
 							{/* Button to add an extra answer option. Conditionally render the "Add Option" button */}
-							{selectedQuestionIndex === questionIndex && (
+							{question.answerType ===
+								QUESTION_TYPE.MULTIPLE_CHOICE.value && (
 								<div
-									className="relative flex flex-row justify-center items-center my-5 lg:mt-6 lg:mb-4 h-14 w-56 hover:cursor-pointer"
+									className="relative flex flex-row justify-center items-center mx-3 my-5 lg:mt-6 lg:mb-4 h-14 w-56 hover:cursor-pointer"
 									onClick={() =>
 										handleAddOption(questionIndex)
 									}
 								>
-									<div className="absolute right-0 flex text-center px-2 border h-10 w-52 border-slate-400 bg-third text-primary rounded-r-full drop-shadow-xl shadow-md shadow-slate-400">
-										<p className="mt-1 ml-8 font-quizgate text-2xl">
+									<div className="absolute left-4 flex text-center h-10 w-56 bg-forth text-primary rounded-r-full drop-shadow-xl shadow-md shadow-slate-400  hover:shadow-lg hover:shadow-slate-500 active:shadow-sm active:shadow-slate-600">
+										<p className="my-1 pl-9 pr-6 pb-1 ml-1 font-quizgate text-2xl border-t border-r border-b border-primary rounded-r-full">
 											Add answer option
 										</p>
+										<CiCirclePlus className="absolute -left-3 -top-1 text-5xl text-primary bg-forth rounded-full" />
 									</div>
-									<CiCirclePlus className="absolute left-0 text-5xl text-primary bg-third rounded-full" />
 								</div>
 							)}
 						</div>
 					))}
 
-					{/* Button to add another question to the form */}
-					<button
-						type="button"
-						onClick={handleAddNewQuestion}
-						className="flex justify-center w-8/12 p-6 text-xl bg-secondary border border-slate-500 rounded-lg shadow-lg shadow-slate-300"
-					>
-						Add New Question
-					</button>
+					<div className="flex justify-center my-4">
+						{/* Button to add another question to the form */}
+						<button
+							type="button"
+							onClick={handleAddNewQuestion}
+							className="w-80 h-16 px-4 py-2 bg-secondary rounded-md text-white text-lg font-roboto font-extrabold border-1 border-slate-600 focus:ring-4 shadow-lg transform active:scale-90 transition-transform"
+						>
+							Add New Question
+						</button>
+					</div>
 				</div>
 
 				{/* Button to submit the form */}
 				<div className="flex justify-center w-8/12 mx-4 my-12">
 					<button
 						type="submit"
-						className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+						className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 					>
 						{isSubmitting ? 'submitting...' : 'create'}
 					</button>

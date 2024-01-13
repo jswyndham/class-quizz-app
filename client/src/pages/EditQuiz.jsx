@@ -16,6 +16,8 @@ import { QuizFormAnswer, QuizFormQuestion } from '../components/quizComponents';
 import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
 import { fetchClasses } from '../features/classGroup/classAPI';
 import { useEffect } from 'react';
+import { QUESTION_TYPE } from '../../../server/utils/constants';
+import { CiCirclePlus } from 'react-icons/ci';
 
 export const loader = async ({ params }) => {
 	try {
@@ -30,7 +32,6 @@ export const loader = async ({ params }) => {
 
 const EditQuiz = () => {
 	const quizData = useLoaderData();
-	console.log('Loaded Quiz Data: ', quizData);
 
 	// STATE HOOKS
 	const {
@@ -327,12 +328,24 @@ const EditQuiz = () => {
 									}
 								/>
 							))}
-							<button
-								type="button"
-								onClick={() => handleAddOption(questionIndex)}
-							>
-								Add Option
-							</button>
+
+							{/* Button to add an extra answer option. Conditionally render the "Add Option" button */}
+							{question.answerType ===
+								QUESTION_TYPE.MULTIPLE_CHOICE.value && (
+								<div
+									className="relative flex flex-row justify-center items-center mx-3 my-5 lg:mt-6 lg:mb-4 h-14 w-56 hover:cursor-pointer"
+									onClick={() =>
+										handleAddOption(questionIndex)
+									}
+								>
+									<div className="absolute left-4 flex text-center h-10 w-56 bg-forth text-primary rounded-r-full drop-shadow-xl shadow-md shadow-slate-400  hover:shadow-lg hover:shadow-slate-500 active:shadow-sm active:shadow-slate-600">
+										<p className="my-1 pl-9 pr-6 pb-1 ml-1 font-quizgate text-2xl border-t border-r border-b border-primary rounded-r-full">
+											Add answer option
+										</p>
+										<CiCirclePlus className="absolute -left-3 -top-1 text-5xl text-primary bg-forth rounded-full" />
+									</div>
+								</div>
+							)}
 						</div>
 					))}
 					<button
