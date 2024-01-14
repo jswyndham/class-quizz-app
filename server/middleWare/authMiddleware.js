@@ -26,3 +26,15 @@ export const authorizePermissions = (...userStatus) => {
 		next();
 	};
 };
+
+// Middleware to check if the user is a teacher
+export const checkIsTeacher = (req, res, next) => {
+	if (req.user.userStatus !== USER_STATUS.TEACHER.value) {
+		return res
+			.status(StatusCodes.UNAUTHORIZED)
+			.json({
+				message: 'Unauthorized: Access restricted to teachers only',
+			});
+	}
+	next();
+};

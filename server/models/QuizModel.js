@@ -26,6 +26,8 @@ const QuizSchema = new mongoose.Schema(
 	{
 		quizTitle: String,
 		quizDescription: String,
+		availableFrom: Date,
+		availableUntil: Date,
 		questions: [questionSchema],
 		createdBy: {
 			type: mongoose.Types.ObjectId,
@@ -46,6 +48,10 @@ const QuizSchema = new mongoose.Schema(
 		wallpaper: {
 			type: String,
 			default: '', // URL or path to the wallpaper image
+		},
+		isActive: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{

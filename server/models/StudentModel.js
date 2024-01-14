@@ -13,6 +13,24 @@ const StudentSchema = new mongoose.Schema(
 			ref: 'User',
 			required: true,
 		},
+		performance: [
+			{
+				class: {
+					type: mongoose.Types.ObjectId,
+					ref: 'Class',
+				},
+				totalScore: Number,
+				quizzesTaken: [
+					{
+						quiz: {
+							type: mongoose.Types.ObjectId,
+							ref: 'Quiz',
+						},
+						score: Number,
+					},
+				],
+			},
+		],
 	},
 	{ timestamps: true }
 );
