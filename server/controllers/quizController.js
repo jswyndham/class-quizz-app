@@ -3,6 +3,13 @@ import sanitizeHtml from 'sanitize-html';
 import Quiz from '../models/QuizModel.js';
 import ClassGroup from '../models/ClassModel.js';
 
+// Function to dynamically generate a unique cache key based on user ID and query parameters.
+// This will ensure that users only access the data relevant to their requests.
+const generateCacheKey = (userId, queryParams) => {
+	const queryStr = JSON.stringify(queryParams);
+	return `quizzes_${userId}_${queryStr}`;
+};
+
 // Configuration for HTML sanitization
 const sanitizeConfig = {
 	allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe', 'img']),
@@ -66,20 +73,33 @@ const sanitizeConfig = {
 
 // Controller to get all quizzes by user
 export const getAllQuizzes = async (req, res) => {
+	const cacheKey = generateCacheKey(req.user.userId, req.query);
 	try {
-		// Find all quizzes by user
-		let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
-			.populate({ path: 'class' })
-			.lean() // Convert to plain JavaScript objects to improve query
-			.exec();
+		const cachedData = getCache(cacheKey);
 
-		// Manually add the questionCount to each quiz
-		allQuizzes = allQuizzes.map((quiz) => ({
-			...quiz,
-			questionCount: quiz.questions.length,
-		}));
+		if (cachedData) {
+			console.log(`Cache hit for key: ${cacheKey}`);
+			return res.status(StatusCodes.OK).json({ allQuizzes: cachedData });
+		} else {
+			console.log(`Cache miss for key: ${cacheKey}`);
 
-		res.status(StatusCodes.OK).json({ allQuizzes });
+			// Find all quizzes by user
+			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
+				.populate({ path: 'class' })
+				.lean() // Convert to plain JavaScript objects to improve query
+				.exec();
+
+			// Manually add the questionCount to each quiz
+			allQuizzes = allQuizzes.map((quiz) => ({
+				...quiz,
+				questionCount: quiz.questions.length,
+			}));
+
+			// Set data in cache for future requests
+			setCache(cacheKey, classGroups, 10800); // Caches for 3 hours
+
+			res.status(StatusCodes.OK).json({ allQuizzes });
+		}
 	} catch (error) {
 		console.error('Error finding all quizzes:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -90,12 +110,30 @@ export const getAllQuizzes = async (req, res) => {
 
 // Controller to get a single quiz
 export const getQuiz = async (req, res) => {
+	const quizId = req.params.id;
+	const cacheKey = `quiz_${quizId}`;
+
 	try {
-		const quiz = await Quiz.findById(req.params.id)
+		const cachedQuiz = getCache(cacheKey);
+		if (cachedQuiz) {
+			console.log(`Cache hit for key: ${cacheKey}`);
+			return res.status(StatusCodes.OK).json(cachedQuiz);
+		}
+
+		console.log(`Cache miss for key: ${cacheKey}`);
+		const quiz = await Quiz.findById(quizId)
 			.populate({ path: 'class' })
-			.lean() // Convert to plain JavaScript objects to improve query
+			.lean()
 			.exec();
-		res.status(StatusCodes.OK).json({ quiz });
+
+		if (!quiz) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Quiz not found' });
+		}
+
+		setCache(cacheKey, quiz, 10800); // Caching for 3 hours
+		res.status(StatusCodes.OK).json(quiz);
 	} catch (error) {
 		console.error('Error finding quiz:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -153,6 +191,10 @@ export const createQuiz = async (req, res) => {
 			})
 		);
 
+		// Invalidate cache after creating a new class
+		const cacheKey = `allClasses_${req.user.userId}`;
+		clearCache(cacheKey);
+
 		res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
 	} catch (error) {
 		console.error('Error creating quiz:', error);
@@ -207,6 +249,10 @@ export const updateQuiz = async (req, res) => {
 			{ new: true }
 		).populate({ path: 'class' });
 
+		// Invalidate cache after creating a new class
+		const cacheKey = `allClasses_${req.user.userId}`;
+		clearCache(cacheKey);
+
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz updated successfully',
 			quiz: updatedQuiz,
@@ -254,6 +300,10 @@ export const copyQuizToClass = async (req, res) => {
 			$addToSet: { quizzes: newQuiz._id },
 		});
 
+		// Invalidate cache after creating a new class
+		const cacheKey = `allClasses_${req.user.userId}`;
+		clearCache(cacheKey);
+
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz copied to class successfully',
 			newQuizId: newQuiz._id,
@@ -287,6 +337,10 @@ export const deleteQuiz = async (req, res) => {
 			{ quizzes: quizId },
 			{ $pull: { quizzes: quizId } }
 		);
+
+		// Invalidate cache after creating a new class
+		const cacheKey = `allClasses_${req.user.userId}`;
+		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz deleted',
