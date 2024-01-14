@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import sanitizeHtml from 'sanitize-html';
 import Quiz from '../models/QuizModel.js';
 import ClassGroup from '../models/ClassModel.js';
+import { getCache, setCache } from '../utils/cache/cache.js';
 
 // Function to dynamically generate a unique cache key based on user ID and query parameters.
 // This will ensure that users only access the data relevant to their requests.
@@ -78,10 +79,10 @@ export const getAllQuizzes = async (req, res) => {
 		const cachedData = getCache(cacheKey);
 
 		if (cachedData) {
-			console.log(`Cache hit for key: ${cacheKey}`);
+			console.log(`Cache hit for allQuizzes key: ${cacheKey}`);
 			return res.status(StatusCodes.OK).json({ allQuizzes: cachedData });
 		} else {
-			console.log(`Cache miss for key: ${cacheKey}`);
+			console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
 
 			// Find all quizzes by user
 			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
@@ -96,7 +97,7 @@ export const getAllQuizzes = async (req, res) => {
 			}));
 
 			// Set data in cache for future requests
-			setCache(cacheKey, classGroups, 10800); // Caches for 3 hours
+			setCache(cacheKey, allQuizzes, 10800); // Caches for 3 hours
 
 			res.status(StatusCodes.OK).json({ allQuizzes });
 		}

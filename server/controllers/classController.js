@@ -7,24 +7,28 @@ import { getCache, setCache } from '../utils/cache/cache.js';
 // This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
 	const queryStr = JSON.stringify(queryParams);
-	return `classes_${userId}_${queryStr}`;
+	return `class_${userId}_${queryStr}`;
 };
 
 // Controller to retrieve all classes
 export const getAllClasses = async (req, res) => {
 	// Setting the cacheKey parameters
 	const cacheKey = generateCacheKey(req.user.userId, req.query);
-
+	console.log('CACHE KRY: ', cacheKey);
 	try {
 		const cachedData = getCache(cacheKey);
+
+		console.log('CACHED DATA: ', cachedData);
 
 		// If the cached data exists, retrieve the existing data.
 		if (cachedData) {
 			console.log(`Cache hit for key: ${cacheKey}`);
+
 			return res.status(StatusCodes.OK).json({ classGroups: cachedData });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
 			// Find all classes organized by createdBy user
+
 			const classGroups = await ClassGroup.find({
 				createdBy: req.user.userId,
 			})
@@ -37,6 +41,7 @@ export const getAllClasses = async (req, res) => {
 			res.status(StatusCodes.OK).json({ classGroups });
 		}
 	} catch (error) {
+		console.error('Error in getAllClasses:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

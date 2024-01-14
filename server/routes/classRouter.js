@@ -17,8 +17,10 @@ import { USER_STATUS } from '../utils/constants.js';
 
 const router = Router();
 
-// validation middleware is imported and applied to the necessary routes
+// Route for fetching all classes and creating a new class
 router.route('/').get(getAllClasses).post(validateClassInput, createClass);
+
+// Routes that require an ID parameter
 router
 	.route('/:id')
 	.get(validateIdParam, getClass)
@@ -33,7 +35,7 @@ router.post(
 	joinClass
 );
 
-// Get the info of class members (students)
-router.get('/:id/students', validateIdParam, getAllStudents); // Separate route for students
+// Route to get the info of class members (students)
+router.get('/:id/students', validateIdParam, getAllStudents); // Keep validateIdParam here as this route requires an ID
 
 export default router;
