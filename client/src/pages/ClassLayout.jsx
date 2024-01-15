@@ -15,6 +15,8 @@ const ClassLayout = () => {
 	const classItem = useSelector((state) => state.class.currentClass);
 	const { error } = useSelector((state) => state.class);
 
+	console.log('CLASS ITEM: ', classItem);
+
 	useEffect(() => {
 		dispatch(fetchClassById(id));
 	}, [id, dispatch]);

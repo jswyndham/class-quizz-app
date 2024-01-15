@@ -86,7 +86,7 @@ export const getAllQuizzes = async (req, res) => {
 
 			// Find all quizzes by user
 			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
-				.populate({ path: 'class' })
+				.populate('class')
 				.lean() // Convert to plain JavaScript objects to improve query
 				.exec();
 
@@ -118,12 +118,12 @@ export const getQuiz = async (req, res) => {
 		const cachedQuiz = getCache(cacheKey);
 		if (cachedQuiz) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-			return res.status(StatusCodes.OK).json(cachedQuiz);
+			return res.status(StatusCodes.OK).json({ quiz: cachedQuiz });
 		}
 
 		console.log(`Cache miss for key: ${cacheKey}`);
 		const quiz = await Quiz.findById(quizId)
-			.populate({ path: 'class' })
+			.populate('class')
 			.lean()
 			.exec();
 
@@ -134,7 +134,7 @@ export const getQuiz = async (req, res) => {
 		}
 
 		setCache(cacheKey, quiz, 10800); // Caching for 3 hours
-		res.status(StatusCodes.OK).json(quiz);
+		res.status(StatusCodes.OK).json({ quiz });
 	} catch (error) {
 		console.error('Error finding quiz:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

@@ -71,15 +71,18 @@ export const getClass = async (req, res) => {
 	const classId = req.params.id;
 	const cacheKey = `class_${classId}`;
 
+	console.log('CLASS ID: ', classId);
+
 	try {
 		const cachedClass = getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-			return res.status(StatusCodes.OK).json(cachedClass);
+			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
 			const classGroup = await ClassGroup.findById(classId)
-				.populate({ path: 'quizzes' }, { path: 'students' })
+				.populate('quizzes') // Populate quizzes
+				.populate('students') // Populate students
 				.lean()
 				.exec();
 			if (!classGroup) {

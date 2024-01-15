@@ -142,6 +142,8 @@ const QuizCard = ({
 		}
 	};
 
+	console.log('QUIZ DATA: ', quizData);
+
 	// Navigates to the edit quiz page
 	const handleEditClick = (e) => {
 		e.stopPropagation();
