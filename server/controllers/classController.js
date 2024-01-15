@@ -14,11 +14,9 @@ const generateCacheKey = (userId, queryParams) => {
 export const getAllClasses = async (req, res) => {
 	// Setting the cacheKey parameters
 	const cacheKey = generateCacheKey(req.user.userId, req.query);
-	console.log('CACHE KRY: ', cacheKey);
+
 	try {
 		const cachedData = getCache(cacheKey);
-
-		console.log('CACHED DATA: ', cachedData);
 
 		// If the cached data exists, retrieve the existing data.
 		if (cachedData) {
@@ -32,7 +30,8 @@ export const getAllClasses = async (req, res) => {
 			const classGroups = await ClassGroup.find({
 				createdBy: req.user.userId,
 			})
-				.populate('quizzes')
+				.populate({ path: 'quizzes' })
+				.lean()
 				.exec();
 
 			// Set data in cache for future requests
@@ -80,8 +79,8 @@ export const getClass = async (req, res) => {
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
 			const classGroup = await ClassGroup.findById(classId)
-				.populate('quizzes')
-				.populate('students')
+				.populate({ path: 'quizzes' }, { path: 'students' })
+				.lean()
 				.exec();
 			if (!classGroup) {
 				return res
@@ -92,7 +91,7 @@ export const getClass = async (req, res) => {
 			// Cache the retrieved class data
 			setCache(cacheKey, classGroup, 10800); // Caching for 3 hours
 
-			res.status(StatusCodes.OK).json(classGroup);
+			res.status(StatusCodes.OK).json({ classGroup });
 		}
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
