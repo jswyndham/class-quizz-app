@@ -1,13 +1,16 @@
 import ClassGroup from '../models/ClassModel.js';
-import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
-import { getCache, setCache } from '../utils/cache/cache.js';
+import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 
-// Function to dynamically generate a unique cache key based on user ID and query parameters.
-// This will ensure that users only access the data relevant to their requests.
+// Function to dynamically generate a unique cache key based on user ID and query parameters. This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
 	const queryStr = JSON.stringify(queryParams);
 	return `class_${userId}_${queryStr}`;
+};
+
+// Function to generate a unique access code for students to join classes as a member
+const generateAccessCode = () => {
+	return Math.random().toString(36).slice(2, 11);
 };
 
 // Controller to retrieve all classes
@@ -52,6 +55,10 @@ export const createClass = async (req, res) => {
 	try {
 		// Set the user as the creator of the class
 		req.body.createdBy = req.user.userId;
+
+		// Generate and assign an access code
+		req.body.accessCode = generateAccessCode();
+
 		const classGroup = await ClassGroup.create(req.body);
 
 		// Invalidate cache after creating a new class

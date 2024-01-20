@@ -23,6 +23,11 @@ const ClassSchema = new mongoose.Schema(
 				ref: 'Student',
 			},
 		],
+		accessCode: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 	},
 	{ timestamps: true }
 );

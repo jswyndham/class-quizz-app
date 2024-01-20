@@ -9,3 +9,7 @@ export const setCache = (key, data, ttl) => {
 export const getCache = (key) => {
 	return myCache.get(key);
 };
+
+export const clearCache = (key) => {
+	myCache.del(key);
+};
