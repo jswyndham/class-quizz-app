@@ -1,15 +1,37 @@
-import { useDashboardContext } from '../pages/DashboardLayout';
+import { useDispatch, useSelector } from 'react-redux';
 import links from '../utils/links';
 import { NavLink } from 'react-router-dom';
+import { fetchCurrentUser } from '../features/user/userAPI';
+import { useEffect } from 'react';
 
 const NavLinks = ({ closeSidebar }) => {
-	const { user } = useDashboardContext();
+	const dispatch = useDispatch();
+	const currentUser = useSelector((state) => state.user.currentUser);
+
+	useEffect(() => {
+		if (!currentUser) {
+			dispatch(fetchCurrentUser());
+		}
+	}, [currentUser, dispatch]);
+
+	console.log('CurrentUser Role:', currentUser?.role);
+
+	if (!currentUser) {
+		// Optional: render a loading state or handle the user not being logged in
+		return <div>Loading...</div>;
+	}
+
+	const filteredLinks = links.filter((link) => {
+		// Note: Check if role array includes currentUser's role
+		return link.role.includes(currentUser.userStatus);
+	});
+
+	console.log('Filtered Links:', filteredLinks);
+
 	return (
 		<div className="flex flex-col mt-8 ml-12 mr-4 text-primary">
-			{links.map((link) => {
+			{filteredLinks.map((link) => {
 				const { text, path, icon } = link;
-
-				if (user && path === 'admin' && user.role !== 'admin') return;
 				return (
 					<NavLink
 						to={path}

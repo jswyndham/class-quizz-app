@@ -33,7 +33,7 @@ export const loader = async ({ params }) => {
 const EditQuiz = () => {
 	const quizData = useLoaderData();
 
-	// STATE HOOKS
+	// Imported quiz hooks
 	const {
 		quiz,
 		selectedClassId,

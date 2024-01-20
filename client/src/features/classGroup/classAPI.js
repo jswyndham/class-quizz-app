@@ -23,7 +23,7 @@ export const fetchClassById = createAsyncThunk(
 	}
 );
 
-// CREATE CLASS
+// Create new class group
 export const createClass = createAsyncThunk(
 	'class/createClass',
 	async (classData) => {
@@ -36,7 +36,7 @@ export const createClass = createAsyncThunk(
 	}
 );
 
-// EDIT CLASS
+// Edit and update class group
 export const updateClass = createAsyncThunk(
 	'class/updateClass',
 	async ({ _id, classData }) => {
@@ -48,7 +48,7 @@ export const updateClass = createAsyncThunk(
 	}
 );
 
-// DELETE CLASS
+// Delete class group
 export const deleteClass = createAsyncThunk('class/deleteClass', async (id) => {
 	await customFetch.delete(`${BASE_URL}/${id}`);
 	return id;

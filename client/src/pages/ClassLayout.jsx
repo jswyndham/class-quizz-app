@@ -36,6 +36,13 @@ const ClassLayout = () => {
 	return (
 		<section className="pt-32 w-full h-full flex flex-col items-center overflow-hidden">
 			<div className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth mb-6">
+				<div className="flex justify-start m-3 font-roboto">
+					<p className="mr-1 italic">join code:</p>
+					<p className="font-bold underline underline-offset-1">
+						{classItem.accessCode}
+					</p>
+				</div>
+
 				<h2 className="my-2 text-3xl font-bold text-forth">
 					{classItem.className}
 				</h2>

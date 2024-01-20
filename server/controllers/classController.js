@@ -1,4 +1,5 @@
 import ClassGroup from '../models/ClassModel.js';
+import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 
@@ -38,7 +39,7 @@ export const getAllClasses = async (req, res) => {
 				.exec();
 
 			// Set data in cache for future requests
-			setCache(cacheKey, classGroups, 10800); // Caches for 3 hours
+			setCache(cacheKey, classGroups, 3600); // Caches for 1 hour
 
 			res.status(StatusCodes.OK).json({ classGroups });
 		}
@@ -61,9 +62,14 @@ export const createClass = async (req, res) => {
 
 		const classGroup = await ClassGroup.create(req.body);
 
-		// Invalidate cache after creating a new class
-		const cacheKey = `allClasses_${req.user.userId}`;
-		clearCache(cacheKey);
+		// Generate cache key for the user
+		const cacheKey = generateCacheKey(req.user.userId, req.query);
+
+		// Get the existing cached classes
+		const cachedClasses = getCache(cacheKey) || [];
+
+		// Update the cache with the new class added
+		setCache(cacheKey, [...cachedClasses, classGroup], 3600); // Cache for 1 hour
 
 		return res.status(StatusCodes.CREATED).json({ classGroup });
 	} catch (error) {
@@ -77,8 +83,6 @@ export const createClass = async (req, res) => {
 export const getClass = async (req, res) => {
 	const classId = req.params.id;
 	const cacheKey = `class_${classId}`;
-
-	console.log('CLASS ID: ', classId);
 
 	try {
 		const cachedClass = getCache(cacheKey);
@@ -121,8 +125,10 @@ export const updateClass = async (req, res) => {
 			}
 		);
 
-		// Invalidate cache when updating a class
-		const cacheKey = `allClasses_${req.user.userId}`;
+		// Generate cache key for the user
+		const cacheKey = generateCacheKey(req.user.userId, req.query);
+
+		// Clear the cache when updated
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({
@@ -220,6 +226,36 @@ export const getAllStudents = async (req, res) => {
 			const students = classGroup.students; // Assuming 'students' is an array of student IDs
 			res.status(StatusCodes.OK).json({ students });
 		}
+	} catch (error) {
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message,
+		});
+	}
+};
+
+// Controller to allow students to join a class with an access code
+export const joinClassWithCode = async (req, res) => {
+	const { accessCode } = req.body;
+	const studentId = req.user.userId;
+
+	try {
+		const classGroup = await ClassGroup.findOne({ accessCode: accessCode });
+
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Class not found' });
+		}
+
+		// Add student to the class if not already added
+		if (!classGroup.students.includes(studentId)) {
+			classGroup.students.push(studentId);
+			await classGroup.save();
+		}
+
+		res.status(StatusCodes.OK).json({
+			message: 'Joined class successfully',
+		});
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,

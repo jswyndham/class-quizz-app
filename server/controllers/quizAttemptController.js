@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import QuizAttempt from '../models/QuizAttemptModel.js';
+import { clearCache, setCache } from '../utils/cache/cache.js';
 
 // Function to dynamically generate a unique cache key based on user ID and query parameters.
 // This will ensure that users only access the data relevant to their requests.
@@ -87,7 +88,7 @@ export const updateQuizVisibility = async (req, res) => {
 		}
 
 		const cacheKey = generateCacheKey(req.user.userId, quizAttemptId);
-		myCache.del(cacheKey); // Invalidate the specific cache entry
+		clearCache(cacheKey); // Invalidate the specific cache entry
 		console.log('Cache key removed:', cacheKey);
 
 		quizAttempt.isVisibleToStudent = true;

@@ -6,8 +6,6 @@ import LogoutContainer from './LogoutContainer';
 
 // Passing the sideMenuRef down to the root DOM element (DashboardLayout) using forwardRef (must accept two arguments).
 const SmallSidebar = ({ showSidebar, toggleSidebar, sidebarRef }) => {
-	console.log('showSidebar in SmallSidebar component:', showSidebar);
-
 	return (
 		<section
 			ref={sidebarRef}

@@ -41,7 +41,7 @@ const EditClass = () => {
 		const classData = { className, subject, classStatus, school };
 
 		try {
-			dispatch(updateClass({ id: classGroup._id, classData }));
+			dispatch(updateClass({ _id: classGroup._id, classData }));
 			navigate('/dashboard');
 			toast.success('Class successfully updated');
 		} catch (error) {

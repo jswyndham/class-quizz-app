@@ -11,6 +11,7 @@ import {
 	deleteClass,
 	joinClass,
 	getAllStudents,
+	joinClassWithCode,
 } from '../controllers/classController.js';
 import { authorizePermissions } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
@@ -36,6 +37,13 @@ router.post(
 );
 
 // Route to get the info of class members (students)
-router.get('/:id/students', validateIdParam, getAllStudents); // Keep validateIdParam here as this route requires an ID
+router.get('/:id/students', validateIdParam, getAllStudents);
+
+// Route for students to join a class using an access code
+router.post(
+	'/joinWithCode',
+	authorizePermissions(USER_STATUS.STUDENT),
+	joinClassWithCode
+);
 
 export default router;

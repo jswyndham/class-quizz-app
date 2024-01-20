@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import sanitizeHtml from 'sanitize-html';
 import Quiz from '../models/QuizModel.js';
 import ClassGroup from '../models/ClassModel.js';
-import { getCache, setCache } from '../utils/cache/cache.js';
+import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 
 // Function to dynamically generate a unique cache key based on user ID and query parameters.
 // This will ensure that users only access the data relevant to their requests.
