@@ -4,6 +4,7 @@ import { USER_STATUS } from '../utils/constants.js';
 import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
 import { UnauthenticatedError } from '../errors/customErrors.js';
 import { createJWT } from '../utils/tokenUtils.js';
+import { clearCache, setCache } from '../utils/cache/cache.js';
 
 // Controller for registering a new user
 export const register = async (req, res) => {
@@ -67,6 +68,12 @@ export const login = async (req, res) => {
 			secure: isProduction, // send the cookie over HTTPS only
 			sameSite: isProduction ? 'None' : 'Lax', // use 'None' for cross-site requests in production
 		});
+
+		// Cache user data after successful login
+		const userData = { ...user.toObject(), password: undefined }; // Exclude password
+		const userCacheKey = `user_${user._id}`;
+		setCache(userCacheKey, userData, 3600);
+
 		res.status(StatusCodes.OK).json({ msg: 'User is logged in' });
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -83,6 +90,10 @@ export const logout = (req, res) => {
 			httpOnly: true,
 			expires: new Date(Date.now()),
 		});
+
+		const userCacheKey = `user_${req.user._id}`; // Assuming req.user contains the logged-in user's data
+		clearCache(userCacheKey);
+
 		res.status(StatusCodes.OK).json({ msg: 'User logged out' });
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
