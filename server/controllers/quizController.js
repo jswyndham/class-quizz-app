@@ -97,7 +97,7 @@ export const getAllQuizzes = async (req, res) => {
 			}));
 
 			// Set data in cache for future requests
-			setCache(cacheKey, allQuizzes, 10800); // Caches for 3 hours
+			setCache(cacheKey, allQuizzes, 3600); // Caches for 1 hour
 
 			res.status(StatusCodes.OK).json({ allQuizzes });
 		}
@@ -192,9 +192,14 @@ export const createQuiz = async (req, res) => {
 			})
 		);
 
-		// Invalidate cache after creating a new class
-		const cacheKey = `allClasses_${req.user.userId}`;
-		clearCache(cacheKey);
+		// Generate cache key for the user
+		const cacheKey = generateCacheKey(req.user.userId, req.query);
+
+		// Get the existing cached quizzes
+		const cachedQuizzes = getCache(cacheKey) || [];
+
+		// Update the cache with the new quiz added
+		setCache(cacheKey, [...cachedQuizzes, newQuiz], 3600); // Cache for 1 hour
 
 		res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
 	} catch (error) {
@@ -250,8 +255,8 @@ export const updateQuiz = async (req, res) => {
 			{ new: true }
 		).populate({ path: 'class' });
 
-		// Invalidate cache after creating a new class
-		const cacheKey = `allClasses_${req.user.userId}`;
+		// Clear the cache when updated
+		const cacheKey = generateCacheKey(req.user.userId, req.query);
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({
@@ -339,8 +344,8 @@ export const deleteQuiz = async (req, res) => {
 			{ $pull: { quizzes: quizId } }
 		);
 
-		// Invalidate cache after creating a new class
-		const cacheKey = `allClasses_${req.user.userId}`;
+		// Clear the cache when updated
+		const cacheKey = generateCacheKey(req.user.userId, req.query);
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({
@@ -392,6 +397,17 @@ export const addQuestionToQuiz = async (req, res) => {
 				.status(StatusCodes.NOT_FOUND)
 				.json({ msg: 'Quiz not found' });
 		}
+
+		// Update cache (if feasible)
+		const quizCacheKey = `quiz_${quizId}`;
+		const cachedQuiz = getCache(quizCacheKey);
+		if (cachedQuiz) {
+			cachedQuiz.questions.push(questionData);
+			setCache(quizCacheKey, cachedQuiz, 3600);
+		}
+
+		// Or, invalidate cache
+		clearCache(quizCacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Question added',

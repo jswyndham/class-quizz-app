@@ -82,18 +82,18 @@ export const createClass = async (req, res) => {
 // Controller to retrieve a single class
 export const getClass = async (req, res) => {
 	const classId = req.params.id;
-	const cacheKey = `class_${classId}`;
+	const cacheKey = `class_${userId}_${queryStr}`;
 
 	try {
-		const cachedClass = getCache(cacheKey);
+		const cachedClass = getCache(req.user.userId, req.query);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
 			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
 			const classGroup = await ClassGroup.findById(classId)
-				.populate('quizzes') // Populate quizzes
-				.populate('students') // Populate students
+				.populate('quizzes') // Populate quizzes mongoose ref
+				.populate('students') // Populate students mongoose ref
 				.lean()
 				.exec();
 			if (!classGroup) {
@@ -201,6 +201,7 @@ export const getAllStudents = async (req, res) => {
 	const cacheKey = generateCacheKey(req.user.userId, req.query);
 
 	try {
+		// Checking the cache
 		const cachedData = getCache(cacheKey);
 
 		// If the cached data exists, retrieve the existing data.
@@ -221,7 +222,7 @@ export const getAllStudents = async (req, res) => {
 			}
 
 			// Set data in cache for future requests
-			setCache(cacheKey, students, 10800); // Caches for 3 hours
+			setCache(cacheKey, students, 3600); // Caches for 1 hour
 
 			const students = classGroup.students; // Assuming 'students' is an array of student IDs
 			res.status(StatusCodes.OK).json({ students });
@@ -239,18 +240,27 @@ export const joinClassWithCode = async (req, res) => {
 	const studentId = req.user.userId;
 
 	try {
-		const classGroup = await ClassGroup.findOne({ accessCode: accessCode });
+		// Get class details from cache
+		const cacheKey = `class_${accessCode}`;
+		let classGroup = getCache(cacheKey);
 
+		// Fetch from DB if not in cache
 		if (!classGroup) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ message: 'Class not found' });
+			classGroup = await ClassGroup.findOne({ accessCode: accessCode });
+			if (!classGroup) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: 'Class not found' });
+			}
 		}
 
-		// Add student to the class if not already added
+		// Update class only if student is not already a member
 		if (!classGroup.students.includes(studentId)) {
 			classGroup.students.push(studentId);
 			await classGroup.save();
+
+			// Update the cache
+			setCache(cacheKey, classGroup, 10800); // Adjust TTL as needed
 		}
 
 		res.status(StatusCodes.OK).json({
