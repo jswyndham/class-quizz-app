@@ -31,12 +31,14 @@ const QuizCard = ({
 	_id,
 	quizTitle,
 	questionCount,
+	totalPoints,
 	createdAt,
 	updatedAt,
 	gradientClass,
-	totalPoints,
 }) => {
 	const quizData = useSelector((state) => state.quiz.quiz);
+
+	console.log('QUIZ total points prop: ', totalPoints);
 
 	const createdData = dayjs(createdAt).format('MMMM D, YYYY');
 	const updatedData = dayjs(updatedAt).format('MMMM D, YYYY');

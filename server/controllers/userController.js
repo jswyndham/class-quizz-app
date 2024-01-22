@@ -6,8 +6,10 @@ import { getCache, setCache } from '../utils/cache/cache.js';
 // Controller to get the current user
 export const getCurrentUser = async (req, res) => {
 	try {
-		const userCacheKey = `user_${req.user.userId}`;
-		let userData = getCache(userCacheKey);
+		const cacheKey = `user_${req.user.userId}`;
+		let userData = getCache(cacheKey);
+
+		console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
 
 		if (!userData) {
 			const user = await User.findById(req.user.userId);
@@ -18,7 +20,7 @@ export const getCurrentUser = async (req, res) => {
 			delete userData.password;
 
 			// Update cache for new user object
-			setCache(userCacheKey, userData, 3600); // Cache for 1 hour
+			setCache(cacheKey, userData, 3600); // Cache for 1 hour
 		}
 
 		res.status(StatusCodes.OK).json({ user: userData });
@@ -41,8 +43,8 @@ export const updateUser = async (req, res) => {
 		});
 
 		// Update cache with new user data
-		const userCacheKey = `user_${req.user.userId}`;
-		setCache(userCacheKey, updatedUser.toObject(), 3600);
+		const cacheKey = `user_${req.user.userId}`;
+		setCache(cacheKey, updatedUser.toObject(), 3600);
 
 		res.status(StatusCodes.OK).json({ update: updatedUser });
 	} catch (error) {
@@ -56,8 +58,8 @@ export const updateUser = async (req, res) => {
 // Controller to get application statistics
 export const getApplicationStats = async (req, res) => {
 	try {
-		const statsCacheKey = 'app_stats';
-		let stats = getCache(statsCacheKey);
+		const cacheKey = 'app_stats';
+		let stats = getCache(cacheKey);
 
 		if (!stats) {
 			const users = await User.countDocuments();
@@ -67,7 +69,7 @@ export const getApplicationStats = async (req, res) => {
 			stats = { users, classGroup, quizzes };
 
 			// Set data in cache
-			setCache(statsCacheKey, stats, 86400); // Cache for 1 day
+			setCache(cacheKey, stats, 86400); // Cache for 1 day
 		}
 
 		res.status(StatusCodes.OK).json(stats);

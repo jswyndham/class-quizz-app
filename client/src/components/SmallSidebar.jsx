@@ -46,6 +46,7 @@ const SmallSidebar = ({ showSidebar, toggleSidebar, sidebarRef }) => {
 					</div>
 
 					{/* LINK LIST in NavLinks component*/}
+
 					<NavLinks closeSidebar={toggleSidebar} />
 
 					<div className="flex justify-start ml-10">

@@ -18,6 +18,7 @@ const ClassLayout = () => {
 	console.log('CLASS ITEM: ', classItem);
 
 	useEffect(() => {
+		console.log('Class Data:', classItem);
 		dispatch(fetchClassById(id));
 	}, [id, dispatch]);
 
@@ -54,15 +55,16 @@ const ClassLayout = () => {
 						: 'lg:w-11/12 w-full h-fit mx-2 2xl:mx-0  px-2 grid grid-cols-1 2xl:grid-cols-2 gap-4'
 				}
 			>
-				{classItem.quizzes.map((quiz) => (
-					<MemoizedQuizCard
-						key={quiz._id}
-						{...quiz}
-						gradientClass={determineGradientClass(
-							quiz.backgroundColor
-						)}
-					/>
-				))}
+				{classItem.quizzes &&
+					classItem.quizzes.map((quiz) => (
+						<MemoizedQuizCard
+							key={quiz._id}
+							{...quiz}
+							gradientClass={determineGradientClass(
+								quiz.backgroundColor
+							)}
+						/>
+					))}
 			</div>
 		</section>
 	);

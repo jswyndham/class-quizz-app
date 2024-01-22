@@ -14,8 +14,6 @@ const NavLinks = ({ closeSidebar }) => {
 		}
 	}, [currentUser, dispatch]);
 
-	console.log('CurrentUser Role:', currentUser?.role);
-
 	if (!currentUser) {
 		// Optional: render a loading state or handle the user not being logged in
 		return <div>Loading...</div>;
@@ -26,17 +24,15 @@ const NavLinks = ({ closeSidebar }) => {
 		return link.role.includes(currentUser.userStatus);
 	});
 
-	console.log('Filtered Links:', filteredLinks);
-
 	return (
-		<div className="flex flex-col mt-8 ml-12 mr-4 text-primary">
+		<div className="flex flex-col mt-8 ml-12 mr-4 text-primary ">
 			{filteredLinks.map((link) => {
 				const { text, path, icon } = link;
 				return (
 					<NavLink
 						to={path}
 						key={text}
-						className="flex flex-row hover:text-primary_yellow"
+						className="flex flex-row hover:text-yellow-200"
 						onClick={() => closeSidebar()}
 					>
 						<span className="text-3xl my-6 mr-3">{icon}</span>

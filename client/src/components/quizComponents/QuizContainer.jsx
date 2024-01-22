@@ -26,6 +26,7 @@ const QuizContainer = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
+		console.log('Class Data:', classData);
 		dispatch(fetchClasses());
 	}, [dispatch]);
 

@@ -32,6 +32,7 @@ export const register = async (req, res) => {
 
 		res.status(StatusCodes.CREATED).json({ msg: 'User registered', user });
 	} catch (error) {
+		console.error('Error registering user:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

@@ -18,7 +18,7 @@ const Navbar = ({ toggleSidebar }) => {
 			<div className="flex items-center mr-8">
 				<button
 					type="button"
-					className="text-primary text-4xl md:text-5xl hover:cursor-pointer hover:text-primaryHover"
+					className="text-primary text-4xl md:text-5xl hover:cursor-pointer hover:text-yellow-200"
 					onClick={toggleSidebar}
 				>
 					<FiMenu />

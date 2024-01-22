@@ -6,7 +6,7 @@ import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 // Function to dynamically generate a unique cache key based on user ID and query parameters. This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
 	const queryStr = JSON.stringify(queryParams);
-	return `class_${userId}_${queryStr}`;
+	return `class_${userId}`;
 };
 
 // Function to generate a unique access code for students to join classes as a member
@@ -17,7 +17,8 @@ const generateAccessCode = () => {
 // Controller to retrieve all classes
 export const getAllClasses = async (req, res) => {
 	// Setting the cacheKey parameters
-	const cacheKey = generateCacheKey(req.user.userId, req.query);
+	const userId = req.user.userId;
+	const cacheKey = `class_${userId}`;
 
 	try {
 		const cachedData = getCache(cacheKey);
@@ -35,7 +36,7 @@ export const getAllClasses = async (req, res) => {
 				createdBy: req.user.userId,
 			})
 				.populate({ path: 'quizzes' })
-				.lean()
+				.lean({ virtuals: true })
 				.exec();
 
 			// Set data in cache for future requests
@@ -81,11 +82,13 @@ export const createClass = async (req, res) => {
 
 // Controller to retrieve a single class
 export const getClass = async (req, res) => {
+	// Convert query parameters to a string for the cache key
 	const classId = req.params.id;
-	const cacheKey = `class_${userId}_${queryStr}`;
+	const userId = req.user.userId;
+	const cacheKey = `class_${userId}_${classId}`; // Unlike getAllClasses function, this also has classId to create a unique key for each class object.
 
 	try {
-		const cachedClass = getCache(req.user.userId, req.query);
+		const cachedClass = getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
 			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
@@ -94,7 +97,7 @@ export const getClass = async (req, res) => {
 			const classGroup = await ClassGroup.findById(classId)
 				.populate('quizzes') // Populate quizzes mongoose ref
 				.populate('students') // Populate students mongoose ref
-				.lean()
+				.lean({ virtuals: true })
 				.exec();
 			if (!classGroup) {
 				return res
@@ -103,7 +106,7 @@ export const getClass = async (req, res) => {
 			}
 
 			// Cache the retrieved class data
-			setCache(cacheKey, classGroup, 10800); // Caching for 3 hours
+			setCache(cacheKey, classGroup, 3600); // Caching for 1 hour
 
 			res.status(StatusCodes.OK).json({ classGroup });
 		}
@@ -126,7 +129,7 @@ export const updateClass = async (req, res) => {
 		);
 
 		// Generate cache key for the user
-		const cacheKey = generateCacheKey(req.user.userId, req.query);
+		const cacheKey = generateCacheKey(req.user.userId);
 
 		// Clear the cache when updated
 		clearCache(cacheKey);

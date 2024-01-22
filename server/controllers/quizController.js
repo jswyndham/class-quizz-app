@@ -20,7 +20,7 @@ const sanitizeConfig = {
 		img: ['src', 'alt'],
 	},
 
-	// Custom transformations for specific tags
+	// Custom transformations for specific tags that are allowed to be shown in the tinyMCE editor. This has been done to tighten security and sanitation regarding what is accepted by the rich text editor.
 	transformTags: {
 		iframe: (tagName, attribs) => {
 			// Regex to validate YouTube URLs in iframe
@@ -74,30 +74,35 @@ const sanitizeConfig = {
 
 // Controller to get all quizzes by user
 export const getAllQuizzes = async (req, res) => {
-	const cacheKey = generateCacheKey(req.user.userId, req.query);
+	const userId = req.user.userId;
+	const queryStr = JSON.stringify(req.query);
+	const cacheKey = `quiz_${userId}_${queryStr}`;
+
 	try {
 		const cachedData = getCache(cacheKey);
 
 		if (cachedData) {
 			console.log(`Cache hit for allQuizzes key: ${cacheKey}`);
-			return res.status(StatusCodes.OK).json({ allQuizzes: cachedData });
+
+			// Deserialize each item back into an object
+			const allQuizzes = cachedData.map((item) => JSON.parse(item));
+
+			return res.status(StatusCodes.OK).json({ allQuizzes });
 		} else {
 			console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
 
-			// Find all quizzes by user
 			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
 				.populate('class')
-				.lean() // Convert to plain JavaScript objects to improve query
+				.lean({ virtuals: true })
 				.exec();
 
-			// Manually add the questionCount to each quiz
-			allQuizzes = allQuizzes.map((quiz) => ({
-				...quiz,
-				questionCount: quiz.questions.length,
-			}));
+			// Serialize each quiz for caching (this is for the benefit of getting the schema virtuals in the cache, which is easier to retreive)
+			const serializedQuizzes = allQuizzes.map((quiz) =>
+				JSON.stringify(quiz)
+			);
 
 			// Set data in cache for future requests
-			setCache(cacheKey, allQuizzes, 3600); // Caches for 1 hour
+			setCache(cacheKey, serializedQuizzes, 3600); // Caches for 1 hour
 
 			res.status(StatusCodes.OK).json({ allQuizzes });
 		}
@@ -112,19 +117,24 @@ export const getAllQuizzes = async (req, res) => {
 // Controller to get a single quiz
 export const getQuiz = async (req, res) => {
 	const quizId = req.params.id;
-	const cacheKey = `quiz_${quizId}`;
+	const userId = req.user.userId;
+	const cacheKey = `quiz_${userId}_${quizId}`;
 
 	try {
 		const cachedQuiz = getCache(cacheKey);
 		if (cachedQuiz) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-			return res.status(StatusCodes.OK).json({ quiz: cachedQuiz });
+
+			// Deserialize the quiz object
+			const quiz = JSON.parse(cachedQuiz);
+
+			return res.status(StatusCodes.OK).json({ quiz });
 		}
 
 		console.log(`Cache miss for key: ${cacheKey}`);
 		const quiz = await Quiz.findById(quizId)
 			.populate('class')
-			.lean()
+			.lean({ virtuals: true })
 			.exec();
 
 		if (!quiz) {
@@ -133,7 +143,9 @@ export const getQuiz = async (req, res) => {
 				.json({ message: 'Quiz not found' });
 		}
 
-		setCache(cacheKey, quiz, 10800); // Caching for 3 hours
+		// Serialize the quiz for caching
+		const serializedQuiz = JSON.stringify(quiz);
+		setCache(cacheKey, serializedQuiz, 10800); // Caching for 3 hours
 		res.status(StatusCodes.OK).json({ quiz });
 	} catch (error) {
 		console.error('Error finding quiz:', error);
@@ -192,14 +204,9 @@ export const createQuiz = async (req, res) => {
 			})
 		);
 
-		// Generate cache key for the user
+		// Clear the cache when updated
 		const cacheKey = generateCacheKey(req.user.userId, req.query);
-
-		// Get the existing cached quizzes
-		const cachedQuizzes = getCache(cacheKey) || [];
-
-		// Update the cache with the new quiz added
-		setCache(cacheKey, [...cachedQuizzes, newQuiz], 3600); // Cache for 1 hour
+		clearCache(cacheKey);
 
 		res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
 	} catch (error) {
@@ -325,28 +332,27 @@ export const copyQuizToClass = async (req, res) => {
 // Controller to delete a quiz
 export const deleteQuiz = async (req, res) => {
 	try {
+		const userId = req.user.userId;
 		const quizId = req.params.id;
-
-		// First, find the quiz to ensure it exists and to get the class references
-		const quiz = await Quiz.findById(quizId);
-		if (!quiz) {
-			return res.status(StatusCodes.NOT_FOUND).json({
-				msg: 'Quiz not found',
-			});
-		}
 
 		// Delete the quiz
 		await Quiz.findByIdAndDelete(quizId);
 
-		// Update all ClassGroup documents that contain the quiz. This will remove the reference to the quiz in the class object
+		// Update all ClassGroup documents that contain the quiz
 		await ClassGroup.updateMany(
 			{ quizzes: quizId },
 			{ $pull: { quizzes: quizId } }
 		);
 
-		// Clear the cache when updated
-		const cacheKey = generateCacheKey(req.user.userId, req.query);
-		clearCache(cacheKey);
+		// Fetch updated quizzes after deletion
+		const updatedQuizzes = await Quiz.find({ createdBy: userId })
+			.lean()
+			.exec();
+
+		// Update the cache with the fresh data
+		const queryStr = JSON.stringify(req.query);
+		const cacheKey = `quiz_${userId}_${queryStr}`;
+		setCache(cacheKey, updatedQuizzes, 3600); // set for 1 hour
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz deleted',

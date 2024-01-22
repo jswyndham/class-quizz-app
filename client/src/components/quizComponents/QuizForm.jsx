@@ -215,7 +215,7 @@ const QuizForm = () => {
 										value: cls._id,
 										label: cls.className,
 									}))}
-									value={selectedClassId} // The state variable to hold the selected class ID
+									value={selectedClassId} // The state holding the selected class ID
 									onChange={(e) =>
 										setSelectedClassId(e.target.value)
 									} // Function to update the state variable
@@ -367,7 +367,7 @@ const QuizForm = () => {
 						<button
 							type="button"
 							onClick={handleAddNewQuestion}
-							className="w-80 h-16 px-4 py-2 bg-secondary rounded-md text-white text-lg font-roboto font-extrabold border-1 border-slate-600 focus:ring-4 shadow-lg transform active:scale-90 transition-transform"
+							className="w-80 h-16 px-4 py-2 bg-third rounded-md text-white text-lg font-roboto font-extrabold border-1 border-slate-600 focus:ring-4 shadow-lg transform active:scale-90 transition-transform"
 						>
 							Add New Question
 						</button>
