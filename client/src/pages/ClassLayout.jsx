@@ -18,9 +18,10 @@ const ClassLayout = () => {
 	console.log('CLASS ITEM: ', classItem);
 
 	useEffect(() => {
-		console.log('Class Data:', classItem);
-		dispatch(fetchClassById(id));
-	}, [id, dispatch]);
+		if (id) {
+			dispatch(fetchClassById(id));
+		}
+	}, [dispatch, id]);
 
 	if (error) return <div>Error: {error}</div>;
 
@@ -36,23 +37,12 @@ const ClassLayout = () => {
 
 	return (
 		<section className="pt-32 w-full h-full flex flex-col items-center overflow-hidden">
-			<div className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth mb-6">
-				<div className="flex justify-start m-3 font-roboto">
-					<p className="mr-1 italic">join code:</p>
-					<p className="font-bold underline underline-offset-1">
-						{classItem.accessCode}
-					</p>
-				</div>
-
-				<h2 className="my-2 text-3xl font-bold text-forth">
-					{classItem.className}
-				</h2>
-			</div>
+			{/* ... rest of your component */}
 			<div
 				className={
-					classItem.quizzes.length === 1
+					classItem.quizzes && classItem.quizzes.length === 1
 						? 'lg:w-10/12 w-full h-fit mx-2 px-2 grid grid-cols-1'
-						: 'lg:w-11/12 w-full h-fit mx-2 2xl:mx-0  px-2 grid grid-cols-1 2xl:grid-cols-2 gap-4'
+						: 'lg:w-11/12 w-full h-fit mx-2 2xl:mx-0 px-2 grid grid-cols-1 2xl:grid-cols-2 gap-4'
 				}
 			>
 				{classItem.quizzes &&

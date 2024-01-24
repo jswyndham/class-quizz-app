@@ -14,7 +14,7 @@ import { RxUpdate } from 'react-icons/rx';
 import { ConfirmDeleteModal } from '../';
 import dayjs from 'dayjs'; // Date formatting
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CardMenu from '../CardMenu';
 import { toast } from 'react-toastify';
 import {
@@ -23,7 +23,10 @@ import {
 	copyQuizToClass,
 } from '../../features/quiz/quizAPI';
 import CopyItem from '../CopyItem';
-import { fetchClasses } from '../../features/classGroup/classAPI';
+import {
+	fetchClasses,
+	fetchClassById,
+} from '../../features/classGroup/classAPI';
 
 dayjs.extend(advancedFormat);
 
@@ -37,6 +40,8 @@ const QuizCard = ({
 	gradientClass,
 }) => {
 	const quizData = useSelector((state) => state.quiz.quiz);
+
+	const { id } = useParams();
 
 	console.log('QUIZ total points prop: ', totalPoints);
 
@@ -162,6 +167,7 @@ const QuizCard = ({
 			await dispatch(deleteQuiz(_id));
 			closeConfirmModal();
 			dispatch(fetchClasses());
+			dispatch(fetchClassById(id));
 			toast.success('Quiz deleted');
 		} catch (error) {
 			toast.error(error?.response?.data?.msg);
@@ -190,7 +196,7 @@ const QuizCard = ({
 						</h3>
 					</div>
 				</header>
-				<div className="absolute w-14 h-7 lg:h-8 right-4 top-2 bg-black bg-opacity-30 rounded-md hover:bg-opacity-40">
+				<div className="absolute w-14 h-7 mt-0.5 lg:h-8 right-4 top-2 bg-black bg-opacity-30 rounded-md hover:bg-opacity-40">
 					<button
 						ref={menuRef}
 						className="absolute text-white -top-1 lg:-top-2 right-2 lg:right-1 mr-0.5 lg:mr-0 text-4xl lg:text-5xl font-bold hover:cursor-pointer"

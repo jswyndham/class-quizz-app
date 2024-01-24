@@ -24,7 +24,7 @@ router.route('/').get(getAllClasses).post(validateClassInput, createClass);
 // Routes that require an ID parameter
 router
 	.route('/:id')
-	.get(validateIdParam, getClass)
+	.get(getClass)
 	.patch(validateIdParam, validateClassInput, updateClass)
 	.delete(validateIdParam, deleteClass);
 

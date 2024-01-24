@@ -6,7 +6,7 @@ import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 // Function to dynamically generate a unique cache key based on user ID and query parameters. This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
 	const queryStr = JSON.stringify(queryParams);
-	return `class_${userId}`;
+	return `quizzes_${userId}_${queryStr}`;
 };
 
 // Function to generate a unique access code for students to join classes as a member
@@ -16,8 +16,8 @@ const generateAccessCode = () => {
 
 // Controller to retrieve all classes
 export const getAllClasses = async (req, res) => {
-	// Setting the cacheKey parameters
 	const userId = req.user.userId;
+	// Setting the cacheKey parameters
 	const cacheKey = `class_${userId}`;
 
 	try {
@@ -55,25 +55,25 @@ export const getAllClasses = async (req, res) => {
 // Controller to create new class
 export const createClass = async (req, res) => {
 	try {
-		// Set the user as the creator of the class
-		req.body.createdBy = req.user.userId;
+		const userId = req.user.userId;
 
-		// Generate and assign an access code
-		req.body.accessCode = generateAccessCode();
+		// Generate a unique access code for the new class
+		const accessCode = generateAccessCode();
 
-		const classGroup = await ClassGroup.create(req.body);
+		// Create a new class with the provided data and the generated access code
+		const classGroup = await ClassGroup.create({
+			...req.body,
+			createdBy: userId,
+			accessCode: accessCode,
+		});
 
-		// Generate cache key for the user
-		const cacheKey = generateCacheKey(req.user.userId, req.query);
-
-		// Get the existing cached classes
-		const cachedClasses = getCache(cacheKey) || [];
-
-		// Update the cache with the new class added
-		setCache(cacheKey, [...cachedClasses, classGroup], 3600); // Cache for 1 hour
+		// Clear the cache related to the user's classes
+		const classCacheKey = `class_${userId}`;
+		clearCache(classCacheKey);
 
 		return res.status(StatusCodes.CREATED).json({ classGroup });
 	} catch (error) {
+		console.error('Error creating class:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});
@@ -88,7 +88,7 @@ export const getClass = async (req, res) => {
 	const cacheKey = `class_${userId}_${classId}`; // Unlike getAllClasses function, this also has classId to create a unique key for each class object.
 
 	try {
-		const cachedClass = getCache(cacheKey);
+		const cachedClass = await getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
 			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
@@ -120,6 +120,9 @@ export const getClass = async (req, res) => {
 // Controller to update a class by ID
 export const updateClass = async (req, res) => {
 	try {
+		const userId = req.user.userId;
+		const cacheKey = `class_${userId}`;
+
 		const updatedClass = await ClassGroup.findByIdAndUpdate(
 			req.params.id,
 			req.body,
@@ -127,9 +130,6 @@ export const updateClass = async (req, res) => {
 				new: true,
 			}
 		);
-
-		// Generate cache key for the user
-		const cacheKey = generateCacheKey(req.user.userId);
 
 		// Clear the cache when updated
 		clearCache(cacheKey);
@@ -148,11 +148,13 @@ export const updateClass = async (req, res) => {
 // Controller to delete class by ID
 export const deleteClass = async (req, res) => {
 	try {
+		const userId = req.user.userId;
+		const cacheKey = `class_${userId}`;
+
 		// Delete the class group by ID
 		const removedClass = await ClassGroup.findByIdAndDelete(req.params.id);
 
-		// Invalidate cache when deleting a class
-		const cacheKey = `allClasses_${req.user.userId}`;
+		// Clear the cache related to the user's classes
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({

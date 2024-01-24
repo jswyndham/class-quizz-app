@@ -140,7 +140,7 @@ const QuizForm = () => {
 		deleteOption(questionIndex, optionIndex);
 	};
 
-	// SUBMIT CREATE QUIZ
+	// Handle quiz form submission
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -152,7 +152,14 @@ const QuizForm = () => {
 		};
 
 		try {
-			await dispatch(createQuiz(formData));
+			const createdQuizResponse = await dispatch(
+				createQuiz(formData)
+			).unwrap();
+
+			if (createdQuizResponse && createdQuizResponse.classId) {
+				// Refetch the class data to update the state
+				await dispatch(fetchClassById(createdQuizResponse.classId));
+			}
 
 			console.log('The formData: ', { formData });
 			navigate('/dashboard');
@@ -168,7 +175,6 @@ const QuizForm = () => {
 			toast.error('Failed to create quiz');
 		}
 	};
-
 	return (
 		<div className="flex justify-center items-center w-full h-fit">
 			<Form

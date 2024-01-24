@@ -4,17 +4,14 @@ import customFetch from '../../utils/customFetch';
 const BASE_URL = '/quiz';
 
 // Retrieve all quizzes
-export const fetchQuizzes = createAsyncThunk(
-	'quiz/fetchQuizzes',
-	async (_, { rejectWithValue }) => {
-		try {
-			const response = await customFetch.get(BASE_URL);
-			return response.data;
-		} catch (error) {
-			return rejectWithValue(error.response.data || error.message);
-		}
+export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async () => {
+	try {
+		const response = await customFetch.get(BASE_URL);
+		return response.data;
+	} catch (error) {
+		return error.message;
 	}
-);
+});
 
 // Find a quiz by its id
 export const fetchQuizById = createAsyncThunk(
@@ -82,10 +79,10 @@ export const copyQuizToClass = createAsyncThunk(
 // Delete a quiz
 export const deleteQuiz = createAsyncThunk(
 	'quiz/deleteQuiz',
-	async (id, { rejectWithValue }) => {
+	async (_id, { rejectWithValue }) => {
 		try {
-			await customFetch.delete(`${BASE_URL}/${id}`);
-			return id; // Return the id of the deleted quiz for reducer to handle
+			await customFetch.delete(`${BASE_URL}/${_id}`);
+			return _id; // Return the id of the deleted quiz for reducer to handle
 		} catch (error) {
 			return rejectWithValue(error.response.data || error.message);
 		}

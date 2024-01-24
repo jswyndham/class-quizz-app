@@ -5,10 +5,13 @@ import { fetchQuizzes } from '../../features/quiz/quizAPI';
 import { fetchCurrentUser } from '../../features/user/userAPI';
 import { fetchClasses } from '../../features/classGroup/classAPI';
 import QuizCardGradientValues from './QuizCardGradientValues';
+import { useParams } from 'react-router';
 
 const MemoizedQuizCard = memo(QuizCard);
 
 const QuizContainer = () => {
+	const { id } = useParams();
+
 	const userData = useSelector((state) => state.class.currentUser);
 	const quizData = useSelector((state) => state.quiz.quiz);
 	const classData = useSelector((state) => state.class.class);
@@ -17,18 +20,21 @@ const QuizContainer = () => {
 
 	useEffect(() => {
 		if (!userData) {
-			dispatch(fetchCurrentUser());
+			dispatch(fetchCurrentUser(id));
 		}
-	}, []);
+	}, [dispatch, id]);
 
 	useEffect(() => {
 		dispatch(fetchQuizzes());
 	}, [dispatch]);
 
 	useEffect(() => {
-		console.log('Class Data:', classData);
+		console.log('Class Data - useEffect:', classData);
 		dispatch(fetchClasses());
 	}, [dispatch]);
+
+	console.log('CLASS DATA QC: ', classData);
+	console.log('Quiz data - useEffect: ', quizData);
 
 	// Defines the color value and returns the gradient in the css
 	const { determineGradientClass } = QuizCardGradientValues({});
@@ -44,7 +50,7 @@ const QuizContainer = () => {
 		);
 	}
 
-	console.log('CLASSDATA: ', classData);
+	console.log('QUIZ DATA: ', quizData);
 
 	return (
 		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">

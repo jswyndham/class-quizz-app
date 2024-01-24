@@ -13,12 +13,12 @@ export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
 // Get single class by id
 export const fetchClassById = createAsyncThunk(
 	'class/fetchClassById',
-	async (_id, { rejectWithValue }) => {
+	async (_id) => {
 		try {
 			const response = await customFetch.get(`${BASE_URL}/${_id}`);
 			return response.data;
 		} catch (error) {
-			return rejectWithValue(error.response.data);
+			return error.message;
 		}
 	}
 );
