@@ -228,7 +228,7 @@ export const updateQuiz = async (req, res) => {
 		const userId = req.user.userId;
 
 		// Get the id of the quiz being updated
-		const { id } = req.params;
+		const id = req.params.id;
 		let { class: classIds, ...quizData } = req.body;
 
 		// Handle cases where classIds might not be an array
@@ -266,22 +266,42 @@ export const updateQuiz = async (req, res) => {
 		const updatedQuiz = await Quiz.findByIdAndUpdate(
 			id,
 			{ ...quizData, class: classIds },
-			{ new: true }
-		).populate({ path: 'class' });
+			{ new: true, timestamps: true }
+		)
+			.populate({ path: 'class' })
+			.exec();
+
+		if (!updatedQuiz) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Quiz not found' });
+		}
+
+		// Manual computation of virtual fields. This is performed here due to an error caused by Mongoose related to the virtuals field in the schema.
+		updatedQuiz.totalPoints = updatedQuiz.questions.reduce(
+			(sum, question) => sum + question.points,
+			0
+		);
+		updatedQuiz.questionCount = updatedQuiz.questions.length;
 
 		// Loop through the class array and clear cache for each class that contained the updated quiz
-		updatedQuiz.class.forEach((classId) => {
-			const classCacheKey = `class_${userId}_${classId}`;
+		updatedQuiz.class.forEach((classItem) => {
+			const classCacheKey = `class_${userId}_${classItem._id.toString()}`;
+			console.log('Class cache key: ', classCacheKey);
+
 			clearCache(classCacheKey);
 		});
 
 		// Clear the cache for the updated quiz
 		const quizCacheKey = `quiz_${userId}_${id}`;
-		clearCache(quizCacheKey);
-
-		// Clear the quizzes cache
+		// Clear the all quizzes cache
 		const quizzesCacheKey = `quizzes_${userId}`;
+		// Clear cache for all classes
+		const allClassesCacheKey = `class_${userId}`;
+
+		clearCache(quizCacheKey);
 		clearCache(quizzesCacheKey);
+		clearCache(allClassesCacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz updated successfully',
@@ -308,7 +328,7 @@ export const copyQuizToClass = async (req, res) => {
 				.json({ msg: 'Class not found' });
 		}
 
-		// Fetch the original quiz
+		// Define and fetch the original quiz
 		const originalQuiz = await Quiz.findById(_id);
 		if (!originalQuiz) {
 			return res
@@ -316,7 +336,7 @@ export const copyQuizToClass = async (req, res) => {
 				.json({ msg: 'Quiz not found' });
 		}
 
-		// Deep clone the quiz and prepare for new quiz creation. The 'toObject()' method creates a new object, which is filled with 'JSON.parse(JSON.stringify(...))'
+		// Deep clone the quiz and prepare for new quiz creation. The 'toObject()' method creates a new object, which is filled with the copy, 'JSON.parse(JSON.stringify(...))'
 		const newQuizData = JSON.parse(JSON.stringify(originalQuiz.toObject()));
 		delete newQuizData._id; // Remove the original ID
 		newQuizData.class = [classId]; // Set the new class ID
@@ -325,7 +345,7 @@ export const copyQuizToClass = async (req, res) => {
 		const newQuiz = new Quiz(newQuizData);
 		await newQuiz.save();
 
-		// Update the class with the new quiz in the 'quizzes' parameter array.
+		// Update the class with the new quiz in the 'quizzes' array in classGroup schema.
 		await ClassGroup.findByIdAndUpdate(classId, {
 			$addToSet: { quizzes: newQuiz._id },
 		});
@@ -353,17 +373,18 @@ export const deleteQuiz = async (req, res) => {
 		const userId = req.user.userId;
 		const quizId = req.params.id;
 
-		// Delete the quiz and get classes that contained the quiz
+		// Delete the quiz and include classes that contained that quiz schema class array
 		const quiz = await Quiz.findByIdAndDelete(quizId);
 		const classesContainingQuiz = quiz ? quiz.class : [];
 
-		// Update all ClassGroup documents that contain the quiz
+		// Update all ClassGroup documents that contain that quiz
 		await ClassGroup.updateMany(
 			{ quizzes: quizId },
 			{ $pull: { quizzes: quizId } }
 		);
 
-		// Clear cache for each class that contained the quiz
+		// Loop through the class array in the quiz schema and clear cache for class array.
+		//Rather than clearing the whole class cache, which would remove all quizzes from ClassLayout page, this will only remove the selected quiz from cache.
 		classesContainingQuiz.forEach((classId) => {
 			const classCacheKey = `class_${userId}_${classId}`;
 			clearCache(classCacheKey);
@@ -372,9 +393,6 @@ export const deleteQuiz = async (req, res) => {
 		// Clear quizzes cache
 		const quizzesCacheKey = `quizzes_${userId}`;
 		clearCache(quizzesCacheKey);
-
-		console.log('Quiz id_2: ', quizId);
-		console.log('classesContainingQuiz: ', classesContainingQuiz);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz deleted',
@@ -420,22 +438,23 @@ export const addQuestionToQuiz = async (req, res) => {
 			{ new: true, runValidators: true }
 		);
 
+		// Validate if updatedQuiz exists
 		if (!updatedQuiz) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ msg: 'Quiz not found' });
 		}
 
-		// Update cache (if feasible)
+		// If the cache already exists, update cache with new question objects
 		const quizCacheKey = `quiz_${quizId}`;
 		const cachedQuiz = getCache(quizCacheKey);
 		if (cachedQuiz) {
 			cachedQuiz.questions.push(questionData);
 			setCache(quizCacheKey, cachedQuiz, 3600);
+		} else {
+			// Otherwise, clear the cache
+			clearCache(quizCacheKey);
 		}
-
-		// Or, invalidate cache
-		clearCache(quizCacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Question added',

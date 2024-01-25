@@ -33,14 +33,25 @@ export const getAllClasses = async (req, res) => {
 			// Find all classes organized by createdBy user
 
 			const classGroups = await ClassGroup.find({
-				createdBy: req.user.userId,
+				createdBy: userId,
 			})
-				.populate({ path: 'quizzes' })
+				.populate({ path: 'quizzes', options: { virtuals: true } })
 				.lean({ virtuals: true })
 				.exec();
 
-			// Set data in cache for future requests
-			setCache(cacheKey, classGroups, 3600); // Caches for 1 hour
+			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not actual parts of the Mongoose schema.
+			classGroups.forEach((classGroup) => {
+				classGroup.quizzes.forEach((quiz) => {
+					quiz.questionCount = quiz.questions.length;
+					quiz.totalPoints = quiz.questions.reduce(
+						(sum, question) => sum + question.points,
+						0
+					);
+				});
+			});
+
+			// Set data cache
+			setCache(cacheKey, classGroups, 3600); // 1 hour
 
 			res.status(StatusCodes.OK).json({ classGroups });
 		}
@@ -105,7 +116,16 @@ export const getClass = async (req, res) => {
 					.json({ message: 'Class not found' });
 			}
 
-			// Cache the retrieved class data
+			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not actual parts of the Mongoose schema.
+			classGroup.quizzes.forEach((quiz) => {
+				quiz.questionCount = quiz.questions.length;
+				quiz.totalPoints = quiz.questions.reduce(
+					(sum, question) => sum + question.points,
+					0
+				);
+			});
+
+			// Cache the class data
 			setCache(cacheKey, classGroup, 3600); // Caching for 1 hour
 
 			res.status(StatusCodes.OK).json({ classGroup });

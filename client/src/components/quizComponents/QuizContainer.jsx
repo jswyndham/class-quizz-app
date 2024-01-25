@@ -33,9 +33,6 @@ const QuizContainer = () => {
 		dispatch(fetchClasses());
 	}, [dispatch]);
 
-	console.log('CLASS DATA QC: ', classData);
-	console.log('Quiz data - useEffect: ', quizData);
-
 	// Defines the color value and returns the gradient in the css
 	const { determineGradientClass } = QuizCardGradientValues({});
 

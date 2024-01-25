@@ -43,8 +43,6 @@ const QuizCard = ({
 
 	const { id } = useParams();
 
-	console.log('QUIZ total points prop: ', totalPoints);
-
 	const createdData = dayjs(createdAt).format('MMMM D, YYYY');
 	const updatedData = dayjs(updatedAt).format('MMMM D, YYYY');
 
