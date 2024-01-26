@@ -47,8 +47,6 @@ const QuizContainer = () => {
 		);
 	}
 
-	console.log('QUIZ DATA: ', quizData);
-
 	return (
 		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">
 			<div className="w-full flex flex-col justify-start">

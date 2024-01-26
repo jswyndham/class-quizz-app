@@ -10,7 +10,7 @@ import { USER_STATUS } from '../../../server/utils/constants';
 
 const links = [
 	{
-		text: 'Create class',
+		text: 'Create new class',
 		path: 'add-class',
 		icon: <MdOutlineAddHome />,
 		role: [USER_STATUS.ADMIN.value, USER_STATUS.TEACHER.value],

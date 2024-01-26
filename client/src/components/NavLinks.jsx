@@ -15,12 +15,10 @@ const NavLinks = ({ closeSidebar }) => {
 	}, [currentUser, dispatch]);
 
 	if (!currentUser) {
-		// Optional: render a loading state or handle the user not being logged in
 		return <div>Loading...</div>;
 	}
 
 	const filteredLinks = links.filter((link) => {
-		// Note: Check if role array includes currentUser's role
 		return link.role.includes(currentUser.userStatus);
 	});
 

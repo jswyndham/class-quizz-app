@@ -70,11 +70,7 @@ const QuizCard = ({
 	// Cllick outside the card menu to close
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
-			if (
-				!isCardMenu &&
-				menuRef.current &&
-				!menuRef.current.contains(e.currentTarget)
-			) {
+			if (menuRef.current && !menuRef.current.contains(e.currentTarget)) {
 				setIsCardMenu(false);
 			}
 		};
@@ -83,16 +79,12 @@ const QuizCard = ({
 		return () => {
 			document.removeEventListener('click', checkOutsideMenu);
 		};
-	}, []);
+	}, [isCardMenu]);
 
 	// Click outside the 'copy-class list' to close
 	useEffect(() => {
 		const checkOutsideMenu = (e) => {
-			if (
-				!isClassList &&
-				menuRef.current &&
-				!menuRef.current.contains(e.currentTarget)
-			) {
+			if (menuRef.current && !menuRef.current.contains(e.currentTarget)) {
 				setIsClassList(false);
 			}
 		};
@@ -101,7 +93,7 @@ const QuizCard = ({
 		return () => {
 			document.removeEventListener('click', checkOutsideMenu);
 		};
-	}, []);
+	}, [isClassList]);
 
 	// EVENT HANDLERS
 	// Opens the delete confirmation modal

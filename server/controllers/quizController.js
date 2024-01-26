@@ -253,7 +253,7 @@ export const updateQuiz = async (req, res) => {
 			});
 		}
 
-		// Find the existing quiz
+		// Find the quiz before upadating and check that it exists
 		const existingQuiz = await Quiz.findById(id);
 
 		if (!existingQuiz) {

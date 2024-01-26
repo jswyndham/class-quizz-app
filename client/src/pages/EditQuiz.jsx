@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
 import { useDispatch, useSelector } from 'react-redux';
 import QuizHooks from '../hooks/QuizHooks';
-import { updateQuiz } from '../features/quiz/quizAPI';
+import { fetchQuizzes, updateQuiz } from '../features/quiz/quizAPI';
 import { MdDeleteForever } from 'react-icons/md';
 import { FormRowSelect } from '../components';
 import { QuizFormAnswer, QuizFormQuestion } from '../components/quizComponents';
@@ -149,7 +149,7 @@ const EditQuiz = () => {
 		deleteOption(questionIndex, optionIndex);
 	};
 
-	// SUBMIT UPDATE
+	// Handle update submit
 	const handleUpdateSubmit = async (e) => {
 		e.preventDefault();
 
@@ -168,8 +168,10 @@ const EditQuiz = () => {
 			return;
 		}
 
+		// Update state for edited quiz and fetch updated state for class groups
 		try {
-			dispatch(updateQuiz({ _id: quizId, formData })).unwrap();
+			await dispatch(updateQuiz({ _id: quizId, formData })).unwrap();
+			dispatch(fetchClasses());
 			navigate('/dashboard');
 			toast.success('Quiz updated successfully');
 		} catch (error) {
