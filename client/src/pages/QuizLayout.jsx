@@ -11,13 +11,13 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 const QuizLayout = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
-	const currentQuiz = useSelector((state) => state.quiz.currentQuizId);
-	const { error } = useSelector((state) => state.class);
-	const isLoading = useSelector((state) => state.class.loading);
+	const currentQuiz = useSelector((state) => state.quiz.currentQuiz);
+	const { error } = useSelector((state) => state.quiz);
+	const isLoading = useSelector((state) => state.quiz.loading);
 
 	useEffect(() => {
 		dispatch(fetchQuizById(id));
-	}, [dispatch, id]);
+	}, []);
 
 	if (isLoading) {
 		return (
@@ -41,7 +41,6 @@ const QuizLayout = () => {
 			</div>
 		);
 	}
-	console.log('Current Quiz:', currentQuiz);
 
 	return (
 		<section className="w-full h-fit flex flex-col justify-center">

@@ -14,7 +14,8 @@ import {
 // Data entities are stored in an object keyed by their IDs rather than an array. This makes it easier to look up and update entities without having to iterate over arrays.
 const initialState = {
 	quizzesById: {},
-	currentQuizId: null,
+	allQuiz: [],
+	currentQuiz: null,
 	loading: false,
 	error: null,
 };
@@ -50,8 +51,18 @@ const quizSlice = createSlice({
 			})
 			.addCase(fetchQuizById.fulfilled, (state, action) => {
 				state.loading = false;
-				state.quizzesById[action.payload.quiz] = action.payload;
-				state.currentQuizId = action.payload._id;
+
+				const quizData = action.payload.quiz;
+				// Check a valid '_id' property
+				if (quizData && quizData._id) {
+					state.currentQuiz = quizData; // Store the sate in 'currentQuiz'
+					// Update allQuizzes array if it doesn't include this class '_id'
+					if (!state.allQuiz.includes(quizData._id)) {
+						state.allQuiz.push(quizData._id);
+					}
+				} else {
+					console.error('No valid quiz data in payload');
+				}
 				state.error = null;
 			})
 			.addCase(fetchQuizById.rejected, (state, action) => {
@@ -98,11 +109,16 @@ const quizSlice = createSlice({
 			})
 			.addCase(copyQuizToClass.fulfilled, (state, action) => {
 				state.loading = false;
-				const index = state.quiz.findIndex(
-					(c) => c._id === action.payload._id
-				);
-				if (index !== -1) {
-					state.quiz[index] = action.payload;
+				const { newQuizId } = action.payload;
+
+				// Check if newQuizId exists in the payload
+				if (newQuizId) {
+					// The complete quiz details are not in the payload,
+					// so we can't update quizzesById here
+					// Instead, we might flag that the quizzes list needs to be refreshed
+					state.needsRefresh = true;
+				} else {
+					console.error('No valid quiz data in payload');
 				}
 				state.error = null;
 			})
@@ -133,11 +149,12 @@ const quizSlice = createSlice({
 			})
 			.addCase(addQuestionToQuiz.fulfilled, (state, action) => {
 				state.loading = false;
-				const index = state.quiz.findIndex(
-					(c) => c._id === action.payload._id
-				);
-				if (index !== -1) {
-					state.quiz[index] = action.payload;
+				const updatedQuiz = action.payload;
+				if (updatedQuiz && updatedQuiz._id) {
+					// Update the quiz in quizzesById
+					state.quizzesById[updatedQuiz._id] = updatedQuiz;
+				} else {
+					console.error('No valid quiz data in payload');
 				}
 				state.error = null;
 			})

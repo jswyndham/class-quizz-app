@@ -18,6 +18,7 @@ import { fetchClasses } from '../features/classGroup/classAPI';
 import { useEffect } from 'react';
 import { QUESTION_TYPE } from '../../../server/utils/constants';
 import { CiCirclePlus } from 'react-icons/ci';
+import { selectClassDataArray } from '../features/classGroup/classSelectors';
 
 export const loader = async ({ params }) => {
 	try {
@@ -55,8 +56,7 @@ const EditQuiz = () => {
 	const isSubmitting = navigation.state === 'submitting';
 
 	// Accessing classes from Redux store for dropdown menu selection
-	const classData = useSelector((state) => state.class.classesById);
-	const classDataArray = useMemo(() => Object.values(classData), [classData]); // Convert object to array and useMemo() to prevent re-rendering
+	const classData = useSelector(selectClassDataArray);
 
 	// Dispatch the action to fetch all classes for dropdown menu
 	useEffect(() => {
@@ -212,7 +212,7 @@ const EditQuiz = () => {
 								<FormRowSelect
 									name="classId"
 									labelText="Add a class"
-									list={classDataArray.map((cls) => ({
+									list={classData.map((cls) => ({
 										key: cls._id,
 										value: cls._id,
 										label: cls.className,
@@ -228,7 +228,7 @@ const EditQuiz = () => {
 								<FormRowSelect
 									name="classId"
 									labelText="Add a class"
-									list={classDataArray.map((cls) => ({
+									list={classData.map((cls) => ({
 										key: cls._id,
 										value: cls._id,
 										label: cls.className,

@@ -14,9 +14,11 @@ const MemoizedQuizCard = memo(QuizCard);
 const QuizContainer = () => {
 	const { id } = useParams();
 
-	const userData = useSelector((state) => state.class.currentUser);
+	const userData = useSelector((state) => state.user.currentUser);
 	const quizData = useSelector(selectQuizDataArray);
-	const classDataArray = useSelector(selectClassDataArray);
+	const classData = useSelector(selectClassDataArray);
+	const isLoading = useSelector((state) => state.class.loading);
+	const { error } = useSelector((state) => state.class);
 
 	const dispatch = useDispatch();
 
@@ -27,13 +29,25 @@ const QuizContainer = () => {
 	// Defines the color value and returns the gradient in the css
 	const { determineGradientClass } = QuizCardGradientValues({});
 
-	// NO QUIZZES TO DISPLAY
-	if (quizData.length === 0) {
+	if (isLoading) {
 		return (
-			<div className="h-screen w-full flex justify-center text-center p-5">
-				<h2 className="text-3xl font-display font-bold italic mt-44 font-roboto">
-					You currently have no quizzes to display.
-				</h2>
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>Loading...</p>
+			</div>
+		);
+	}
+
+	if (error)
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-red-700">
+				<p>Error: {error}</p>
+			</div>
+		);
+
+	if (!classData) {
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>No quiz available.</p>
 			</div>
 		);
 	}
@@ -41,7 +55,7 @@ const QuizContainer = () => {
 	return (
 		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">
 			<div className="w-full flex flex-col justify-start">
-				{classDataArray.map((classes) => (
+				{classData.map((classes) => (
 					<div key={classes._id} className="my-4">
 						<div className="w-full h-fit bg-forth text-primary p-2 border-b-4 border-primary shadow-lg shadow-slate-400">
 							<h2 className="text-2xl font-roboto font-bold italic">

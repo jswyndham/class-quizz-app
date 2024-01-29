@@ -46,16 +46,14 @@ const classSlice = createSlice({
 			.addCase(fetchClassById.fulfilled, (state, action) => {
 				state.loading = false;
 				const classData = action.payload.classGroup;
-				// Check a valid '_id' property
 				if (classData && classData._id) {
 					state.currentClass = classData; // Store the sate in 'currentClass'
 
-					// Update allClassIds array if it doesn't include this class '_id'
+					// Update allClassIds array if it doesn't include class '_id'
 					if (!state.allClassIds.includes(classData._id)) {
 						state.allClassIds.push(classData._id);
 					}
 				} else {
-					// If classData is undefined or doesn't have '_id', log an error or handle as needed
 					console.error('No valid class data in payload');
 				}
 				state.error = null;

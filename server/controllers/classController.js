@@ -113,16 +113,16 @@ export const getClass = async (req, res) => {
 		const cachedClass = await getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
+			console.log('Cache hit class: ', { classGroup: cachedClass });
 			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
+			console.log('Cache miss class: ', cachedClass);
 			const classGroup = await ClassGroup.findById(classId)
 				.populate('quizzes') // Populate quizzes mongoose ref
 				.populate('students') // Populate students mongoose ref
 				.lean({ virtuals: true })
 				.exec();
-
-			console.log('ClassGroup Data:', classGroup);
 
 			if (!classGroup) {
 				return res
@@ -130,7 +130,7 @@ export const getClass = async (req, res) => {
 					.json({ message: 'Class not found' });
 			}
 
-			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not actual parts of the Mongoose schema.
+			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not part of the Mongoose schema.
 			classGroup.quizzes.forEach((quiz) => {
 				quiz.questionCount = quiz.questions.length;
 				quiz.totalPoints = quiz.questions.reduce(
@@ -141,8 +141,6 @@ export const getClass = async (req, res) => {
 
 			// Cache the class data
 			setCache(cacheKey, classGroup, 3600); // Caching for 1 hour
-
-			console.log('CLASS OBJECT: ', classGroup);
 
 			res.status(StatusCodes.OK).json({ classGroup });
 		}

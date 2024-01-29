@@ -21,6 +21,7 @@ import {
 	deleteQuiz,
 	fetchQuizzes,
 	copyQuizToClass,
+	fetchQuizById,
 } from '../../features/quiz/quizAPI';
 import CopyItem from '../CopyItem';
 import {
@@ -124,14 +125,28 @@ const QuizCard = ({
 	const handleCopyQuizToClass = async (e, classId) => {
 		e.stopPropagation();
 		try {
-			await dispatch(copyQuizToClass({ _id: _id, classId }));
-			handleClassListClose(e);
-			handleMenuClick(e);
-			dispatch(fetchClasses());
-			toast.success('Quiz copied to class successfully');
+			const actionResult = await dispatch(
+				copyQuizToClass({ _id, classId })
+			);
+			if (copyQuizToClass.fulfilled.match(actionResult)) {
+				const newQuizId = actionResult.payload.newQuizId;
+
+				// Fetch the complete details of the newly copied quiz
+				await dispatch(fetchQuizById(newQuizId));
+
+				// Optionally, you might want to fetch all quizzes or classes again
+				// if the UI needs to be updated with the latest state
+				dispatch(fetchQuizzes());
+				dispatch(fetchClasses());
+
+				toast.success('Quiz copied to class successfully');
+			}
 		} catch (error) {
 			toast.error('Failed to copy quiz to class');
 			console.error('Error copying quiz to class:', error);
+		} finally {
+			handleClassListClose(e);
+			handleMenuClick(e);
 		}
 	};
 
