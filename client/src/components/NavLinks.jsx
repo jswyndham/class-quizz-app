@@ -1,18 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import links from '../utils/links';
 import { NavLink } from 'react-router-dom';
-import { fetchCurrentUser } from '../features/user/userAPI';
-import { useEffect } from 'react';
 
 const NavLinks = ({ closeSidebar }) => {
 	const dispatch = useDispatch();
 	const currentUser = useSelector((state) => state.user.currentUser);
-
-	useEffect(() => {
-		if (!currentUser) {
-			dispatch(fetchCurrentUser());
-		}
-	}, [currentUser, dispatch]);
 
 	if (!currentUser) {
 		return <div>Loading...</div>;

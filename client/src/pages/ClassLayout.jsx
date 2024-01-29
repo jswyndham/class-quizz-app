@@ -14,30 +14,49 @@ const ClassLayout = () => {
 	const dispatch = useDispatch();
 	const classItem = useSelector((state) => state.class.currentClass);
 	const { error } = useSelector((state) => state.class);
-
-	console.log('CLASS ITEM: ', classItem);
+	const isLoading = useSelector((state) => state.class.loading);
 
 	useEffect(() => {
-		if (id) {
-			dispatch(fetchClassById(id));
-		}
-	}, [dispatch, id]);
+		dispatch(fetchClassById(id));
+	}, [id, dispatch]);
 
-	if (error) return <div>Error: {error}</div>;
+	if (isLoading) {
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>Loading...</p>
+			</div>
+		);
+	}
+
+	if (error)
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-red-700">
+				<p>Error: {error}</p>
+			</div>
+		);
 
 	if (!classItem) {
 		return (
-			<div className="h-screen w-full flex justify-center">
-				<h2 className="text-3xl font-display font-bold italic mt-44">
-					No class data available.
-				</h2>
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>No class data available.</p>
 			</div>
 		);
 	}
 
 	return (
 		<section className="pt-32 w-full h-full flex flex-col items-center overflow-hidden">
-			{/* ... rest of your component */}
+			<div className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth mb-6">
+				<div className="flex justify-start m-3 font-roboto">
+					<p className="mr-1 italic">join code:</p>
+					<p className="font-bold underline underline-offset-1">
+						{classItem.accessCode}
+					</p>
+				</div>
+				<h2 className="my-2 text-3xl font-bold text-forth">
+					{classItem.className}
+				</h2>
+			</div>
+
 			<div
 				className={
 					classItem.quizzes && classItem.quizzes.length === 1

@@ -1,30 +1,31 @@
-import { memo, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 import ClassListCard from './ClassListCard';
-import { fetchCurrentUser } from '../../features/user/userAPI';
 import { fetchClasses } from '../../features/classGroup/classAPI';
 import LoadingSpinner from '../LoadingSpinner';
 import AddButton from '../AddButton';
 import ButtonMenu from '../ButtonMenu';
 import { MdOutlineAddHome } from 'react-icons/md';
 import { IoPeopleSharp } from 'react-icons/io5';
-import ConfirmDeleteModal from '../ConfirmDeleteModal';
 import JoinClassModal from '../JoinClassModal';
+import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 
 const MemoizedClassListCard = memo(ClassListCard);
 
 const ClassListMenu = () => {
-	const { id } = useParams();
+	console.log('ClassListMenu rendered');
 
 	// Manage the visibility of the card menu
 	const [isCardMenu, setIsCardMenu] = useState(false);
 	const [isJoinModal, setIsJoinModal] = useState(false);
 
-	const userData = useSelector((state) => state.class.currentUser);
-	const loading = useSelector((state) => state.class.loading);
-	const classData = useSelector((state) => state.class.class);
-	const currentUser = useSelector((state) => state.user.currentUser);
+	const classData = useSelector(selectClassDataArray);
+
+	const currentUser = useSelector(
+		(state) => state.user.currentUser,
+		shallowEqual
+	);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -34,12 +35,7 @@ const ClassListMenu = () => {
 	const userRole = currentUser?.userStatus;
 
 	useEffect(() => {
-		if (!userData) {
-			dispatch(fetchCurrentUser(id));
-		}
-	}, [dispatch, id]);
-
-	useEffect(() => {
+		console.log('Dispatching fetchClasses - CLassListMenu');
 		dispatch(fetchClasses());
 	}, [dispatch]);
 
@@ -74,10 +70,10 @@ const ClassListMenu = () => {
 		navigate('/dashboard/add-class');
 	};
 
-	// Loading spinner
-	if (loading) {
-		return <LoadingSpinner />;
-	}
+	// Handlers
+	const handleClassLink = (_id) => {
+		navigate(`/dashboard/class/${_id}`);
+	};
 
 	// Map list of class groups
 	return (
@@ -120,7 +116,11 @@ const ClassListMenu = () => {
 						classData.map((classGroup) => (
 							<MemoizedClassListCard
 								key={classGroup._id}
-								{...classGroup}
+								clickClassListCard={() =>
+									handleClassLink(classGroup._id)
+								}
+								className={classGroup.className}
+								subject={classGroup.subject}
 							/>
 						))}
 				</div>

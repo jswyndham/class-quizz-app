@@ -22,7 +22,7 @@ dayjs.extend(advancedFormat);
 const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 	//const date = day(createdAt).format('YYYY-MM-DD');
 
-	const classData = useSelector((state) => state.class.class);
+	const classData = useSelector((state) => state.class.classesById);
 
 	// STATE
 	const [isClassCardMenu, setIsClassCardMenu] = useState(false);

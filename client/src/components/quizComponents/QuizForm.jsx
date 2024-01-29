@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FormRowSelect } from '../';
 import QuizHooks from '../../hooks/QuizHooks';
 import { useNavigate, useNavigation, Form } from 'react-router-dom';
@@ -16,6 +16,7 @@ import {
 	QuizFormQuestion,
 } from '../quizComponents';
 import { QUESTION_TYPE } from '../../../../server/utils/constants';
+import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 
 const QuizForm = () => {
 	// STATE HOOKS
@@ -45,13 +46,13 @@ const QuizForm = () => {
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === 'submitting';
 
-	// Accessing classes from Redux store for dropdown menu selection
-	const classData = useSelector((state) => state.class.class);
+	// Accessing classes for dropdown menu selection
+	const classData = useSelector(selectClassDataArray);
 
 	// Dispatch the action to fetch all classes for dropdown menu
 	useEffect(() => {
 		dispatch(fetchClasses());
-	}, []);
+	}, [dispatch]);
 
 	// ADD QUIZ TITLE
 	const handleQuizTitleChange = (e) => {
@@ -155,13 +156,11 @@ const QuizForm = () => {
 			const createdQuizResponse = await dispatch(
 				createQuiz(formData)
 			).unwrap();
-
+			dispatch(fetchClasses());
 			if (createdQuizResponse && createdQuizResponse.classId) {
-				// Refetch the class data to update the state
-				await dispatch(fetchClassById(createdQuizResponse.classId));
+				dispatch(fetchClassById(createdQuizResponse.classId));
 			}
 
-			console.log('The formData: ', { formData });
 			navigate('/dashboard');
 			toast.success('Quiz successfully added');
 

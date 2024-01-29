@@ -383,16 +383,26 @@ export const deleteQuiz = async (req, res) => {
 			{ $pull: { quizzes: quizId } }
 		);
 
-		// Loop through the class array in the quiz schema and clear cache for class array.
-		//Rather than clearing the whole class cache, which would remove all quizzes from ClassLayout page, this will only remove the selected quiz from cache.
-		classesContainingQuiz.forEach((classId) => {
-			const classCacheKey = `class_${userId}_${classId}`;
-			clearCache(classCacheKey);
-		});
+		// Loop through the class array and clear cache for each class that contained the updated quiz
+		// if (Array.isArray(classesContainingQuiz)) {
+		// 	classesContainingQuiz.class.forEach((classItem) => {
+		// 		const classCacheKey = `class_${userId}_${classItem._id.toString()}`;
+		// 		console.log('Class cache key: ', classCacheKey);
 
-		// Clear quizzes cache
+		// 		clearCache(classCacheKey);
+		// 	});
+		// }
+
+		// Clear the cache for the updated quiz
+		const quizCacheKey = `quiz_${userId}_${quizId}`;
+		// Clear the all quizzes cache
 		const quizzesCacheKey = `quizzes_${userId}`;
+		// Clear cache for all classes
+		const allClassesCacheKey = `class_${userId}`;
+
+		clearCache(quizCacheKey);
 		clearCache(quizzesCacheKey);
+		clearCache(allClassesCacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz deleted',

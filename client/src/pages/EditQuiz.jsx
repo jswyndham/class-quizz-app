@@ -55,7 +55,8 @@ const EditQuiz = () => {
 	const isSubmitting = navigation.state === 'submitting';
 
 	// Accessing classes from Redux store for dropdown menu selection
-	const classData = useSelector((state) => state.class.class);
+	const classData = useSelector((state) => state.class.classesById);
+	const classDataArray = useMemo(() => Object.values(classData), [classData]); // Convert object to array and useMemo() to prevent re-rendering
 
 	// Dispatch the action to fetch all classes for dropdown menu
 	useEffect(() => {
@@ -211,7 +212,7 @@ const EditQuiz = () => {
 								<FormRowSelect
 									name="classId"
 									labelText="Add a class"
-									list={classData.map((cls) => ({
+									list={classDataArray.map((cls) => ({
 										key: cls._id,
 										value: cls._id,
 										label: cls.className,
@@ -227,7 +228,7 @@ const EditQuiz = () => {
 								<FormRowSelect
 									name="classId"
 									labelText="Add a class"
-									list={classData.map((cls) => ({
+									list={classDataArray.map((cls) => ({
 										key: cls._id,
 										value: cls._id,
 										label: cls.className,

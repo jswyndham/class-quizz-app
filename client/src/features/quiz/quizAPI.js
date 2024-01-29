@@ -13,14 +13,25 @@ export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async () => {
 	}
 });
 
-// Find a quiz by its id
+// Find a quiz by its id with caching
 export const fetchQuizById = createAsyncThunk(
 	'quiz/fetchQuizById',
-	async (_id, { rejectWithValue }) => {
+	async (_id, { getState, rejectWithValue }) => {
+		// Access the current state
+		const { quiz } = getState();
+
+		// Check if the quiz already exists in the state. If it exists, will avoid an unnecessary server request
+		const existingQuiz = quiz.quizzesById[_id];
+		if (existingQuiz) {
+			return existingQuiz;
+		}
+
+		// If the quiz does not exist, make an API call to fetch it
 		try {
 			const response = await customFetch.get(`${BASE_URL}/${_id}`);
-			return response.data;
+			return response.data; // Return the fetched quiz data
 		} catch (error) {
+			// Handle any errors during the API call
 			return rejectWithValue(error.response.data || error.message);
 		}
 	}

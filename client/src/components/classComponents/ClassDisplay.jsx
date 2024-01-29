@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ClassDisplay = ({ _id, name, subject, students, img }) => {
+const ClassDisplay = ({ name, subject, students }) => {
 	return (
 		<article className="h-36 w-96 m-7 flex flex-row justify-center align-middle bg-blue-300 rounded-lg drop-shadow-xl">
 			<div className="left-0 m-4">

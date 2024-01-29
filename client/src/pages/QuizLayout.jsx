@@ -11,23 +11,36 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 const QuizLayout = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
-	const currentQuiz = useSelector((state) => state.quiz.currentQuiz);
-	const { loading, error } = useSelector((state) => state.class);
+	const currentQuiz = useSelector((state) => state.quiz.currentQuizId);
+	const { error } = useSelector((state) => state.class);
+	const isLoading = useSelector((state) => state.class.loading);
 
-	useEffect(
-		() => {
-			dispatch(fetchQuizById(id));
-		},
-		[dispatch, id],
-		id
-	);
+	useEffect(() => {
+		dispatch(fetchQuizById(id));
+	}, [dispatch, id]);
+
+	if (isLoading) {
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>Loading...</p>
+			</div>
+		);
+	}
+
+	if (error)
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-red-700">
+				<p>Error: {error}</p>
+			</div>
+		);
 
 	if (!currentQuiz) {
-		return <div>Loading quiz...</div>; // or any other placeholder content
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>No quiz available.</p>
+			</div>
+		);
 	}
-	if (loading) return <div>Loading class...</div>;
-	if (error) return <div>Error: {error}</div>;
-
 	console.log('Current Quiz:', currentQuiz);
 
 	return (

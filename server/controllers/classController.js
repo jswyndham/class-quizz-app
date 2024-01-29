@@ -3,6 +3,9 @@ import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 
+// Validate ID format (example using a simple regex for MongoDB ObjectId)
+const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+
 // Function to dynamically generate a unique cache key based on user ID and query parameters. This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
 	const queryStr = JSON.stringify(queryParams);
@@ -96,9 +99,17 @@ export const getClass = async (req, res) => {
 	// Convert query parameters to a string for the cache key
 	const classId = req.params.id;
 	const userId = req.user.userId;
+
 	const cacheKey = `class_${userId}_${classId}`; // Unlike getAllClasses function, this also has classId to create a unique key for each class object.
 
 	try {
+		// Validate IDs
+		if (!isValidObjectId(classId) || !isValidObjectId(userId)) {
+			return res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ message: 'Invalid ID format' });
+		}
+
 		const cachedClass = await getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
@@ -110,6 +121,9 @@ export const getClass = async (req, res) => {
 				.populate('students') // Populate students mongoose ref
 				.lean({ virtuals: true })
 				.exec();
+
+			console.log('ClassGroup Data:', classGroup);
+
 			if (!classGroup) {
 				return res
 					.status(StatusCodes.NOT_FOUND)
@@ -127,6 +141,8 @@ export const getClass = async (req, res) => {
 
 			// Cache the class data
 			setCache(cacheKey, classGroup, 3600); // Caching for 1 hour
+
+			console.log('CLASS OBJECT: ', classGroup);
 
 			res.status(StatusCodes.OK).json({ classGroup });
 		}

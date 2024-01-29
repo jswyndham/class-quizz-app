@@ -29,6 +29,7 @@ const DashboardLayout = () => {
 	const { isDarkTheme, setisDarkTheme, showLogout, setShowLogout } =
 		DashboardLayoutHooks({});
 
+	// If the user data is not available, redirect to the home page.
 	useEffect(() => {
 		const abortController = new AbortController();
 
@@ -94,7 +95,7 @@ const DashboardLayout = () => {
 			toggleSidebar,
 			logoutUser,
 		}),
-		[user]
+		[user, showSidebar, isDarkTheme, showLogout]
 	);
 
 	return (

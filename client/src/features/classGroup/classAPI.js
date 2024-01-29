@@ -4,21 +4,35 @@ import customFetch from '../../utils/customFetch';
 // Base URL for class-related operations
 const BASE_URL = '/class';
 
+// Check the state
+const shouldFetchClassById = (_id, state) => {
+	return !state.class.classesById[_id];
+};
+
 // Get all classes
-export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
-	const response = await customFetch.get(BASE_URL);
-	return response.data;
-});
+export const fetchClasses = createAsyncThunk(
+	'class/fetchClasses',
+	async (_, { rejectWithValue }) => {
+		try {
+			const response = await customFetch.get(BASE_URL);
+			return response.data;
+		} catch (error) {
+			console.error(`Error fetching class with ID ${_id}:`, error);
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);
 
 // Get single class by id
 export const fetchClassById = createAsyncThunk(
 	'class/fetchClassById',
-	async (_id) => {
+	async (_id, { rejectWithValue }) => {
 		try {
 			const response = await customFetch.get(`${BASE_URL}/${_id}`);
 			return response.data;
 		} catch (error) {
-			return error.message;
+			console.error(`Error fetching class with ID ${_id}:`, error);
+			return rejectWithValue(error.response?.data || error.message);
 		}
 	}
 );

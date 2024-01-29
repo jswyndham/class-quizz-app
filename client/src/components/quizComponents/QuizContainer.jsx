@@ -1,4 +1,4 @@
-import { useEffect, memo } from 'react';
+import { useEffect, memo, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import QuizCard from './QuizCard';
 import { fetchQuizzes } from '../../features/quiz/quizAPI';
@@ -6,6 +6,8 @@ import { fetchCurrentUser } from '../../features/user/userAPI';
 import { fetchClasses } from '../../features/classGroup/classAPI';
 import QuizCardGradientValues from './QuizCardGradientValues';
 import { useParams } from 'react-router';
+import { selectClassDataArray } from '../../features/classGroup/classSelectors';
+import { selectQuizDataArray } from '../../features/quiz/quizSelectors';
 
 const MemoizedQuizCard = memo(QuizCard);
 
@@ -13,24 +15,13 @@ const QuizContainer = () => {
 	const { id } = useParams();
 
 	const userData = useSelector((state) => state.class.currentUser);
-	const quizData = useSelector((state) => state.quiz.quiz);
-	const classData = useSelector((state) => state.class.class);
+	const quizData = useSelector(selectQuizDataArray);
+	const classDataArray = useSelector(selectClassDataArray);
 
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		if (!userData) {
-			dispatch(fetchCurrentUser(id));
-		}
-	}, [dispatch, id]);
-
-	useEffect(() => {
 		dispatch(fetchQuizzes());
-	}, [dispatch]);
-
-	useEffect(() => {
-		console.log('Class Data - useEffect:', classData);
-		dispatch(fetchClasses());
 	}, [dispatch]);
 
 	// Defines the color value and returns the gradient in the css
@@ -50,7 +41,7 @@ const QuizContainer = () => {
 	return (
 		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">
 			<div className="w-full flex flex-col justify-start">
-				{classData.map((classes) => (
+				{classDataArray.map((classes) => (
 					<div key={classes._id} className="my-4">
 						<div className="w-full h-fit bg-forth text-primary p-2 border-b-4 border-primary shadow-lg shadow-slate-400">
 							<h2 className="text-2xl font-roboto font-bold italic">

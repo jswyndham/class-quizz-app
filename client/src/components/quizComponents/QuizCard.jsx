@@ -27,6 +27,7 @@ import {
 	fetchClasses,
 	fetchClassById,
 } from '../../features/classGroup/classAPI';
+import { selectQuizDataArray } from '../../features/quiz/quizSelectors';
 
 dayjs.extend(advancedFormat);
 
@@ -39,7 +40,7 @@ const QuizCard = ({
 	updatedAt,
 	gradientClass,
 }) => {
-	const quizData = useSelector((state) => state.quiz.quiz);
+	const quizData = useSelector(selectQuizDataArray);
 
 	const { id } = useParams();
 
@@ -61,11 +62,6 @@ const QuizCard = ({
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const menuRef = useRef();
-
-	// Fetches quiz data on component mount
-	useEffect(() => {
-		dispatch(fetchQuizzes());
-	}, [dispatch]);
 
 	// Cllick outside the card menu to close
 	useEffect(() => {
@@ -153,14 +149,15 @@ const QuizCard = ({
 	// Handles the deletion of the quiz
 	const handleDeleteClick = async (e) => {
 		e.stopPropagation();
+
 		try {
-			await dispatch(deleteQuiz(_id));
-			closeConfirmModal();
+			await dispatch(deleteQuiz(_id)).unwrap();
 			dispatch(fetchClasses());
-			dispatch(fetchClassById(id));
+			closeConfirmModal();
+
 			toast.success('Quiz deleted');
 		} catch (error) {
-			toast.error(error?.response?.data?.msg);
+			toast.error(error?.response?.data?.msg || 'Failed to delete quiz');
 		}
 	};
 
