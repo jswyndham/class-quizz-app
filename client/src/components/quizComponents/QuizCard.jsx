@@ -167,9 +167,8 @@ const QuizCard = ({
 
 		try {
 			await dispatch(deleteQuiz(_id)).unwrap();
-			dispatch(fetchClasses());
 			closeConfirmModal();
-
+			dispatch(fetchClasses());
 			toast.success('Quiz deleted');
 		} catch (error) {
 			toast.error(error?.response?.data?.msg || 'Failed to delete quiz');

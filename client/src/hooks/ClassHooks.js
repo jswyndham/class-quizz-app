@@ -1,34 +1,45 @@
 import { useState } from 'react';
 
-const classHooks = (initialClassData) => {
-	const [className, setClassName] = useState(
-		initialClassData.className || ''
-	);
-	const [subject, setSubject] = useState(initialClassData.subject || '');
-	const [classStatus, setClassStatus] = useState(
-		initialClassData.classStatus || ''
-	);
-	const [school, setSchool] = useState(initialClassData.school || '');
+const classHooks = (initialClassData = {}) => {
+	const [classGroup, setClassGroup] = useState({
+		className: initialClassData.className || '',
+		subject: initialClassData.subject || '',
+		school: initialClassData.school || '',
+		quizzes: initialClassData.quizzes || [],
+		students: initialClassData.students || [],
+	});
 
-	// ON CHANGE
-	const onNameChanged = (e) => setClassName(e.target.value);
-	const onSubjectChanged = (e) => setSubject(e.target.value);
-	const onSchoolChanged = (e) => setSchool(e.target.value);
-	const onClassStatusChanged = (e) => setClassStatus(e.target.value);
+	// Set class title
+	const setClassName = (e) => {
+		setClassGroup((prevClass) => ({
+			...prevClass,
+			className: e.target.value,
+		}));
+	};
+
+	// Set class subject
+	const setClassSubject = (e) => {
+		setClassGroup((prevClass) => ({
+			...prevClass,
+			subject: e.target.value,
+		}));
+	};
+
+	// Set class school name
+	const setClassSchool = (e) => {
+		setClassGroup((prevClass) => ({
+			...prevClass,
+			school: e.target.value,
+		}));
+	};
 
 	return {
-		onNameChanged,
-		onSubjectChanged,
-		onSchoolChanged,
-		onClassStatusChanged,
 		setClassName,
-		setSubject,
-		setClassStatus,
-		setSchool,
-		className,
-		subject,
-		classStatus,
-		school,
+		setClassSubject,
+		setClassName,
+		setClassSchool,
+		setClassGroup,
+		classGroup,
 	};
 };
 

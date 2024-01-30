@@ -1,47 +1,50 @@
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import { redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
 import ClassForm from '../components/classComponents/ClassForm';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classHooks from '../hooks/ClassHooks';
-import { updateClass } from '../features/classGroup/classAPI';
-
-export const loader = async ({ params }) => {
-	try {
-		const { data } = await customFetch.get(`/class/${params.id}`);
-		return data;
-	} catch (error) {
-		toast.error(error?.response?.data?.msg);
-		return redirect('/dashboard');
-	}
-};
+import {
+	fetchClassById,
+	fetchClasses,
+	updateClass,
+} from '../features/classGroup/classAPI';
+import { useEffect } from 'react';
 
 const EditClass = () => {
-	const { classGroup } = useLoaderData();
-
-	const {
-		onNameChanged,
-		onSubjectChanged,
-		onSchoolChanged,
-		onClassStatusChanged,
-		className,
-		subject,
-		classStatus,
-		school,
-	} = classHooks(classGroup);
-
-	const navigate = useNavigate();
+	const { id } = useParams();
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const classData = useSelector((state) => state.class.classesById[id]);
+	const isLoading = useSelector((state) => state.class.loading);
+	const error = useSelector((state) => state.class.error);
 
-	// SUBMIT
+	useEffect(() => {
+		if (!classData) {
+			dispatch(fetchClassById(id));
+		}
+	}, [id, classData, dispatch]);
+
+	// Always call hooks at the top level
+	const { setClassSchool, setClassName, setClassSubject, classGroup } =
+		classHooks(classData || {});
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (!classData) return;
 
-		const classData = { className, subject, classStatus, school };
+		const formData = {
+			className: classGroup.className,
+			subject: classGroup.subject,
+			school: classGroup.school,
+		};
 
 		try {
-			dispatch(updateClass({ _id: classGroup._id, classData }));
+			await dispatch(
+				updateClass({ _id: id, classData: formData })
+			).unwrap();
+			dispatch(fetchClasses());
 			navigate('/dashboard');
 			toast.success('Class successfully updated');
 		} catch (error) {
@@ -49,6 +52,28 @@ const EditClass = () => {
 			toast.error('Failed to update class');
 		}
 	};
+	if (isLoading) {
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>Loading...</p>
+			</div>
+		);
+	}
+
+	if (error)
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-red-700">
+				<p>Error: {error}</p>
+			</div>
+		);
+
+	if (!classData) {
+		return (
+			<div className="text-4xl font-quizgate mt-48 text-center text-forth">
+				<p>No quiz available.</p>
+			</div>
+		);
+	}
 
 	return (
 		<section className="flex justify-center align-middle w-screen h-screen bg-secondary mt-24 md:my-16 pt-4 md:pt-12 ">
@@ -59,15 +84,14 @@ const EditClass = () => {
 					</h1>
 				</div>
 				<ClassForm
+					classKey={classData._id}
 					onSubmit={handleSubmit}
-					nameRow={onNameChanged}
-					classStatusRow={onClassStatusChanged}
-					subjectRow={onSubjectChanged}
-					schoolRow={onSchoolChanged}
-					nameValue={className}
-					statusValue={classStatus}
-					subjectValue={subject}
-					schoolValue={school}
+					nameRow={setClassName}
+					nameValue={classGroup.className}
+					subjectRow={setClassSubject}
+					subjectValue={classGroup.subject}
+					schoolRow={setClassSchool}
+					schoolValue={classGroup.school}
 				/>
 			</article>
 		</section>

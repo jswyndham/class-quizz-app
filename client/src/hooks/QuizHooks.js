@@ -29,11 +29,12 @@ const QuizHooks = (initialQuizData) => {
 
 	const [quizBackgroundColor, setQuizBackgroundColor] = useState('#2D9596'); // default color
 
+	// Store quiz data in local storage with using quizForm
 	useEffect(() => {
 		localStorage.setItem('quizData', JSON.stringify(quiz));
 	}, [quiz]);
 
-	// QUIZ TITLE
+	// Set quiz title
 	const setQuizTitle = (quizTitle) => {
 		setQuiz((prevQuiz) => ({ ...prevQuiz, quizTitle }));
 	};

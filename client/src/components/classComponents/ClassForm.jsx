@@ -5,7 +5,7 @@ import { useNavigation } from 'react-router-dom';
 const ClassForm = ({
 	onSubmit,
 	nameRow,
-	classStatusRow,
+	classKey,
 	subjectRow,
 	schoolRow,
 	nameValue,
@@ -23,6 +23,7 @@ const ClassForm = ({
 		<div className="flex justify-center align-middle">
 			<Form
 				method="post"
+				key={classKey}
 				onSubmit={onSubmit}
 				className="flex flex-col p-24 drop-shadow-lg 2xl:ml-20"
 			>

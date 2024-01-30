@@ -44,15 +44,10 @@ const classSlice = createSlice({
 				state.error = null;
 			})
 			.addCase(fetchClassById.fulfilled, (state, action) => {
-				state.loading = false;
-				const classData = action.payload.classGroup;
-				if (classData && classData._id) {
-					state.currentClass = classData; // Store the sate in 'currentClass'
-
-					// Update allClassIds array if it doesn't include class '_id'
-					if (!state.allClassIds.includes(classData._id)) {
-						state.allClassIds.push(classData._id);
-					}
+				// Handle fetching single class by ID
+				const fetchedClass = action.payload;
+				if (fetchedClass && fetchedClass._id) {
+					state.classesById[fetchedClass._id] = fetchedClass;
 				} else {
 					console.error('No valid class data in payload');
 				}
@@ -65,16 +60,30 @@ const classSlice = createSlice({
 			// Create a new class
 			.addCase(createClass.fulfilled, (state, action) => {
 				state.loading = false;
-				const newClass = action.payload;
+				const newClass = action.payload.classGroup;
 				state.classesById[newClass._id] = newClass;
 				state.allClassIds.push(newClass._id);
+
+				// const classData = action.payload.classGroup;
+				// if (classData && classData._id) {
+				// 	state.currentClass = classData; // Store the state in 'currentClass'
+				// 	// Update allClassIds array if it doesn't include class '_id'
+				// 	if (!state.allClassIds.includes(classData._id)) {
+				// 		state.allClassIds.push(classData._id);
+				// 	}
+				// } else {
+				// 	console.error('No valid class data in payload');
+				// }
+
 				state.error = null;
 			})
 			// Update existing class
 			.addCase(updateClass.fulfilled, (state, action) => {
 				state.loading = false;
 				const updatedClass = action.payload;
-				state.classesById[updatedClass._id] = updatedClass;
+				if (updatedClass && updatedClass._id) {
+					state.classesById[updatedClass._id] = updatedClass;
+				}
 				state.error = null;
 			})
 			// Delete a class

@@ -157,6 +157,8 @@ export const updateClass = async (req, res) => {
 		const userId = req.user.userId;
 		const cacheKey = `class_${userId}`;
 
+		console.log('CLASS UPDATE KEY: ', cacheKey);
+
 		const updatedClass = await ClassGroup.findByIdAndUpdate(
 			req.params.id,
 			req.body,

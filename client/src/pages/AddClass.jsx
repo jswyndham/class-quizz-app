@@ -6,16 +6,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const AddClass = () => {
-	const {
-		onNameChanged,
-		onSubjectChanged,
-		onSchoolChanged,
-		onClassStatusChanged,
-		className,
-		subject,
-		classStatus,
-		school,
-	} = classHooks({});
+	const { setClassSchool, setClassName, setClassSubject, classGroup } =
+		classHooks({});
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -24,9 +16,7 @@ const AddClass = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			await dispatch(
-				createClass({ className, subject, classStatus, school })
-			).unwrap();
+			await dispatch(createClass(classGroup)).unwrap();
 			dispatch(fetchClasses());
 			navigate('/dashboard');
 			toast.success('Class successfully added');
@@ -45,11 +35,14 @@ const AddClass = () => {
 					</h1>
 				</div>
 				<ClassForm
+					classKey={classGroup._id}
 					onSubmit={handleSubmit}
-					nameRow={onNameChanged}
-					classStatusRow={onClassStatusChanged}
-					subjectRow={onSubjectChanged}
-					schoolRow={onSchoolChanged}
+					nameRow={setClassName}
+					nameValue={classGroup.className}
+					subjectRow={setClassSubject}
+					subjectValue={classGroup.subject}
+					schoolRow={setClassSchool}
+					schoolValue={classGroup.school}
 				/>
 			</article>
 		</section>

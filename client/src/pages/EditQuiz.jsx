@@ -188,7 +188,7 @@ const EditQuiz = () => {
 				onSubmit={handleUpdateSubmit}
 				className="flex flex-col justify-center items-center drop-shadow-lg w-full pt-36 m-3 md:mx-5 my-4 lg:w-10/12 xl:w-max"
 			>
-				<div className="flex flex-col justify-center w-full md:mx-2 my-1">
+				<div className="flex flex-col justify-center align-middle w-full md:mx-2 my-1">
 					<label htmlFor="questionText" className="text-lg ml-4 my-4">
 						Quiz Title
 					</label>

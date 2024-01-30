@@ -53,12 +53,17 @@ export const createClass = createAsyncThunk(
 // Edit and update class group
 export const updateClass = createAsyncThunk(
 	'class/updateClass',
-	async ({ _id, classData }) => {
-		const response = await customFetch.patch(
-			`${BASE_URL}/${_id}`,
-			classData
-		);
-		return response.data;
+	async ({ _id, classData }, { rejectWithValue }) => {
+		try {
+			const response = await customFetch.patch(
+				`${BASE_URL}/${_id}`,
+				classData
+			);
+			return response.data;
+		} catch (error) {
+			console.error(`Error updating class with ID ${_id}:`, error);
+			return rejectWithValue(error.response?.data || error.message);
+		}
 	}
 );
 
