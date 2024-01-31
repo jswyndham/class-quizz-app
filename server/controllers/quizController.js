@@ -4,6 +4,7 @@ import Quiz from '../models/QuizModel.js';
 import ClassGroup from '../models/ClassModel.js';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 import AuditLog from '../models/AuditLogModel.js';
+import { ROLE_PERMISSIONS } from '../utils/constants.js';
 
 // This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId) => {
@@ -80,10 +81,10 @@ const sanitizeConfig = {
 
 // Controller to get all quizzes by user
 export const getAllQuizzes = async (req, res) => {
-	const userId = req.user.userId;
-	const cacheKey = `quiz_${userId}`;
-
 	try {
+		const userId = req.user.userId;
+		const cacheKey = `quiz_${userId}`;
+		// Get previous set cache
 		const cachedData = getCache(cacheKey);
 
 		if (cachedData) {
@@ -106,7 +107,7 @@ export const getAllQuizzes = async (req, res) => {
 				JSON.stringify(quiz)
 			);
 
-			// Set data in cache for future requests
+			// Set new cache
 			setCache(cacheKey, serializedQuizzes, 3600); // Caches for 1 hour
 
 			res.status(StatusCodes.OK).json({ allQuizzes });
@@ -175,29 +176,25 @@ export const createQuiz = async (req, res) => {
 		}
 
 		// User ID
-		const userId = userId;
+		const userId = req.user.userId;
 
 		// Extract classId from the request body
 		let { class: classIds, ...quizData } = req.body;
 
 		// Sanitize and prepare questions data
-		if (quizData.questions && quizData.questions.length > 0) {
-			quizData.questions = quizData.questions.map((question) => {
-				const correctOption = question.options.find(
-					(option) => option.isCorrect
-				);
-				return {
-					...question,
-					questionText: sanitizeHtml(
-						question.questionText,
-						sanitizeConfig
-					),
-					correctAnswer: correctOption
-						? correctOption.optionText
-						: null,
-				};
-			});
-		}
+		quizData.questions = quizData.questions?.map((question) => {
+			const correctOption = question.options?.find(
+				(option) => option.isCorrect
+			);
+			return {
+				...question,
+				questionText: sanitizeHtml(
+					question.questionText,
+					sanitizeConfig
+				),
+				correctAnswer: correctOption?.optionText ?? null,
+			};
+		});
 
 		// Ensure classIds is an array and contains valid MongoDB ObjectId
 		classIds = Array.isArray(classIds) ? classIds : [classIds];
@@ -216,7 +213,7 @@ export const createQuiz = async (req, res) => {
 		// Create new quiz with classIds
 		const newQuiz = await Quiz.create({
 			...quizData,
-			userId,
+			createdBy: userId,
 			class: classIds,
 		});
 

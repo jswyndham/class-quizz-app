@@ -1,13 +1,14 @@
-import { body, param, validationResult } from 'express-validator';
+import { body, param } from 'express-validator';
 import {
 	BadRequestError,
 	NotFoundError,
 	UnauthorizedError,
 } from '../errors/customErrors.js';
-import { USER_STATUS } from '../utils/constants.js';
 import mongoose from 'mongoose';
 import Quiz from '../models/QuizModel.js';
+import { withValidationErrors } from './validationHelpers.js';
 
+// Strip image tags to sanitize in the rich text editor
 const stripImages = (text) => {
 	if (typeof text !== 'string') {
 		console.warn('stripImages expected a string, received:', typeof text);
@@ -17,52 +18,27 @@ const stripImages = (text) => {
 	return text.replace(/<img[^>]*>/g, '');
 };
 
-// VALIDATION FUNCTION
-const withValidationErrors = (validateValues) => {
-	return [
-		validateValues,
-		(req, res, next) => {
-			const errors = validationResult(req);
-			if (!errors.isEmpty()) {
-				const errorMessages = errors.array().map((error) => error.msg);
-				if (errorMessages[0].startsWith('Class with')) {
-					throw new NotFoundError(errorMessages);
-				}
-				if (errorMessages[0].startsWith('Not authorized')) {
-					throw new UnauthorizedError(
-						'Not authorized to access this route'
-					);
-				}
-				throw new BadRequestError(errorMessages);
-			}
-			next();
-		},
-	];
-};
-
-// QUIZ SCHEMA PARAM ID VALUE
+// Validator for validating Quiz ID
 export const validateQuizIdParam = withValidationErrors([
-	// withMessage() is not required b/c custom() method needed for async func
 	param('id').custom(async (value, { req }) => {
-		// INVALID MONGO ID
-		const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
-		if (!isValidMongoId) throw new BadRequestError('Invalid MongoDB id');
+		try {
+			if (!mongoose.Types.ObjectId.isValid(value)) {
+				throw new BadRequestError('Invalid MongoDB id');
+			}
 
-		// INVALID ID
-		const quiz = await Quiz.findById(value);
-		if (!quiz)
-			throw new NotFoundError(
-				`Quiz with id ${value} could not be found.`
-			);
-		// checking for admin or owner roles
-		const isAdmin = req.user.userStatus === USER_STATUS.ADMIN;
-		const isOwner = req.user.userId === quiz.createdBy.toString();
-		if (!isAdmin && !isOwner)
-			throw new UnauthorizedError('Not authorized to access this route');
+			const quiz = await Quiz.findById(value);
+			if (!quiz) {
+				throw new NotFoundError(
+					`Quiz with id ${value} could not be found.`
+				);
+			}
+		} catch (error) {
+			throw new UnauthorizedError('Error validating quiz ID');
+		}
 	}),
 ]);
 
-// QUIZ SCHEMA INPUT VALUES
+// Validate quiz schema data
 export const validateQuizInput = withValidationErrors([
 	body('quizTitle')
 		.notEmpty()
@@ -98,7 +74,7 @@ export const validateQuizInput = withValidationErrors([
 		.withMessage('isCorrect must be a boolean'),
 ]);
 
-// QUESTION INPUT
+// Validate question schema data
 export const validateQuestionInput = withValidationErrors([
 	body('questionText')
 		.notEmpty()

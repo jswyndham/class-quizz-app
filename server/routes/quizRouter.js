@@ -16,7 +16,10 @@ import {
 
 const router = Router();
 
-router.route('/').get(getAllQuizzes).post(validateQuizInput, createQuiz);
+router
+	.route('/')
+	.get(getAllQuizzes)
+	.post(validateQuizInput, validateQuestionInput, createQuiz);
 router
 	.route('/:id')
 	.get(validateQuizIdParam, getQuiz)

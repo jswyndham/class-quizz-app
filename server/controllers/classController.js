@@ -2,7 +2,7 @@ import ClassGroup from '../models/ClassModel.js';
 import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
-import { ROLE_PERMISSIONS, USER_STATUS } from '../utils/constants.js';
+import { ROLE_PERMISSIONS } from '../utils/constants.js';
 import AuditLog from '../models/AuditLogModel.js';
 
 const hasPermission = (userRole, action) => {
