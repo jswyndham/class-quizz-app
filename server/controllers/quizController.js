@@ -3,11 +3,18 @@ import sanitizeHtml from 'sanitize-html';
 import Quiz from '../models/QuizModel.js';
 import ClassGroup from '../models/ClassModel.js';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
+import AuditLog from '../models/AuditLogModel.js';
 
-// Function to dynamically generate a unique cache key based on user ID and query parameters.
 // This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId) => {
 	return `quizzes_${userId}`;
+};
+
+const hasPermission = (userRole, action) => {
+	return (
+		ROLE_PERMISSIONS[userRole] &&
+		ROLE_PERMISSIONS[userRole].includes(action)
+	);
 };
 
 // Configuration for HTML sanitization
@@ -157,13 +164,21 @@ export const getQuiz = async (req, res) => {
 // Controller to create a new quiz
 export const createQuiz = async (req, res) => {
 	try {
-		const userId = req.user.userId;
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'CREATE_QUIZ')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
+		// User ID
+		const userId = userId;
 
 		// Extract classId from the request body
 		let { class: classIds, ...quizData } = req.body;
-
-		// Set the creator of the quiz
-		const createdBy = req.user.userId;
 
 		// Sanitize and prepare questions data
 		if (quizData.questions && quizData.questions.length > 0) {
@@ -187,30 +202,56 @@ export const createQuiz = async (req, res) => {
 		// Ensure classIds is an array and contains valid MongoDB ObjectId
 		classIds = Array.isArray(classIds) ? classIds : [classIds];
 
+		// Validate the existence of class
+		const validClassCount = await ClassGroup.countDocuments({
+			_id: { $in: classIds },
+		});
+
+		if (validClassCount !== classIds.length) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				message: 'One or more class IDs are invalid or do not exist.',
+			});
+		}
+
 		// Create new quiz with classIds
 		const newQuiz = await Quiz.create({
 			...quizData,
-			createdBy,
+			userId,
 			class: classIds,
 		});
 
-		// Asynchronously update the corresponding class object with the new quiz
+		// Create an audit log entry of the user's action
+		if (newQuiz) {
+			const auditLog = new AuditLog({
+				action: 'CREATE_QUIZ',
+				subjectType: 'Quiz',
+				subjectId: newQuiz._id,
+				userId: userId,
+				details: { reason: 'Quiz created' },
+			});
+			await auditLog.save();
+		}
+
+		// Update the corresponding class object with the new quiz
 		await Promise.all(
 			classIds.map(async (classId) => {
-				await ClassGroup.findByIdAndUpdate(
-					classId,
-					{ $push: { quizzes: newQuiz._id } },
-					{ new: true }
-				);
+				try {
+					await ClassGroup.findByIdAndUpdate(
+						classId,
+						{ $push: { quizzes: newQuiz._id } },
+						{ new: true }
+					);
 
-				// Clear the cache for this specific class
-				const specificClassCacheKey = `class_${userId}_${classId}`;
-				clearCache(specificClassCacheKey);
+					// Clear the cache for this specific class
+					const specificClassCacheKey = `class_${userId}_${classId}`;
+					clearCache(specificClassCacheKey);
+				} catch (err) {
+					console.error(`Error updating class ${classId}:`, err);
+				}
 			})
 		);
 
 		// Clear cache related to the user's classes and quizzes
-
 		clearCache(`class_${userId}`, `quiz_${userId}`);
 
 		res.status(StatusCodes.CREATED).json({ quiz: newQuiz });
@@ -225,6 +266,16 @@ export const createQuiz = async (req, res) => {
 // Controller to update an existing quiz
 export const updateQuiz = async (req, res) => {
 	try {
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'UPDATE_QUIZ')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
 		const userId = req.user.userId;
 
 		// Get the id of the quiz being updated
@@ -283,6 +334,18 @@ export const updateQuiz = async (req, res) => {
 			0
 		);
 		updatedQuiz.questionCount = updatedQuiz.questions.length;
+
+		// Create an audit log entry of the user's action
+		if (updatedQuiz) {
+			const auditLog = new AuditLog({
+				action: 'UPDATE_OWN_QUIZ',
+				subjectType: 'Quiz',
+				subjectId: updatedQuiz._id,
+				userId: userId,
+				details: { reason: 'Quiz updated' },
+			});
+			await auditLog.save();
+		}
 
 		// Loop through the class array and clear cache for each class that contained the updated quiz
 		updatedQuiz.class.forEach((classItem) => {
@@ -350,6 +413,18 @@ export const copyQuizToClass = async (req, res) => {
 			$addToSet: { quizzes: newQuiz._id },
 		});
 
+		// Create an audit log entry of the user's action
+		if (newQuiz) {
+			const auditLog = new AuditLog({
+				action: 'COPY_QUIZ_TO_CLASS',
+				subjectType: 'Quiz',
+				subjectId: newQuiz._id,
+				userId: req.user.userId,
+				details: { reason: 'Quiz copied to another class' },
+			});
+			await auditLog.save();
+		}
+
 		// Clear the cache for both classes and quizzes when saved
 		const quizCacheKey = `quiz_${req.user.userId}_${req.params.id}`;
 		const allClassesCacheKey = `class_${req.user.userId}`;
@@ -370,6 +445,16 @@ export const copyQuizToClass = async (req, res) => {
 // Controller to delete a quiz
 export const deleteQuiz = async (req, res) => {
 	try {
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'DELETE_QUIZ')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
 		const userId = req.user.userId;
 		const quizId = req.params.id;
 
@@ -383,16 +468,17 @@ export const deleteQuiz = async (req, res) => {
 			{ $pull: { quizzes: quizId } }
 		);
 
-		// Loop through the class array and clear cache for each class that contained the updated quiz
-		// if (Array.isArray(classesContainingQuiz)) {
-		// 	classesContainingQuiz.class.forEach((classItem) => {
-		// 		const classCacheKey = `class_${userId}_${classItem._id.toString()}`;
-		// 		console.log('Class cache key: ', classCacheKey);
-
-		// 		clearCache(classCacheKey);
-		// 	});
-		// }
-
+		// Create an audit log entry of the user's action
+		if (quiz) {
+			const auditLog = new AuditLog({
+				action: 'DELETE_QUIZ',
+				subjectType: 'Quiz',
+				subjectId: quizId,
+				userId: userId,
+				details: { reason: 'Quiz deleted' },
+			});
+			await auditLog.save();
+		}
 		// Clear the cache for the updated quiz
 		const quizCacheKey = `quiz_${userId}_${quizId}`;
 		// Clear the all quizzes cache

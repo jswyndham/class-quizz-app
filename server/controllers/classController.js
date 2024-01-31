@@ -2,6 +2,15 @@ import ClassGroup from '../models/ClassModel.js';
 import Student from '../models/StudentModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
+import { ROLE_PERMISSIONS, USER_STATUS } from '../utils/constants.js';
+import AuditLog from '../models/AuditLogModel.js';
+
+const hasPermission = (userRole, action) => {
+	return (
+		ROLE_PERMISSIONS[userRole] &&
+		ROLE_PERMISSIONS[userRole].includes(action)
+	);
+};
 
 // Validate ID format (example using a simple regex for MongoDB ObjectId)
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
@@ -68,6 +77,14 @@ export const getAllClasses = async (req, res) => {
 
 // Controller to create new class
 export const createClass = async (req, res) => {
+	const userRole = req.user.userStatus;
+
+	if (!hasPermission(userRole, 'CREATE_CLASS')) {
+		return res.status(403).json({
+			message: 'Forbidden: You do not have permission for this action',
+		});
+	}
+
 	try {
 		const userId = req.user.userId;
 
@@ -80,6 +97,18 @@ export const createClass = async (req, res) => {
 			createdBy: userId,
 			accessCode: accessCode,
 		});
+
+		// Create an audit log entry of the user's action
+		if (classGroup) {
+			const auditLog = new AuditLog({
+				action: 'CREATE_CLASS',
+				subjectType: 'Class',
+				subjectId: classGroup._id,
+				userId: req.user.userId,
+				details: { reason: 'Class created' },
+			});
+			await auditLog.save();
+		}
 
 		// Clear the cache related to the user's classes
 		const classCacheKey = `class_${userId}`;
@@ -154,10 +183,40 @@ export const getClass = async (req, res) => {
 // Controller to update a class by ID
 export const updateClass = async (req, res) => {
 	try {
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'UPDATE_CLASS')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
 		const userId = req.user.userId;
 		const cacheKey = `class_${userId}`;
 
 		console.log('CLASS UPDATE KEY: ', cacheKey);
+
+		const classGroup = await ClassGroup.findById(classId);
+
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Class not found' });
+		}
+
+		// Create an audit log entry of the user's action
+		if (classGroup) {
+			const auditLog = new AuditLog({
+				action: 'UPDATE_CLASS',
+				subjectType: 'Class',
+				subjectId: classGroup._id,
+				userId: req.user.userId,
+				details: { reason: 'Class updated' },
+			});
+			await auditLog.save();
+		}
 
 		const updatedClass = await ClassGroup.findByIdAndUpdate(
 			req.params.id,
@@ -184,8 +243,39 @@ export const updateClass = async (req, res) => {
 // Controller to delete class by ID
 export const deleteClass = async (req, res) => {
 	try {
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'DELETE_CLASS')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
 		const userId = req.user.userId;
+		const classId = req.params.id;
 		const cacheKey = `class_${userId}`;
+
+		const classGroup = await ClassGroup.findById(classId);
+
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ msg: 'Class not found' });
+		}
+
+		// Create an audit log entry of the user's action
+		if (classGroup) {
+			const auditLog = new AuditLog({
+				action: 'DELETE_CLASS',
+				subjectType: 'Class',
+				subjectId: classGroup._id,
+				userId: req.user.userId,
+				details: { reason: 'Class deleted' },
+			});
+			await auditLog.save();
+		}
 
 		// Delete the class group by ID
 		const removedClass = await ClassGroup.findByIdAndDelete(req.params.id);
@@ -279,6 +369,13 @@ export const getAllStudents = async (req, res) => {
 export const joinClassWithCode = async (req, res) => {
 	const { accessCode } = req.body;
 	const studentId = req.user.userId;
+	const userRole = req.user.userStatus;
+
+	if (!hasPermission(userRole, 'JOIN_CLASS')) {
+		return res
+			.status(StatusCodes.UNAUTHORIZED)
+			.json({ msg: 'Unauthorized' });
+	}
 
 	try {
 		// Get class details from cache

@@ -5,6 +5,7 @@ import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
 import { UnauthenticatedError } from '../errors/customErrors.js';
 import { createJWT } from '../utils/tokenUtils.js';
 import { clearCache, setCache } from '../utils/cache/cache.js';
+import AuditLog from '../models/AuditLogModel.js';
 
 // Controller for registering a new user
 export const register = async (req, res) => {
@@ -29,6 +30,17 @@ export const register = async (req, res) => {
 
 		// Create and save the new user
 		const user = await User.create(req.body);
+
+		// Create an audit log entry of the user's action
+		if (user._id) {
+			const auditLog = new AuditLog({
+				action: 'REGISTER',
+				subjectType: 'Register as user',
+				userId: user._id,
+				details: { reason: 'User registered' },
+			});
+			await auditLog.save();
+		}
 
 		res.status(StatusCodes.CREATED).json({ msg: 'User registered', user });
 	} catch (error) {
@@ -75,6 +87,17 @@ export const login = async (req, res) => {
 		const userCacheKey = `user_${user._id}`;
 		setCache(userCacheKey, userData, 3600);
 
+		// Create an audit log entry of the user's action
+		if (user._id) {
+			const auditLog = new AuditLog({
+				action: 'LOGIN',
+				subjectType: 'Login user',
+				userId: user._id,
+				details: { reason: 'User logged in' },
+			});
+			await auditLog.save();
+		}
+
 		res.status(StatusCodes.OK).json({ msg: 'User is logged in' });
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -84,13 +107,26 @@ export const login = async (req, res) => {
 };
 
 // Controller for logging out a user and removing the authentication cookie
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+	const user = await req.user.userId;
+
 	try {
 		// Set the cookie to a dummy value and make it expire immediately
 		res.cookie('token', 'logout', {
 			httpOnly: true,
 			expires: new Date(Date.now()),
 		});
+
+		// Create an audit log entry of the user's action
+		if (user) {
+			const auditLog = new AuditLog({
+				action: 'LOGOUT',
+				subjectType: 'Logout user',
+				userId: user,
+				details: { reason: 'User logged out' },
+			});
+			await auditLog.save();
+		}
 
 		const userCacheKey = `user_${req.user._id}`; // Assuming req.user contains the logged-in user's data
 		clearCache(userCacheKey);

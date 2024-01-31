@@ -40,12 +40,13 @@ export const fetchClassById = createAsyncThunk(
 // Create new class group
 export const createClass = createAsyncThunk(
 	'class/createClass',
-	async (classData) => {
+	async (classData, { rejectWithValue }) => {
 		try {
 			const response = await customFetch.post(BASE_URL, classData);
 			return response.data;
 		} catch (error) {
-			return error.message;
+			console.error(`Error updating class with ID ${_id}:`, error);
+			return rejectWithValue(error.response?.data || error.message);
 		}
 	}
 );
@@ -68,7 +69,15 @@ export const updateClass = createAsyncThunk(
 );
 
 // Delete class group
-export const deleteClass = createAsyncThunk('class/deleteClass', async (id) => {
-	await customFetch.delete(`${BASE_URL}/${id}`);
-	return id;
-});
+export const deleteClass = createAsyncThunk(
+	'class/deleteClass',
+	async (id, { rejectWithValue }) => {
+		try {
+			await customFetch.delete(`${BASE_URL}/${id}`);
+			return id;
+		} catch (error) {
+			console.error(`Error updating class with ID ${_id}:`, error);
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);
