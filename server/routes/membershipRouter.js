@@ -18,10 +18,9 @@ const router = Router();
 
 router.use(authenticateUser);
 
-router
-	.route('/')
-	.get(validateMembershipIds, getClassMemberships)
-	.post(validateAccessCode, createMembership);
+router.route('/').post(createMembership);
+
+router.route('/class/:classId').get(validateMembershipIds, getClassMemberships);
 
 router
 	.route('/student/:studentId')

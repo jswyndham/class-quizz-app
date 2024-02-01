@@ -1,9 +1,10 @@
 import ClassGroup from '../models/ClassModel.js';
 import AuditLog from '../models/AuditLogModel.js';
-import Membership from '../models/MembershipModel';
+import Membership from '../models/MembershipModel.js';
 import { isValidObjectId } from 'mongoose';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 import { ROLE_PERMISSIONS } from '../utils/constants.js';
+import { StatusCodes } from 'http-status-codes';
 
 const hasPermission = (userRole, action) => {
 	return (
@@ -25,34 +26,20 @@ export const createMembership = async (req, res) => {
 			});
 		}
 
-		const { studentId, classId, accessCode } = req.body;
+		const { studentId, accessCode } = req.body;
 
-		// Check class and student id for validity
-		if (!isValidObjectId(studentId) || !isValidObjectId(classId)) {
-			return res
-				.status(StatusCodes.BAD_REQUEST)
-				.json({ msg: 'Invalid student or class ID' });
-		}
-
-		// Fetch the class by ID
-		const classGroup = await ClassGroup.findById(classId);
+		// Fetch the class by accessCode
+		const classGroup = await ClassGroup.findOne({ accessCode: accessCode });
 		if (!classGroup) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
-				.json({ msg: 'Class not found' });
-		}
-
-		// Check if the provided access code matches the class's access code
-		if (classGroup.accessCode !== accessCode) {
-			return res
-				.status(StatusCodes.UNAUTHORIZED)
-				.json({ msg: 'Invalid access code' });
+				.json({ msg: 'Class not found with provided access code' });
 		}
 
 		// Check if the student already joined the class
 		const existingMembership = await Membership.findOne({
 			student: studentId,
-			class: classId,
+			class: classGroup._id,
 		});
 		if (existingMembership) {
 			return res
@@ -63,8 +50,12 @@ export const createMembership = async (req, res) => {
 		// Create new membership
 		const membership = await Membership.create({
 			student: studentId,
-			class: classId,
+			class: classGroup._id,
 		});
+
+		// Add membership to the class
+		classGroup.membership.push(membership._id);
+		await classGroup.save();
 
 		// Create an audit log entry of the user's action
 		if (membership) {
@@ -78,16 +69,9 @@ export const createMembership = async (req, res) => {
 			await auditLog.save();
 		}
 
-		// student cache
-		const studentCacheKey = `student_${studentId}`;
-		// cache for class
-		const classCacheKey = `class_${classId}`;
-		// membership cache
-		const allMembershipsCacheKey = `memberships_class_${classId}`;
-
-		clearCache(allMembershipsCacheKey);
-		clearCache(studentCacheKey);
-		clearCache(classCacheKey);
+		// Clear related caches
+		clearCache(`memberships_student_${studentId}`);
+		clearCache(`memberships_class_${classGroup._id}`);
 
 		res.status(StatusCodes.CREATED).json({ membership });
 	} catch (error) {

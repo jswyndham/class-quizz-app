@@ -23,6 +23,13 @@ const ClassSchema = new mongoose.Schema(
 			unique: true,
 			required: true,
 		},
+
+		membership: [
+			{
+				type: mongoose.Types.ObjectId,
+				ref: 'Membership',
+			},
+		],
 	},
 	{ timestamps: true }
 );

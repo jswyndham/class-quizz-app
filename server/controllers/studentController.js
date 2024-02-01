@@ -92,8 +92,8 @@ export const updateStudentPerformance = async (req, res) => {
 	const { score } = req.body;
 
 	try {
-		// Find the student document
-		const student = await Student.findById(req.body.id);
+		// Find the student based on the user ID
+		const student = await Student.findOne({ user: req.user._id });
 
 		if (!student) {
 			return res
@@ -114,7 +114,7 @@ export const updateStudentPerformance = async (req, res) => {
 			student.performance.push(performance);
 		}
 
-		// Update quizzesTaken and totalScore
+		// Update quizzesTaken and totalScore fields
 		performance.quizzesTaken.push({ quiz: req.body.id, score });
 		performance.totalScore += score;
 

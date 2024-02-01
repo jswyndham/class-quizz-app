@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 import Quiz from '../models/QuizModel.js';
 import { withValidationErrors } from './validationHelpers.js';
 
-// Strip image tags to sanitize in the rich text editor
+// Strip html tags to sanitize in the rich text editor
 const stripImages = (text) => {
 	if (typeof text !== 'string') {
 		console.warn('stripImages expected a string, received:', typeof text);
@@ -76,14 +76,6 @@ export const validateQuizInput = withValidationErrors([
 
 // Validate question schema data
 export const validateQuestionInput = withValidationErrors([
-	body('questionText')
-		.notEmpty()
-		.withMessage('Question text is required')
-		.isLength({ max: 1000 })
-		.withMessage('Question text is too long'),
-
-	body('answerType').notEmpty().withMessage('Answer type is required'),
-
 	body('options')
 		.optional()
 		.isArray()

@@ -31,6 +31,11 @@ export const register = async (req, res) => {
 		// Create and save the new user
 		const user = await User.create(req.body);
 
+		// If the user is a student, create a student profile
+		if (user.userStatus === USER_STATUS.STUDENT.value) {
+			await Student.create({ user: user._id });
+		}
+
 		// Create an audit log entry of the user's action
 		if (user._id) {
 			const auditLog = new AuditLog({
@@ -108,9 +113,9 @@ export const login = async (req, res) => {
 
 // Controller for logging out a user and removing the authentication cookie
 export const logout = async (req, res) => {
-	const user = await req.user.userId;
-
 	try {
+		const userId = req.user._id;
+
 		// Set the cookie to a dummy value and make it expire immediately
 		res.cookie('token', 'logout', {
 			httpOnly: true,
@@ -118,17 +123,17 @@ export const logout = async (req, res) => {
 		});
 
 		// Create an audit log entry of the user's action
-		if (user) {
+		if (userId) {
 			const auditLog = new AuditLog({
 				action: 'LOGOUT',
 				subjectType: 'Logout user',
-				userId: user,
+				userId: userId,
 				details: { reason: 'User logged out' },
 			});
 			await auditLog.save();
 		}
 
-		const userCacheKey = `user_${req.user._id}`; // Assuming req.user contains the logged-in user's data
+		const userCacheKey = `user_${userId}`;
 		clearCache(userCacheKey);
 
 		res.status(StatusCodes.OK).json({ msg: 'User logged out' });

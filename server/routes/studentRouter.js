@@ -11,19 +11,27 @@ import {
 } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
 import { validateQuizIdParam } from '../validators/quizValidator.js';
+import {
+	validateStudentId,
+	validateStudentPerformanceUpdate,
+} from '../validators/studentValidator.js';
 const router = Router();
 
-router
-	.route()
-	.get(
-		'/class/:id/students',
-		getAllStudents,
-		checkIsTeacher,
-		authorizePermissions(USER_STATUS.TEACHER.value)
-	);
-router
-	.route('/class/:id/students/:id')
-	.get(getSingleStudent, authorizePermissions(USER_STATUS.TEACHER))
-	.post(updateStudentPerformance);
+// Get all students in a class
+router.get(
+	'/class/:id/students',
+	checkIsTeacher,
+	authorizePermissions(USER_STATUS.TEACHER.value),
+	getAllStudents
+);
 
+// Get a single student by ID
+router.get('/student/:id', validateStudentId, getSingleStudent);
+
+// Update student performance
+router.post(
+	'/student/performance',
+	validateStudentPerformanceUpdate,
+	updateStudentPerformance
+);
 export default router;

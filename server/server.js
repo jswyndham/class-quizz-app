@@ -13,6 +13,7 @@ import authRouter from './routes/authRouter.js';
 import userRouter from './routes/userRouter.js';
 import cloudinaryRouter from './routes/cloudinaryRouter.js';
 import quizAttemptRouter from './routes/quizAttemptRouter.js';
+import membershipRouter from './routes/membershipRouter.js';
 
 // middleware
 import errorHandlerMiddleware from './middleWare/errorHandlerMiddleware.js';
@@ -40,6 +41,7 @@ app.use('/api/v1/users', authenticateUser, userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/upload', cloudinaryRouter);
 app.use('/api/v1/quizAttempt', authenticateUser, quizAttemptRouter);
+app.use('/api/v1/membership', authenticateUser, membershipRouter);
 
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));

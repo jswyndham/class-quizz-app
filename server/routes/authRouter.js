@@ -4,11 +4,12 @@ import {
 	validateRegisterInput,
 	validateLoginInput,
 } from '../middleWare/validationMiddleware.js';
+import { authenticateUser } from '../middleWare/authMiddleware.js';
 
 const router = Router();
 
 router.post('/register', validateRegisterInput, register);
 router.post('/login', validateLoginInput, login);
-router.get('/logout', logout);
+router.get('/logout', authenticateUser, logout);
 
 export default router;
