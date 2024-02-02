@@ -14,6 +14,12 @@ export const validateStudentPerformanceUpdate = [
 export const validateStudentId = [
 	body('studentId')
 		.custom((value) => mongoose.Types.ObjectId.isValid(value))
-		.withMessage('Invalid student ID format'),
-	// You can add additional checks, like ensuring the student exists
+		.withMessage('Invalid student ID format')
+		// Check if student id exists
+		.custom(async (value) => {
+			const student = await Student.findById(value);
+			if (!student) {
+				return Promise.reject('Student ID does not exist');
+			}
+		}),
 ];

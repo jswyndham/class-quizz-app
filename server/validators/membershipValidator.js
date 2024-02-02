@@ -9,54 +9,28 @@ import {
 } from '../errors/customErrors.js';
 import { withValidationErrors } from './validationHelpers.js';
 
-// Validate Class and Student IDs
-export const validateMembershipIds = withValidationErrors([
+// Validator for classId as a route parameter
+export const validateClassIdParam = withValidationErrors([
 	param('classId').custom(async (value, { req }) => {
-		if (value) {
-			console.log('Validating classId:', value); // Debug log
-			if (!mongoose.Types.ObjectId.isValid(value)) {
-				throw new BadRequestError('Invalid class ID');
-			}
-			const classGroup = await ClassGroup.findById(value);
-			if (!classGroup) {
-				throw new NotFoundError(`Class with ID ${value} not found`);
-			}
+		if (!mongoose.Types.ObjectId.isValid(value)) {
+			throw new BadRequestError('Invalid class ID');
+		}
+		const classGroup = await ClassGroup.findById(value);
+		if (!classGroup) {
+			throw new NotFoundError(`Class with ID ${value} not found`);
 		}
 	}),
+]);
+
+// Validator for studentId as a route parameter
+export const validateStudentIdParam = withValidationErrors([
 	param('studentId').custom(async (value, { req }) => {
-		if (value) {
-			console.log('Validating studentId:', value); // Debug log
-			if (!mongoose.Types.ObjectId.isValid(value)) {
-				throw new BadRequestError('Invalid student ID');
-			}
-			const student = await Student.findById(value);
-			if (!student) {
-				throw new NotFoundError(`Student with ID ${value} not found`);
-			}
+		if (!mongoose.Types.ObjectId.isValid(value)) {
+			throw new BadRequestError('Invalid student ID');
 		}
-	}),
-	body('classId').custom(async (value, { req }) => {
-		if (value) {
-			console.log('Validating classId:', value); // Debug log
-			if (!mongoose.Types.ObjectId.isValid(value)) {
-				throw new BadRequestError('Invalid class ID');
-			}
-			const classGroup = await ClassGroup.findById(value);
-			if (!classGroup) {
-				throw new NotFoundError(`Class with ID ${value} not found`);
-			}
-		}
-	}),
-	body('studentId').custom(async (value, { req }) => {
-		if (value) {
-			console.log('Validating studentId:', value); // Debug log
-			if (!mongoose.Types.ObjectId.isValid(value)) {
-				throw new BadRequestError('Invalid student ID');
-			}
-			const student = await Student.findById(value);
-			if (!student) {
-				throw new NotFoundError(`Student with ID ${value} not found`);
-			}
+		const student = await Student.findById(value);
+		if (!student) {
+			throw new NotFoundError(`Student with ID ${value} not found`);
 		}
 	}),
 ]);
@@ -67,14 +41,12 @@ export const validateAccessCode = withValidationErrors([
 		.notEmpty()
 		.withMessage('Access code is required')
 		.custom(async (accessCode, { req }) => {
-			try {
-				const { classId } = req.body;
-				const classGroup = await ClassGroup.findById(classId);
-				if (classGroup.accessCode !== accessCode) {
-					throw new UnauthorizedError('Invalid access code');
-				}
-			} catch (error) {
-				throw error; // rethrow the error to be caught by withValidationErrors
+			const classGroup = await ClassGroup.findOne({
+				accessCode: accessCode,
+			});
+			if (!classGroup) {
+				throw new UnauthorizedError('Invalid access code');
 			}
+			req.classGroup = classGroup; // Attaching the classGroup to the request
 		}),
 ]);

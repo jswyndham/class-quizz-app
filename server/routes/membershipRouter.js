@@ -7,7 +7,8 @@ import {
 } from '../controllers/membershipController.js';
 import {
 	validateAccessCode,
-	validateMembershipIds,
+	validateClassIdParam,
+	validateStudentIdParam,
 } from '../validators/membershipValidator.js';
 import {
 	authenticateUser,
@@ -18,24 +19,20 @@ const router = Router();
 
 router.use(authenticateUser);
 
-router.route('/').post(createMembership);
+router.route('/').post(validateAccessCode, createMembership);
 
-router.route('/class/:classId').get(validateMembershipIds, getClassMemberships);
+router.route('/class/:classId').get(validateClassIdParam, getClassMemberships);
 
 router
 	.route('/student/:studentId')
 	.get(
-		validateMembershipIds,
+		validateStudentIdParam,
 		authorizePermissions('ADMIN', 'TEACHER'),
 		getStudentMemberships
 	);
 
 router
 	.route('/:id')
-	.delete(
-		validateMembershipIds,
-		authorizePermissions('ADMIN', 'TEACHER'),
-		deleteMembership
-	);
+	.delete(authorizePermissions('ADMIN', 'TEACHER'), deleteMembership);
 
 export default router;

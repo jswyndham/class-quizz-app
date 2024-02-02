@@ -6,6 +6,7 @@ import { UnauthenticatedError } from '../errors/customErrors.js';
 import { createJWT } from '../utils/tokenUtils.js';
 import { clearCache, setCache } from '../utils/cache/cache.js';
 import AuditLog from '../models/AuditLogModel.js';
+import Student from '../models/StudentModel.js';
 
 // Controller for registering a new user
 export const register = async (req, res) => {
@@ -13,9 +14,9 @@ export const register = async (req, res) => {
 		// Check if this is the first account to automatically assign admin status
 		const isFirstAccount = (await User.countDocuments()) === 0;
 		if (isFirstAccount) {
-			req.body.userStatus = USER_STATUS.ADMIN.value; // Ensure you use the string value
+			req.body.userStatus = USER_STATUS.ADMIN.value;
 		} else {
-			// If userStatus is an object, use its value property
+			// If userStatus is an object, use its value property (there are 'value' and 'label' properties)
 			if (
 				typeof req.body.userStatus === 'object' &&
 				req.body.userStatus.value
@@ -40,7 +41,7 @@ export const register = async (req, res) => {
 		if (user._id) {
 			const auditLog = new AuditLog({
 				action: 'REGISTER',
-				subjectType: 'Register as user',
+				subjectType: 'Registered as user',
 				userId: user._id,
 				details: { reason: 'User registered' },
 			});

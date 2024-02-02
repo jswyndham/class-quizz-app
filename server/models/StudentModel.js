@@ -26,6 +26,12 @@ const StudentSchema = new mongoose.Schema(
 				],
 			},
 		],
+		membership: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Membership',
+			},
+		],
 	},
 	{ timestamps: true }
 );

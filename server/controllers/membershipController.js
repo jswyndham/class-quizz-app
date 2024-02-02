@@ -5,6 +5,7 @@ import { isValidObjectId } from 'mongoose';
 import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
 import { ROLE_PERMISSIONS } from '../utils/constants.js';
 import { StatusCodes } from 'http-status-codes';
+import Student from '../models/StudentModel.js';
 
 const hasPermission = (userRole, action) => {
 	return (
@@ -16,8 +17,9 @@ const hasPermission = (userRole, action) => {
 // Create student class membership (student join class)
 export const createMembership = async (req, res) => {
 	try {
-		// Verify user permissions
 		const userRole = req.user.userStatus;
+		const studentId = req.user.userId;
+		const accessCode = req.body.accessCode;
 
 		if (!hasPermission(userRole, 'JOIN_CLASS')) {
 			return res.status(403).json({
@@ -25,8 +27,6 @@ export const createMembership = async (req, res) => {
 					'Forbidden: You do not have permission for this action',
 			});
 		}
-
-		const { studentId, accessCode } = req.body;
 
 		// Fetch the class by accessCode
 		const classGroup = await ClassGroup.findOne({ accessCode: accessCode });
@@ -57,17 +57,21 @@ export const createMembership = async (req, res) => {
 		classGroup.membership.push(membership._id);
 		await classGroup.save();
 
+		// Also update the Student's membership array
+		await Student.findOneAndUpdate(
+			{ user: studentId },
+			{ $push: { membership: membership._id } }
+		);
+
 		// Create an audit log entry of the user's action
-		if (membership) {
-			const auditLog = new AuditLog({
-				action: 'CREATE_MEMBERSHIP',
-				subjectType: 'Class membership',
-				subjectId: membership._id,
-				userId: req.user.userId,
-				details: { reason: 'Class member added' },
-			});
-			await auditLog.save();
-		}
+		const auditLog = new AuditLog({
+			action: 'CREATE_MEMBERSHIP',
+			subjectType: 'Class membership',
+			subjectId: membership._id,
+			userId: req.user.userId,
+			details: { reason: 'Class member added' },
+		});
+		await auditLog.save();
 
 		// Clear related caches
 		clearCache(`memberships_student_${studentId}`);
@@ -119,8 +123,8 @@ export const getClassMemberships = async (req, res) => {
 			console.error('Cache retrieval error:', cacheError);
 		}
 
-		const memberships = await Membership.find({ class: classId })
-			.populate('student')
+		const memberships = await ClassGroup.find({ class: classId })
+			.populate('membership')
 			.lean()
 			.exec();
 
@@ -144,7 +148,7 @@ export const getClassMemberships = async (req, res) => {
 export const getStudentMemberships = async (req, res) => {
 	try {
 		const userRole = req.user.userStatus;
-		const studentId = req.params.studentId;
+		const userId = req.user.userId;
 
 		if (!hasPermission(userRole, 'GET_ALL_STUDENT_MEMBERSHIPS')) {
 			return res.status(403).json({
@@ -153,7 +157,7 @@ export const getStudentMemberships = async (req, res) => {
 			});
 		}
 
-		const cacheKey = `memberships_student_${studentId}`;
+		const cacheKey = `memberships_student_${userId}`;
 		try {
 			const cachedData = getCache(cacheKey);
 			if (cachedData) {
@@ -165,18 +169,30 @@ export const getStudentMemberships = async (req, res) => {
 			console.error('Cache retrieval error:', cacheError);
 		}
 
-		const memberships = await Membership.find({ student: studentId })
-			.populate('class')
+		// Query the Student model by the user field
+		const studentData = await Student.findOne({ user: userId })
+			.populate({
+				path: 'membership',
+				populate: { path: 'class' },
+			})
 			.lean()
 			.exec();
 
+		if (!studentData) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Student not found' });
+		}
+
 		try {
-			setCache(cacheKey, memberships, 3600); // 1 hour
+			setCache(cacheKey, studentData.membership, 3600); // Cache for 1 hour
 		} catch (cacheError) {
 			console.error('Cache set error:', cacheError);
 		}
 
-		res.status(StatusCodes.OK).json({ memberships });
+		res.status(StatusCodes.OK).json({
+			memberships: studentData.membership,
+		});
 	} catch (error) {
 		console.error('Error getting student memberships:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

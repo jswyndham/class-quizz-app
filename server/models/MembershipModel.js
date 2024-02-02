@@ -6,11 +6,13 @@ const MembershipSchema = new mongoose.Schema({
 		ref: 'Student',
 		required: true,
 	},
-	class: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Class',
-		required: true,
-	},
+	class: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Class',
+			required: true,
+		},
+	],
 	joinedAt: {
 		type: Date,
 		default: Date.now,

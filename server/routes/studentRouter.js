@@ -4,18 +4,20 @@ import {
 	getSingleStudent,
 	updateStudentPerformance,
 } from '../controllers/userController.js';
-import { validateUpdateUserInput } from '../middleWare/validationMiddleware.js';
 import {
+	authenticateUser,
 	authorizePermissions,
 	checkIsTeacher,
 } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
-import { validateQuizIdParam } from '../validators/quizValidator.js';
 import {
 	validateStudentId,
 	validateStudentPerformanceUpdate,
 } from '../validators/studentValidator.js';
+
 const router = Router();
+
+router.use(authenticateUser);
 
 // Get all students in a class
 router.get(
