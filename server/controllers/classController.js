@@ -125,13 +125,14 @@ export const createClass = async (req, res) => {
 
 // Controller to retrieve a single class
 export const getClass = async (req, res) => {
-	// Convert query parameters to a string for the cache key
-	const classId = req.params.id;
-	const userId = req.user.userId;
-
-	const cacheKey = `class_${userId}_${classId}`; // Unlike getAllClasses function, this also has classId to create a unique key for each class object.
-
 	try {
+		// Convert query parameters to a string for the cache key
+		const classId = req.params.id;
+		const userId = req.user.userId;
+
+		// Unique cacheKey
+		const cacheKey = `class_${userId}_${classId}`;
+
 		// Validate IDs
 		if (!isValidObjectId(classId) || !isValidObjectId(userId)) {
 			return res
@@ -405,6 +406,72 @@ export const joinClassWithCode = async (req, res) => {
 			message: 'Joined class successfully',
 		});
 	} catch (error) {
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message,
+		});
+	}
+};
+
+// Get all students in a specific class
+export const getClassMemberships = async (req, res) => {
+	try {
+		const classId = req.params.id;
+
+		// Verify user permissions
+		const userRole = req.user.userStatus;
+
+		if (!hasPermission(userRole, 'GET_CLASS_MEMBERS')) {
+			return res.status(403).json({
+				message:
+					'Forbidden: You do not have permission for this action',
+			});
+		}
+
+		// Validate IDs
+		if (!isValidObjectId(classId)) {
+			return res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ message: 'Invalid ID format' });
+		}
+
+		// Create cacheKey
+		const cacheKey = `memberships_class_${classId}`;
+
+		console.log('getClassMemberships cacheKey: ', cacheKey);
+
+		try {
+			// Get previous set cache
+			const cachedData = getCache(cacheKey);
+
+			// If the cached data exists, retrieve the existing data.
+			if (cachedData) {
+				console.log(`Cache hit for key: ${cacheKey}`);
+				return res
+					.status(StatusCodes.OK)
+					.json({ memberships: cachedData });
+			} else {
+				console.log(`Cache miss for key: ${cacheKey}`);
+			}
+		} catch (cacheError) {
+			console.error('Cache retrieval error:', cacheError);
+		}
+
+		// Retrieve class with populated memberships
+		const classData = await ClassGroup.findById(classId)
+			.select('membership')
+			.lean()
+			.exec();
+
+		try {
+			// Set new cache
+			setCache(cacheKey, classData.membership, 3600); // 1 hour
+		} catch (cacheError) {
+			console.error('Cache set error:', cacheError);
+		}
+
+		res.status(StatusCodes.OK).json({ memberships: classData.membership });
+	} catch (error) {
+		console.error('Error getting class memberships:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

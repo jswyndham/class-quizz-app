@@ -1,4 +1,4 @@
-import { body, param, validationResult } from 'express-validator';
+import { body, param } from 'express-validator';
 import mongoose from 'mongoose';
 import ClassGroup from '../models/ClassModel.js';
 import Student from '../models/StudentModel.js';
@@ -9,29 +9,17 @@ import {
 } from '../errors/customErrors.js';
 import { withValidationErrors } from './validationHelpers.js';
 
-// Validator for classId as a route parameter
-export const validateClassIdParam = withValidationErrors([
-	param('classId').custom(async (value, { req }) => {
-		if (!mongoose.Types.ObjectId.isValid(value)) {
-			throw new BadRequestError('Invalid class ID');
-		}
-		const classGroup = await ClassGroup.findById(value);
-		if (!classGroup) {
-			throw new NotFoundError(`Class with ID ${value} not found`);
-		}
-	}),
-]);
-
 // Validator for studentId as a route parameter
 export const validateStudentIdParam = withValidationErrors([
 	param('studentId').custom(async (value, { req }) => {
 		if (!mongoose.Types.ObjectId.isValid(value)) {
 			throw new BadRequestError('Invalid student ID');
 		}
-		const student = await Student.findById(value);
+		const student = await Student.findOne({ user: value });
 		if (!student) {
 			throw new NotFoundError(`Student with ID ${value} not found`);
 		}
+		req.student = student; // Store the student in the request object for later use
 	}),
 ]);
 

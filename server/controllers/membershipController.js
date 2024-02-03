@@ -86,69 +86,13 @@ export const createMembership = async (req, res) => {
 	}
 };
 
-// Get all students in a specific class
-export const getClassMemberships = async (req, res) => {
-	try {
-		// Verify user permissions
-		const userRole = req.user.userStatus;
-
-		if (!hasPermission(userRole, 'GET_CLASS_MEMBERS')) {
-			return res.status(403).json({
-				message:
-					'Forbidden: You do not have permission for this action',
-			});
-		}
-
-		const classId = req.params.id;
-
-		// Create cacheKey
-		const cacheKey = `memberships_class_${classId}`;
-
-		console.log('getClassMemberships cacheKey: ', cacheKey);
-
-		try {
-			// Get previous set cache
-			const cachedData = getCache(cacheKey);
-
-			// If the cached data exists, retrieve the existing data.
-			if (cachedData) {
-				console.log(`Cache hit for key: ${cacheKey}`);
-				return res
-					.status(StatusCodes.OK)
-					.json({ memberships: cachedData });
-			} else {
-				console.log(`Cache miss for key: ${cacheKey}`);
-			}
-		} catch (cacheError) {
-			console.error('Cache retrieval error:', cacheError);
-		}
-
-		const memberships = await ClassGroup.find({ class: classId })
-			.populate('membership')
-			.lean()
-			.exec();
-
-		try {
-			// Set new cache
-			setCache(cacheKey, memberships, 3600); // 1 hour
-		} catch (cacheError) {
-			console.error('Cache set error:', cacheError);
-		}
-
-		res.status(StatusCodes.OK).json({ memberships });
-	} catch (error) {
-		console.error('Error getting class memberships:', error);
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
-};
-
 // Get (find) all the class memberships a single student has joined
 export const getStudentMemberships = async (req, res) => {
 	try {
 		const userRole = req.user.userStatus;
-		const userId = req.user.userId;
+		const studentId = req.params.studentId;
+
+		console.log('Requested studentId:', studentId);
 
 		if (!hasPermission(userRole, 'GET_ALL_STUDENT_MEMBERSHIPS')) {
 			return res.status(403).json({
@@ -157,7 +101,7 @@ export const getStudentMemberships = async (req, res) => {
 			});
 		}
 
-		const cacheKey = `memberships_student_${userId}`;
+		const cacheKey = `memberships_student_${studentId}`;
 		try {
 			const cachedData = getCache(cacheKey);
 			if (cachedData) {
@@ -170,11 +114,9 @@ export const getStudentMemberships = async (req, res) => {
 		}
 
 		// Query the Student model by the user field
-		const studentData = await Student.findOne({ user: userId })
-			.populate({
-				path: 'membership',
-				populate: { path: 'class' },
-			})
+		const studentData = await Student.findOne({ user: studentId })
+			.select('membership')
+			.populate('membership')
 			.lean()
 			.exec();
 
