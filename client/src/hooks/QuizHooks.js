@@ -4,6 +4,7 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 const QuizHooks = (initialQuizData) => {
 	const [quiz, setQuiz] = useState({
 		quizTitle: initialQuizData.quizTitle || '',
+		quizDuration: initialQuizData.quizDuration || '',
 		questions: initialQuizData.questions || [
 			{
 				questionText: '',
@@ -14,6 +15,7 @@ const QuizHooks = (initialQuizData) => {
 		class: initialQuizData.class || [],
 	});
 
+	// Hooks state for pictures and video upload
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
@@ -27,6 +29,7 @@ const QuizHooks = (initialQuizData) => {
 	// State to control the selected question index when a QuizFormAnswer is interacted with in a Form.
 	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
 
+	// State for background color
 	const [quizBackgroundColor, setQuizBackgroundColor] = useState('#2D9596'); // default color
 
 	// Store quiz data in local storage with using quizForm

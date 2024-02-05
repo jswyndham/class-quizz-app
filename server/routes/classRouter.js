@@ -4,16 +4,17 @@ import {
 	validateIdParam,
 } from '../middleWare/validationMiddleware.js';
 import {
-	getClass,
-	getAllClasses,
 	createClass,
 	updateClass,
 	deleteClass,
-	joinClass,
 	getAllStudents,
 	joinClassWithCode,
+} from '../controllers/classGroup/manageClassController.js';
+import {
+	getClass,
+	getAllClasses,
 	getClassMemberships,
-} from '../controllers/classController.js';
+} from '../controllers/classGroup/getClassController.js';
 import { authorizePermissions } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
 import { validateClassIdParam } from '../validators/classValidator.js';
@@ -29,14 +30,6 @@ router
 	.get(getClass)
 	.patch(validateIdParam, validateClassInput, updateClass)
 	.delete(validateIdParam, deleteClass);
-
-// Route for students to join a class group (become class members)
-router.post(
-	'/:id/join',
-	authorizePermissions(USER_STATUS.STUDENT),
-	validateIdParam,
-	joinClass
-);
 
 // Route to get the info of class members (students)
 router.get('/:id/students', validateIdParam, getAllStudents);

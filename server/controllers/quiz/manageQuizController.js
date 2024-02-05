@@ -1,165 +1,17 @@
 import { StatusCodes } from 'http-status-codes';
 import sanitizeHtml from 'sanitize-html';
-import Quiz from '../models/QuizModel.js';
-import ClassGroup from '../models/ClassModel.js';
-import { getCache, setCache, clearCache } from '../utils/cache/cache.js';
-import AuditLog from '../models/AuditLogModel.js';
-import { ROLE_PERMISSIONS } from '../utils/constants.js';
-
-// This will ensure that users only access the data relevant to their requests.
-const generateCacheKey = (userId) => {
-	return `quizzes_${userId}`;
-};
+import Quiz from '../../models/QuizModel.js';
+import ClassGroup from '../../models/ClassModel.js';
+import { clearCache } from '../../utils/cache/cache.js';
+import AuditLog from '../../models/AuditLogModel.js';
+import { ROLE_PERMISSIONS } from '../../utils/constants.js';
+import sanitizeConfig from './quizUtils.js';
 
 const hasPermission = (userRole, action) => {
 	return (
 		ROLE_PERMISSIONS[userRole] &&
 		ROLE_PERMISSIONS[userRole].includes(action)
 	);
-};
-
-// Configuration for HTML sanitization
-const sanitizeConfig = {
-	allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe', 'img']),
-	allowedAttributes: {
-		...sanitizeHtml.defaults.allowedAttributes,
-		iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen'],
-		img: ['src', 'alt'],
-	},
-
-	// Custom transformations for specific tags that are allowed to be shown in the tinyMCE editor. This has been done to tighten security and sanitation regarding what is accepted by the rich text editor.
-	transformTags: {
-		iframe: (tagName, attribs) => {
-			// Regex to validate YouTube URLs in iframe
-			// Two expressions are used to match YouTube URL in iframe src
-			const iframeRegex =
-				/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/embed\/[\w-]+(\?.*)?$/;
-			if (attribs.src && iframeRegex.test(attribs.src)) {
-				return {
-					tagName: 'iframe',
-					attribs: {
-						src: attribs.src,
-						width: attribs.width || '560',
-						height: attribs.height || '315',
-						frameborder: attribs.frameborder || '0',
-						allowfullscreen: attribs.allowfullscreen || '',
-					},
-				};
-			}
-			return {
-				tagName: 'p',
-				text: '(Video removed for security reasons)',
-			};
-		},
-		img: (tagName, attribs) => {
-			// Regular expression to match jpg and png image URLs
-			const dataUrlRegex = /^data:image\/(png|jpeg|jpg);base64,/;
-			const imageUrlRegex = /\.(jpg|jpeg|png)$/i;
-
-			// Check if the src attribute of the img tag matches allowed formats
-			if (
-				attribs.src &&
-				(dataUrlRegex.test(attribs.src) ||
-					imageUrlRegex.test(attribs.src))
-			) {
-				// Return the img tag with its attributes if it matches the criteria
-				return {
-					tagName: 'img',
-					attribs: {
-						src: attribs.src,
-						alt: attribs.alt || '',
-					},
-				};
-			}
-			return {
-				tagName: 'p',
-				text: '(Image removed for security reasons)',
-			};
-		},
-	},
-};
-
-// Controller to get all quizzes by user
-export const getAllQuizzes = async (req, res) => {
-	try {
-		const userId = req.user.userId;
-		const cacheKey = `quiz_${userId}`;
-		// Get previous set cache
-		const cachedData = getCache(cacheKey);
-
-		if (cachedData) {
-			console.log(`Cache hit for allQuizzes key: ${cacheKey}`);
-
-			// Deserialize each item back into an object
-			const allQuizzes = cachedData.map((item) => JSON.parse(item));
-
-			return res.status(StatusCodes.OK).json({ allQuizzes });
-		} else {
-			console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
-
-			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
-				.populate('class')
-				.lean({ virtuals: true })
-				.exec();
-
-			// Serialize each quiz for caching (this is for the benefit of getting the schema virtuals in the cache, which is easier to retreive)
-			const serializedQuizzes = allQuizzes.map((quiz) =>
-				JSON.stringify(quiz)
-			);
-
-			// Set new cache
-			setCache(cacheKey, serializedQuizzes, 3600); // Caches for 1 hour
-
-			res.status(StatusCodes.OK).json({ allQuizzes });
-		}
-	} catch (error) {
-		console.error('Error finding all quizzes:', error);
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
-};
-
-// Controller to get a single quiz
-export const getQuiz = async (req, res) => {
-	const quizId = req.params.id;
-	const userId = req.user.userId;
-	const cacheKey = `quiz_${userId}_${quizId}`;
-
-	try {
-		const cachedQuiz = getCache(cacheKey);
-		if (cachedQuiz) {
-			console.log(`Cache hit for key: ${cacheKey}`);
-
-			// Deserialize the quiz object
-			const quiz = JSON.parse(cachedQuiz);
-
-			return res.status(StatusCodes.OK).json({ quiz: quiz });
-		}
-
-		console.log(`Cache miss for key: ${cacheKey}`);
-		const quiz = await Quiz.findById(quizId)
-			.populate('class')
-			.lean({ virtuals: true })
-			.exec();
-
-		if (!quiz) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ message: 'Quiz not found' });
-		}
-
-		// Serialize the quiz for faster caching
-		const serializedQuiz = JSON.stringify(quiz);
-		setCache(cacheKey, serializedQuiz, 10800); // Caching for 3 hours
-
-		res.status(StatusCodes.OK).json({ quiz });
-	} catch (error) {
-		console.error('Error finding quiz:', error);
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
 };
 
 // Controller to create a new quiz
@@ -495,67 +347,6 @@ export const deleteQuiz = async (req, res) => {
 		console.error('Error deleting quiz:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
-		});
-	}
-};
-
-// Controller to add a question to a quiz
-export const addQuestionToQuiz = async (req, res) => {
-	try {
-		const quizId = req.params.id;
-		const questionData = { ...req.body };
-
-		// Sanitize question and option texts
-		if (questionData.questionText) {
-			questionData.questionText = sanitizeHtml(
-				questionData.questionText,
-				sanitizeConfig
-			);
-		}
-
-		// Sanitize options and set correct answer
-		if (questionData.options) {
-			questionData.options = questionData.options.map(
-				(option, index) => ({
-					...option,
-					optionText: sanitizeHtml(option.optionText, sanitizeConfig),
-					isCorrect: index === questionData.correctAnswer,
-				})
-			);
-		}
-
-		// Update quiz with the new question
-		const updatedQuiz = await Quiz.findByIdAndUpdate(
-			quizId,
-			{ $push: { questions: questionData } },
-			{ new: true, runValidators: true }
-		);
-
-		// Validate if updatedQuiz exists
-		if (!updatedQuiz) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ msg: 'Quiz not found' });
-		}
-
-		// If the cache already exists, update cache with new question objects
-		const quizCacheKey = `quiz_${quizId}`;
-		const cachedQuiz = getCache(quizCacheKey);
-		if (cachedQuiz) {
-			cachedQuiz.questions.push(questionData);
-			setCache(quizCacheKey, cachedQuiz, 3600);
-		} else {
-			// Otherwise, clear the cache
-			clearCache(quizCacheKey);
-		}
-
-		res.status(StatusCodes.OK).json({
-			msg: 'Question added',
-			quiz: updatedQuiz,
-		});
-	} catch (error) {
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			msg: error.message,
 		});
 	}
 };

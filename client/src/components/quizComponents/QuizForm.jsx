@@ -1,11 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { FormRowSelect } from '../';
 import QuizHooks from '../../hooks/QuizHooks';
-import { useNavigate, useNavigation, Form } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useNavigation, Form } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { createQuiz } from '../../features/quiz/quizAPI';
-import { uploadCloudinaryFile } from '../../features/cloudinary/cloudinaryAPI';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegImage } from 'react-icons/fa6';
 import { fetchClasses } from '../../features/classGroup/classAPI';
@@ -17,6 +14,7 @@ import {
 } from '../quizComponents';
 import { QUESTION_TYPE } from '../../../../server/utils/constants';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
+import quizFormHandlers from '../../handlers/quizFormHandlers';
 
 const QuizForm = () => {
 	// STATE HOOKS
@@ -24,23 +22,28 @@ const QuizForm = () => {
 		quiz,
 		selectedClassId,
 		quizBackgroundColor,
-		selectedQuestionIndex,
-		setSelectedQuestionIndex,
 		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
-		setQuizTitle,
-		updateQuestion,
-		addNewQuestion,
 		setCorrectAnswer,
-		addOptionToQuestion,
 		updateAnswerType,
-		updateOption,
-		deleteOption,
 		deleteQuizForm,
 	} = QuizHooks({});
 
-	const navigate = useNavigate();
+	const {
+		handleQuizTitleChange,
+		handleQuizDuration,
+		updateQuestionText,
+		updateQuestionPoints,
+		handleRadioChange,
+		handleFileChange,
+		handleAddNewQuestion,
+		handleAddOption,
+		handleOptionTextChange,
+		handleDeleteOption,
+		handleSubmit,
+	} = quizFormHandlers({});
+
 	const dispatch = useDispatch();
 
 	const navigation = useNavigation();
@@ -54,126 +57,7 @@ const QuizForm = () => {
 		dispatch(fetchClasses());
 	}, [dispatch]);
 
-	// ADD QUIZ TITLE
-	const handleQuizTitleChange = (e) => {
-		setQuizTitle(e.target.value);
-	};
-
-	// ADD QUESTION TEXT
-	const updateQuestionText = (questionIndex, newText, e) => {
-		// Ensure newText is a string
-		newText = String(newText);
-
-		const updatedQuestion = {
-			...quiz.questions[questionIndex],
-
-			questionText: newText,
-		};
-
-		updateQuestion(questionIndex, updatedQuestion);
-	};
-
-	// ADD QUESTION POINTS
-	const updateQuestionPoints = (questionIndex, e) => {
-		const points = parseInt(e.target.value, 10) || 0;
-		const updatedQuestion = {
-			...quiz.questions[questionIndex],
-			points: points,
-		};
-
-		updateQuestion(questionIndex, updatedQuestion);
-	};
-
-	// Handles the changes to the radio button which triggers changes to the 'isCorrect' boolean parameter in the Quiz schema
-	const handleRadioChange = (questionIndex, optionIndex) => {
-		setCorrectAnswer(questionIndex, optionIndex);
-	};
-
-	// Update this state based on the input change
-	const handleBackgroundColorChange = (color) => {
-		setQuizBackgroundColor(color);
-	};
-
-	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
-	const handleFileChange = async (e, questionIndex) => {
-		const file = e.target.files[0];
-		if (file) {
-			const formData = new FormData();
-			formData.append('file', file);
-
-			try {
-				const uploadResult = await dispatch(
-					uploadCloudinaryFile(formData)
-				).unwrap();
-				const updatedQuestion = {
-					...quiz.questions[questionIndex],
-					uploadedImageUrl: uploadResult.url,
-				};
-				updateQuestion(questionIndex, updatedQuestion);
-			} catch (error) {
-				console.error('Failed to upload file:', error);
-				toast.error('Failed to upload file');
-			}
-		}
-	};
-
-	// ADD NEW QUESTION
-	const handleAddNewQuestion = () => {
-		addNewQuestion();
-	};
-
-	// ADD NEW OPTION (ANSWER) TO QUESTION
-	const handleAddOption = (questionIndex) => {
-		addOptionToQuestion(questionIndex);
-	};
-
-	// ADD OPTION (ANSWER) TEXT
-	const handleOptionTextChange = (questionIndex, optionIndex, e) => {
-		const updatedOption = {
-			...quiz.questions[questionIndex].options[optionIndex],
-			optionText: e.target.value,
-		};
-		updateOption(questionIndex, optionIndex, updatedOption);
-	};
-
-	// DELETE OPTION
-	const handleDeleteOption = (questionIndex, optionIndex) => {
-		deleteOption(questionIndex, optionIndex);
-	};
-
-	// Handle quiz form submission
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-
-		// Add the selected class ID to the quiz data
-		const formData = {
-			...quiz,
-			backgroundColor: quizBackgroundColor,
-			class: selectedClassId ? [selectedClassId] : [],
-		};
-
-		try {
-			const createdQuizResponse = await dispatch(
-				createQuiz(formData)
-			).unwrap();
-			dispatch(fetchClasses());
-			if (createdQuizResponse && createdQuizResponse.classId) {
-				dispatch(fetchClassById(createdQuizResponse.classId));
-			}
-
-			navigate('/dashboard');
-			toast.success('Quiz successfully added');
-
-			// Clear local storage
-			localStorage.removeItem('quizData');
-			quiz.questions.forEach((_, index) => {
-				localStorage.removeItem(`editorContent-${index}`);
-			});
-		} catch (error) {
-			console.error('Failed to create quiz:', error);
-			toast.error('Failed to create quiz');
-		}
-	};
+	// Quiz form
 	return (
 		<div className="flex justify-center items-center w-full h-fit">
 			<Form
@@ -228,6 +112,18 @@ const QuizForm = () => {
 							</div>
 						)}
 					</div>
+
+					{/* Quiz duration (quiz timer) */}
+					<label htmlFor="quizDuration">
+						Quiz Duration (in minutes):
+					</label>
+					<input
+						id="quizDuration"
+						type="number"
+						value={quiz.quizDuration}
+						onChange={(e) => handleQuizDuration(e.target.value)}
+						min="1"
+					/>
 
 					{/* Quiz question section */}
 					{quiz.questions.map((question, questionIndex) => (

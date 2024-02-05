@@ -48,10 +48,11 @@ export const createMembership = async (req, res) => {
 		}
 
 		// Create new membership
-		const membership = await Membership.create({
-			student: studentId,
-			class: classGroup._id,
-		});
+		const membership = await Membership.findOneAndUpdate(
+			{ student: studentId },
+			{ $push: { classList: { class: classId } } },
+			{ new: true }
+		);
 
 		// Add membership to the class
 		classGroup.membership.push(membership._id);
@@ -116,7 +117,10 @@ export const getStudentMemberships = async (req, res) => {
 		// Query the Student model by the user field
 		const studentData = await Student.findOne({ user: studentId })
 			.select('membership')
-			.populate('membership')
+			.populate({
+				path: 'user',
+				select: 'firstName lastName email',
+			})
 			.lean()
 			.exec();
 
@@ -147,7 +151,12 @@ export const getStudentMemberships = async (req, res) => {
 export const deleteMembership = async (req, res) => {
 	try {
 		const userRole = req.user.userStatus;
-		const { studentId, classId } = req.body;
+
+		const userId = req.params.userId;
+		const classId = req.params.classId;
+
+		console.log('USER ID: ', userId);
+		console.log('CLASS ID: ', classId);
 
 		if (!hasPermission(userRole, 'DELETE_CLASS_MEMBERSHIP')) {
 			return res.status(403).json({
@@ -156,27 +165,41 @@ export const deleteMembership = async (req, res) => {
 			});
 		}
 
-		const result = await Membership.findOneAndDelete({
-			student: studentId,
-			class: classId,
-		});
+		// Update the Membership document by removing the class from classList
+		const updatedMembership = await Membership.findOneAndUpdate(
+			{ student: userId },
+			{ $pull: { classList: { class: classId } } },
+			{ new: true }
+		);
 
-		if (!result) {
+		if (!updatedMembership) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ msg: 'Membership not found' });
 		}
 
+		// Update the Student model
+		await Student.updateOne(
+			{ _id: userId },
+			{ $pull: { membership: updatedMembership._id } }
+		);
+
+		// Update the Class model
+		await ClassGroup.updateOne(
+			{ _id: classId },
+			{ $pull: { membership: updatedMembership._id } }
+		);
+
 		// Clear related caches
-		clearCache(`memberships_student_${studentId}`);
+		clearCache(`memberships_student_${userId}`);
 		clearCache(`memberships_class_${classId}`);
 
 		res.status(StatusCodes.OK).json({
-			msg: 'Membership deleted',
-			membership: result,
+			msg: 'Class removed from membership',
+			updatedMembership,
 		});
 	} catch (error) {
-		console.error('Error deleting membership:', error);
+		console.error('Error updating membership:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

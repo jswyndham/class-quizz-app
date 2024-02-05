@@ -2,12 +2,14 @@ import { Router } from 'express';
 import {
 	getQuiz,
 	getAllQuizzes,
+} from '../controllers/quiz/getQuizController.js';
+import {
 	createQuiz,
 	updateQuiz,
 	deleteQuiz,
-	addQuestionToQuiz,
 	copyQuizToClass,
-} from '../controllers/quizController.js';
+} from '../controllers/quiz/manageQuizController.js';
+import { addQuestionToQuiz } from '../controllers/quiz/quizQuestionsController.js';
 import {
 	validateQuizIdParam,
 	validateQuizInput,

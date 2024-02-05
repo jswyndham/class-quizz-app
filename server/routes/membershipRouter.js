@@ -28,7 +28,7 @@ router
 	);
 
 router
-	.route('/:id')
+	.route('/class/:classId/:userId')
 	.delete(authorizePermissions('ADMIN', 'TEACHER'), deleteMembership);
 
 export default router;

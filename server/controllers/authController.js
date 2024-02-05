@@ -7,6 +7,8 @@ import { createJWT } from '../utils/tokenUtils.js';
 import { clearCache, setCache } from '../utils/cache/cache.js';
 import AuditLog from '../models/AuditLogModel.js';
 import Student from '../models/StudentModel.js';
+import Membership from '../models/MembershipModel.js';
+import Teacher from '../models/TeacherModel.js';
 
 // Controller for registering a new user
 export const register = async (req, res) => {
@@ -36,6 +38,13 @@ export const register = async (req, res) => {
 		if (user.userStatus === USER_STATUS.STUDENT.value) {
 			await Student.create({ user: user._id });
 		}
+
+		if (user.userStatus === USER_STATUS.TEACHER.value) {
+			await Teacher.create({ user: user._id });
+		}
+
+		// Create new membership
+		await Membership.create(req.body);
 
 		// Create an audit log entry of the user's action
 		if (user._id) {

@@ -1,22 +1,29 @@
 import mongoose from 'mongoose';
+import { USER_STATUS } from '../utils/constants.js';
 
 const MembershipSchema = new mongoose.Schema({
-	student: {
+	user: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Student',
+		ref: 'User',
 		required: true,
 	},
-	class: [
+	userStatus: {
+		type: String,
+		enum: Object.values(USER_STATUS).map((type) => type.value),
+	},
+	classList: [
 		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Class',
-			required: true,
+			class: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Class',
+				required: true,
+			},
+			joinedAt: {
+				type: Date,
+				default: Date.now,
+			},
 		},
 	],
-	joinedAt: {
-		type: Date,
-		default: Date.now,
-	},
 });
 
 export default mongoose.model('Membership', MembershipSchema);

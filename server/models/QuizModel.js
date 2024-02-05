@@ -20,6 +20,7 @@ const questionSchema = new mongoose.Schema({
 	correctAnswer: String,
 	hints: [String],
 	points: Number,
+	timer: Number, // Timer in seconds for each question
 });
 
 const QuizSchema = new mongoose.Schema(

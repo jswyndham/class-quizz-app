@@ -11,19 +11,22 @@ const ClassSchema = new mongoose.Schema(
 			type: mongoose.Types.ObjectId,
 			ref: 'User',
 		},
+		admin: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User',
+			required: true,
+		},
 		quizzes: [
 			{
 				type: mongoose.Types.ObjectId,
 				ref: 'Quiz',
 			},
 		],
-
 		accessCode: {
 			type: String,
 			unique: true,
 			required: true,
 		},
-
 		membership: [
 			{
 				type: mongoose.Types.ObjectId,
@@ -33,5 +36,8 @@ const ClassSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+// Indexing the membership field
+ClassSchema.index({ membership: 1 });
 
 export default mongoose.model('Class', ClassSchema);
