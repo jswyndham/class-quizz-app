@@ -81,6 +81,17 @@ export const createClass = async (req, res) => {
 		const classCacheKey = `class_${userId}`;
 		clearCache(classCacheKey);
 
+		// Prepare response object
+		const response = {
+			...classGroup.toObject(), // Convert the document to a plain JavaScript object
+			accessCode: undefined, // Remove access code from the response
+		};
+
+		// Only include access code in response for site admin or class admin
+		if (userRole === 'ADMIN' || userId === classGroup.admin.toString()) {
+			response.accessCode = accessCode;
+		}
+
 		return res.status(StatusCodes.CREATED).json({ classGroup });
 	} catch (error) {
 		console.error('Error creating class:', error);
