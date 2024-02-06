@@ -1,11 +1,11 @@
 import { StatusCodes } from 'http-status-codes';
-import Student from '../models/StudentModel';
-import { clearCache, getCache, setCache } from '../utils/cache/cache';
+import Student from '../../models/StudentModel';
+import { getCache, setCache } from '../../utils/cache/cache';
 
 // Find and return all students that are members of the student collection (across all classes)
 export const getAllStudents = async (req, res) => {
 	const page = parseInt(req.query.page) || 1;
-	const limit = parseInt(req.query.limit) || 10; // Number of students per page
+	const limit = parseInt(req.query.limit) || 20; // Number of students per page
 	const skip = (page - 1) * limit;
 	const cacheKey = `allStudents_page${page}_limit${limit}`;
 
@@ -18,15 +18,13 @@ export const getAllStudents = async (req, res) => {
 
 		// Fetch from DB if not cached
 		const allStudents = await Student.find({})
-			.populate({ path: 'classGroup' })
 			.populate({ path: 'user', select: 'firstName lastName email' })
 			.skip(skip)
 			.limit(limit)
 			.exec();
 
-		const total = await Student.countDocuments({
-			classGroup: req.params.id,
-		});
+		// Calculate total number of students across all classes
+		const totalStudents = await Student.countDocuments();
 
 		if (!allStudents) {
 			return res
@@ -36,7 +34,7 @@ export const getAllStudents = async (req, res) => {
 
 		const result = {
 			students: allStudents,
-			total,
+			total: totalStudents,
 			page,
 			pages: Math.ceil(total / limit), // Calculates the total number of pages required to display all students
 		};
@@ -54,6 +52,9 @@ export const getAllStudents = async (req, res) => {
 
 // Find a student by id
 export const getSingleStudent = async (req, res) => {
+	const studentId = req.params.studentId;
+	const cacheKey = `student_${studentId}`;
+
 	try {
 		// Check cache
 		const cachedStudent = getCache(cacheKey);
@@ -64,70 +65,44 @@ export const getSingleStudent = async (req, res) => {
 		}
 
 		// Fetch from DB if not cached
-		const findStudent = await Student.findById(req.user.id)
-			.populate({ path: 'classGroup' })
+		const student = await Student.findById(req.user.id)
 			.populate({ path: 'user', select: 'firstName lastName email' })
+			.populate({
+				path: 'classMembership',
+				populate: {
+					path: 'classList',
+					populate: { path: 'class', select: 'className' },
+					select: 'joinedAt',
+				},
+			})
+			.populate({
+				path: 'performance',
+				populate: {
+					path: 'class',
+					populate: { path: 'class', select: 'className' },
+					populate: {
+						path: 'quizzesTaken',
+						populate: {
+							path: 'quiz',
+							select: 'quiz score completed isFullyScored isVisibleToStudent',
+						},
+					},
+				},
+			})
+			.lean()
 			.exec();
 
 		// If no students return
-		if (!findStudent) {
+		if (!student) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ message: 'Student was not found' });
 		}
 
 		// Cache the fetched data
-		setCache(cacheKey, findStudent, 7200); // Cache for 2 hours
+		setCache(cacheKey, student, 3600); // Cache for 1 hour
 
-		res.status(StatusCodes.OK).json({ findStudent });
-	} catch (error) {
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
-};
-
-// Update student's performance after taking a quiz
-export const updateStudentPerformance = async (req, res) => {
-	const { score } = req.body;
-
-	try {
-		// Find the student based on the user ID
-		const student = await Student.findOne({ user: req.user._id });
-
-		if (!student) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ message: 'Student not found' });
-		}
-
-		// Find or initialize performance for the class
-		let performance = student.performance.find(
-			(p) => p.class.toString() === req.body.id
-		);
-		if (!performance) {
-			performance = {
-				class: req.body.id,
-				totalScore: 0,
-				quizzesTaken: [],
-			};
-			student.performance.push(performance);
-		}
-
-		// Update quizzesTaken and totalScore fields
-		performance.quizzesTaken.push({ quiz: req.body.id, score });
-		performance.totalScore += score;
-
-		// Save the student document
-		await student.save();
-
-		// Delete related cache
-		const cacheKey = `student_${req.body.id}`;
-		clearCache(cacheKey);
-
-		res.status(StatusCodes.OK).json({
-			message: 'Student performance updated',
-		});
+		res.status(StatusCodes.OK).json({ student });
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,

@@ -125,9 +125,10 @@ export const getClass = async (req, res) => {
 // Controller to find all students in a specific class
 export const getClassMemberships = async (req, res) => {
 	try {
+		const page = parseInt(req.query.page) || 1;
+		const limit = parseInt(req.query.limit) || 20; // Number of students per page
+		const skip = (page - 1) * limit;
 		const classId = req.params.id;
-
-		// Verify user permissions
 		const userRole = req.user.userStatus;
 
 		if (!hasPermission(userRole, 'GET_CLASS_MEMBERS')) {
@@ -144,12 +145,11 @@ export const getClassMemberships = async (req, res) => {
 				.json({ message: 'Invalid ID format' });
 		}
 
-		// Create cacheKey
-		const cacheKey = `memberships_class_${classId}`;
-
-		console.log('getClassMemberships cacheKey: ', cacheKey);
-
 		try {
+			// Create cacheKey
+			const cacheKey = `memberships_class_${classId}`;
+
+			console.log('getClassMemberships cacheKey: ', cacheKey);
 			// Get previous set cache
 			const cachedData = getCache(cacheKey);
 
@@ -166,20 +166,40 @@ export const getClassMemberships = async (req, res) => {
 			console.error('Cache retrieval error:', cacheError);
 		}
 
-		// Retrieve class with populated memberships
-		const classData = await ClassGroup.findById(classId)
-			.select('membership')
-			.lean()
-			.exec();
-
 		try {
+			// Count the total number of memberships for this class
+			const totalMemberships = await Membership.countDocuments({
+				class: classId,
+			});
+
+			// Retrieve memberships with pagination and populate necessary fields
+			const memberships = await Membership.find({ class: classId })
+				.skip(skip)
+				.limit(limit)
+				.populate({
+					path: 'student',
+					populate: {
+						path: 'user',
+						select: 'firstName lastName email',
+					},
+				})
+				.lean()
+				.exec();
+
+			const result = {
+				memberships,
+				total: totalMemberships,
+				page,
+				pages: Math.ceil(totalMemberships / limit),
+			};
+
 			// Set new cache
-			setCache(cacheKey, classData.membership, 3600); // 1 hour
+			setCache(cacheKey, result, 3600); // 1 hour
 		} catch (cacheError) {
 			console.error('Cache set error:', cacheError);
 		}
 
-		res.status(StatusCodes.OK).json({ memberships: classData.membership });
+		res.status(StatusCodes.OK).json(result);
 	} catch (error) {
 		console.error('Error getting class memberships:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

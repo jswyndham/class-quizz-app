@@ -25,7 +25,7 @@ const StudentSchema = new mongoose.Schema(
 					{
 						quiz: {
 							type: mongoose.Types.ObjectId,
-							ref: 'Quiz',
+							ref: 'QuizAttempt',
 						},
 						score: Number,
 					},

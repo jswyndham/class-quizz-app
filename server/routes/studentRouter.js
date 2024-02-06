@@ -2,8 +2,8 @@ import { Router } from 'express';
 import {
 	getAllStudents,
 	getSingleStudent,
-	updateStudentPerformance,
-} from '../controllers/userController.js';
+} from '../controllers/student/getStudentController.js';
+import { updateStudentPerformance } from '../controllers/student/manageStudentController.js';
 import {
 	authenticateUser,
 	authorizePermissions,
