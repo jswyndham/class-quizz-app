@@ -12,6 +12,8 @@ const hasPermission = (userRole, action) => {
 
 // Controller to transfer class admin rights
 export const transferClassAdmin = async (req, res) => {
+	// User permissions
+	const userRole = req.user.userStatus;
 	if (!hasPermission(userRole, 'TRANSFER_ADMIN_RIGHTS')) {
 		return res.status(403).json({
 			message: 'Forbidden: You do not have permission for this action',

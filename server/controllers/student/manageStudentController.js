@@ -2,9 +2,24 @@ import { StatusCodes } from 'http-status-codes';
 import Student from '../../models/StudentModel';
 import { clearCache, getCache, setCache } from '../../utils/cache/cache';
 
+const hasPermission = (userRole, action) => {
+	return (
+		ROLE_PERMISSIONS[userRole] &&
+		ROLE_PERMISSIONS[userRole].includes(action)
+	);
+};
+
 // Update student's performance after taking a quiz
 export const updateStudentPerformance = async (req, res) => {
-	const { score } = req.body;
+	// User permissions
+	const userRole = req.user.userStatus;
+	if (!hasPermission(userRole, 'GET_STUDENT_PERFORMANCE')) {
+		return res.status(403).json({
+			message: 'Forbidden: You do not have permission for this action',
+		});
+	}
+
+	const score = req.params.score;
 
 	try {
 		// Find the student based on the user ID

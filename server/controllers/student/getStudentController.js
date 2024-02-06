@@ -2,12 +2,27 @@ import { StatusCodes } from 'http-status-codes';
 import Student from '../../models/StudentModel';
 import { getCache, setCache } from '../../utils/cache/cache';
 
+const hasPermission = (userRole, action) => {
+	return (
+		ROLE_PERMISSIONS[userRole] &&
+		ROLE_PERMISSIONS[userRole].includes(action)
+	);
+};
+
 // Find and return all students that are members of the student collection (across all classes)
 export const getAllStudents = async (req, res) => {
 	const page = parseInt(req.query.page) || 1;
 	const limit = parseInt(req.query.limit) || 20; // Number of students per page
 	const skip = (page - 1) * limit;
 	const cacheKey = `allStudents_page${page}_limit${limit}`;
+
+	// User permissions
+	const userRole = req.user.userStatus;
+	if (!hasPermission(userRole, 'GET_ALL_STUDENTS')) {
+		return res.status(403).json({
+			message: 'Forbidden: You do not have permission for this action',
+		});
+	}
 
 	try {
 		// Check cache first
@@ -54,6 +69,14 @@ export const getAllStudents = async (req, res) => {
 export const getSingleStudent = async (req, res) => {
 	const studentId = req.params.studentId;
 	const cacheKey = `student_${studentId}`;
+
+	// User permissions
+	const userRole = req.user.userStatus;
+	if (!hasPermission(userRole, 'GET_SINGLE_STUDENT')) {
+		return res.status(403).json({
+			message: 'Forbidden: You do not have permission for this action',
+		});
+	}
 
 	try {
 		// Check cache

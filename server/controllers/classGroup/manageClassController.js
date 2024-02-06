@@ -2,7 +2,7 @@ import ClassGroup from '../../models/ClassModel.js';
 import Student from '../../models/StudentModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
-import { getCache, setCache, clearCache } from '../../utils/cache/cache.js';
+import { clearCache } from '../../utils/cache/cache.js';
 import { ROLE_PERMISSIONS } from '../../utils/constants.js';
 import AuditLog from '../../models/AuditLogModel.js';
 
@@ -222,52 +222,6 @@ export const deleteClass = async (req, res) => {
 		res.status(StatusCodes.OK).json({
 			msg: 'Class was deleted',
 			class: removedClass,
-		});
-	} catch (error) {
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
-};
-
-// Controller to allow students to join a class with an access code
-export const joinClassWithCode = async (req, res) => {
-	const { accessCode } = req.body;
-	const studentId = req.user.userId;
-	const userRole = req.user.userStatus;
-
-	if (!hasPermission(userRole, 'JOIN_CLASS')) {
-		return res
-			.status(StatusCodes.UNAUTHORIZED)
-			.json({ msg: 'Unauthorized' });
-	}
-
-	try {
-		// Get class details from cache
-		const cacheKey = `class_${accessCode}`;
-		let classGroup = getCache(cacheKey);
-
-		// Fetch from DB if not in cache
-		if (!classGroup) {
-			classGroup = await ClassGroup.findOne({ accessCode: accessCode });
-			if (!classGroup) {
-				return res
-					.status(StatusCodes.NOT_FOUND)
-					.json({ message: 'Class not found' });
-			}
-		}
-
-		// Update class only if student is not already a member
-		if (!classGroup.students.includes(studentId)) {
-			classGroup.students.push(studentId);
-			await classGroup.save();
-
-			// Update the cache
-			setCache(cacheKey, classGroup, 10800); // Adjust TTL as needed
-		}
-
-		res.status(StatusCodes.OK).json({
-			message: 'Joined class successfully',
 		});
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

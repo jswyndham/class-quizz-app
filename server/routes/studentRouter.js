@@ -31,7 +31,7 @@ router.get(
 router.get('/student/:id', validateStudentId, getSingleStudent);
 
 // Update student performance
-router.post(
+router.patch(
 	'/student/performance',
 	validateStudentPerformanceUpdate,
 	updateStudentPerformance

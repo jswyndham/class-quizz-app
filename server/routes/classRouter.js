@@ -7,14 +7,13 @@ import {
 	createClass,
 	updateClass,
 	deleteClass,
-	getAllStudents,
-	joinClassWithCode,
 } from '../controllers/classGroup/manageClassController.js';
 import {
 	getClass,
 	getAllClasses,
 	getClassMemberships,
 } from '../controllers/classGroup/getClassController.js';
+import { joinClassWithCode } from '../controllers/classGroup/joinClassController.js';
 import { authorizePermissions } from '../middleWare/authMiddleware.js';
 import { USER_STATUS } from '../utils/constants.js';
 import { validateClassIdParam } from '../validators/classValidator.js';
@@ -32,7 +31,6 @@ router
 	.delete(validateIdParam, deleteClass);
 
 // Route to get the info of class members (students)
-router.get('/:id/students', validateIdParam, getAllStudents);
 
 router.get('/members/:id', validateClassIdParam, getClassMemberships);
 
