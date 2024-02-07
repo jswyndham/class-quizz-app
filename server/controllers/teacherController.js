@@ -67,11 +67,20 @@ export const getAllTeachers = async (req, res) => {
 // Find a teacher by id
 export const getSingleTeacher = async (req, res) => {
 	const teacherId = req.params.teacherID;
+	const userId = req.user._id; // ID of the authenticated user
 	const cacheKey = `teacher_${teacherId}`;
 
 	if (!hasPermission(userRole, 'GET_SINGLE_TEACHER')) {
 		return res.status(403).json({
 			message: 'Forbidden: You do not have permission for this action',
+		});
+	}
+
+	// Check if the authenticated user is the same as the requested teacher
+	if (userId.toString() !== teacherId) {
+		return res.status(403).json({
+			message:
+				'Forbidden: You do not have permission to access this data',
 		});
 	}
 

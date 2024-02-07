@@ -21,18 +21,18 @@ router.use(authenticateUser);
 
 // Get all students in a class
 router.get(
-	'/class/:id/students',
+	'/class/:classId',
 	checkIsTeacher,
 	authorizePermissions(USER_STATUS.TEACHER.value),
 	getAllStudents
 );
 
 // Get a single student by ID
-router.get('/student/:id', validateStudentId, getSingleStudent);
+router.get('/:studentId', validateStudentId, getSingleStudent);
 
 // Update student performance
 router.patch(
-	'/student/performance',
+	'/performance/:studentId',
 	validateStudentPerformanceUpdate,
 	updateStudentPerformance
 );

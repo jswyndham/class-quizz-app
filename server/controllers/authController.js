@@ -9,42 +9,50 @@ import AuditLog from '../models/AuditLogModel.js';
 import Student from '../models/StudentModel.js';
 import Membership from '../models/MembershipModel.js';
 import Teacher from '../models/TeacherModel.js';
+import Admin from '../models/AdminModel.js';
 
 // Controller for registering a new user
 export const register = async (req, res) => {
 	try {
-		// Check if this is the first account to automatically assign admin status
-		const isFirstAccount = (await User.countDocuments()) === 0;
-		if (isFirstAccount) {
-			req.body.userStatus = USER_STATUS.ADMIN.value;
-		} else {
-			// If userStatus is an object, use its value property (there are 'value' and 'label' properties)
-			if (
-				typeof req.body.userStatus === 'object' &&
-				req.body.userStatus.value
-			) {
-				req.body.userStatus = req.body.userStatus.value;
-			}
-		}
-
-		// Encrypt the user's password before saving
+		// Encrypt the user's password
 		const hashedPassword = await hashPassword(req.body.password);
-		req.body.password = hashedPassword;
 
-		// Create and save the new user
-		const user = await User.create(req.body);
+		// Check if this is the first account to automatically assign super admin status
+		const isFirstAccount = (await User.countDocuments()) === 0;
 
-		// If the user is a student, create a student profile
-		if (user.userStatus === USER_STATUS.STUDENT.value) {
-			await Student.create({ user: user._id });
+		// Determine the user role
+		let userRole;
+		let adminRoles = [];
+
+		if (isFirstAccount) {
+			userRole = USER_STATUS.ADMIN.value;
+			adminRoles.push(ADMIN_STATUS.SUPER_ADMIN.value);
+		} else {
+			userRole = req.body.userStatus.value || USER_STATUS.STUDENT.value;
 		}
 
-		if (user.userStatus === USER_STATUS.TEACHER.value) {
-			await Teacher.create({ user: user._id });
+		// Create the user
+		const user = await User.create({
+			...req.body,
+			password: hashedPassword,
+			userStatus: userRole,
+		});
+
+		// Create role-specific profiles
+		switch (userRole) {
+			case USER_STATUS.STUDENT.value:
+				await Student.create({ user: user._id });
+				break;
+			case USER_STATUS.TEACHER.value:
+				await Teacher.create({ user: user._id });
+				break;
+			case USER_STATUS.ADMIN.value:
+				await Admin.create({ user: user._id });
+				break;
 		}
 
 		// Create new membership
-		await Membership.create(req.body);
+		await Membership.create({ user: user._id, classList: [] });
 
 		// Create an audit log entry of the user's action
 		if (user._id) {
@@ -57,7 +65,16 @@ export const register = async (req, res) => {
 			await auditLog.save();
 		}
 
-		res.status(StatusCodes.CREATED).json({ msg: 'User registered', user });
+		res.status(StatusCodes.CREATED).json({
+			msg: 'User registered',
+			user: {
+				id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				userStatus: user.userStatus,
+			},
+		});
 	} catch (error) {
 		console.error('Error registering user:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
