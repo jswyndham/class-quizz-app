@@ -3,12 +3,10 @@ import {
 	getQuiz,
 	getAllQuizzes,
 } from '../controllers/quiz/getQuizController.js';
-import {
-	createQuiz,
-	updateQuiz,
-	deleteQuiz,
-	copyQuizToClass,
-} from '../controllers/quiz/manageQuizController.js';
+import { createAndAssignQuiz } from '../controllers/quiz/createQuizController.js';
+import { updateQuiz } from '../controllers/quiz/updateQuizController.js';
+import { copyQuizToClass } from '../controllers/quiz/copyQuizController.js';
+import { deleteQuiz } from '../controllers/quiz/deleteQuizController.js';
 import { addQuestionToQuiz } from '../controllers/quiz/quizQuestionsController.js';
 import {
 	validateQuizIdParam,
@@ -21,7 +19,7 @@ const router = Router();
 router
 	.route('/')
 	.get(getAllQuizzes)
-	.post(validateQuizInput, validateQuestionInput, createQuiz);
+	.post(validateQuizInput, validateQuestionInput, createAndAssignQuiz);
 router
 	.route('/:id')
 	.get(validateQuizIdParam, getQuiz)
