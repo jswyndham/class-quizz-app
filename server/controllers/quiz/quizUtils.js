@@ -12,6 +12,7 @@ const sanitizeConfig = {
 	// Custom transformations for specific tags that are allowed to be shown in the tinyMCE editor. This has been done to tighten security and sanitation regarding what is accepted by the rich text editor.
 	transformTags: {
 		iframe: (tagName, attribs) => {
+			// YOUTUBE
 			// Regex to validate YouTube URLs in iframe
 			// Two expressions are used to match YouTube URL in iframe src
 			const iframeRegex =
@@ -34,6 +35,7 @@ const sanitizeConfig = {
 			};
 		},
 		img: (tagName, attribs) => {
+			// IMAGES
 			// Regular expression to match jpg and png image URLs
 			const dataUrlRegex = /^data:image\/(png|jpeg|jpg);base64,/;
 			const imageUrlRegex = /\.(jpg|jpeg|png)$/i;

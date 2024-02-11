@@ -1,4 +1,4 @@
-import { ROLE_PERMISSIONS } from '../../utils/constants.js';
+import { ROLE_PERMISSIONS } from '../utils/constants.js';
 
 const hasPermission = (userRole, action) => {
 	return (

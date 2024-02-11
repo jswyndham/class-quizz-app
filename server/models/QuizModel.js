@@ -27,8 +27,13 @@ const QuizSchema = new mongoose.Schema(
 	{
 		quizTitle: String,
 		quizDescription: String,
+		isVisibleBeforeStart: Boolean,
 		availableFrom: Date,
 		availableUntil: Date,
+		releaseDate: {
+			type: Date,
+			default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default to one week after creation
+		},
 		questions: [questionSchema],
 		createdBy: {
 			type: mongoose.Types.ObjectId,

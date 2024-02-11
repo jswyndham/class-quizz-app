@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import Student from '../../models/StudentModel';
-import { clearCache, getCache, setCache } from '../../utils/cache/cache';
+import Student from '../../models/StudentModel.js';
+import { clearCache } from '../../utils/cache/cache.js';
 
 const hasPermission = (userRole, action) => {
 	return (

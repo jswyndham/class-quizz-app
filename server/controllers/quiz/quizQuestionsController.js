@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import Quiz from '../../models/QuizModel';
+import Quiz from '../../models/QuizModel.js';
 import { getCache, setCache, clearCache } from '../../utils/cache/cache.js';
 
 // Controller to add a question to a quiz

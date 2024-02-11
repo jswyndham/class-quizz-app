@@ -1,8 +1,8 @@
-import ClassGroup from '../models/ClassModel.js';
-import Student from '../models/StudentModel.js';
-import Membership from '../models/MembershipModel.js';
+import ClassGroup from '../../models/ClassModel.js';
+import Student from '../../models/StudentModel.js';
+import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
-import { getCache, setCache } from '../utils/cache/cache.js';
+import { getCache, setCache } from '../../utils/cache/cache.js';
 import { ROLE_PERMISSIONS } from '../../utils/constants.js';
 
 const hasPermission = (userRole, action) => {

@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import Quiz from '../../models/QuizModel';
+import Quiz from '../../models/QuizModel.js';
 import { getCache, setCache } from '../../utils/cache/cache.js';
 
 // Controller to get all quizzes by user
@@ -20,7 +20,9 @@ export const getAllQuizzes = async (req, res) => {
 		} else {
 			console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
 
-			let allQuizzes = await Quiz.find({ createdBy: req.user.userId })
+			let allQuizzes = await Quiz.find({
+				createdBy: req.user.userId,
+			})
 				.populate('class')
 				.lean({ virtuals: true })
 				.exec();

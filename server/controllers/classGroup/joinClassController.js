@@ -3,14 +3,8 @@ import Student from '../../models/StudentModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { clearCache } from '../../utils/cache/cache.js';
-import { ROLE_PERMISSIONS } from '../../utils/constants.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
+import QuizAttempt from '../../models/QuizAttemptModel.js';
 
 // Controller to allow students to join a class with an access code
 export const joinClassWithCode = async (req, res) => {
@@ -21,7 +15,7 @@ export const joinClassWithCode = async (req, res) => {
 	if (!hasPermission(userRole, 'JOIN_CLASS')) {
 		return res
 			.status(StatusCodes.UNAUTHORIZED)
-			.json({ msg: 'Unauthorized' });
+			.json({ msg: 'You are unauthorized to join this class' });
 	}
 
 	try {
@@ -52,17 +46,25 @@ export const joinClassWithCode = async (req, res) => {
 				{ $push: { classMembership: newMembership._id } }
 			);
 
+			// Assign all quizzes available to this class to the new student
+			const quizAttempts = classGroup.quizzes.map((quiz) => ({
+				student: studentId,
+				quiz: quiz._id,
+				answers: [],
+			}));
+			await QuizAttempt.insertMany(quizAttempts);
+
 			// Clear the cache
 			const cacheKey = `class_${accessCode}`;
 			clearCache(cacheKey);
 		} else {
 			return res
 				.status(StatusCodes.BAD_REQUEST)
-				.json({ message: 'Already a member of this class' });
+				.json({ message: 'You are already a member of this group' });
 		}
 
 		res.status(StatusCodes.OK).json({
-			message: 'Joined class successfully',
+			message: 'Joined group successfully',
 		});
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

@@ -31,3 +31,5 @@ router.get(
 	authorizePermissions(USER_STATUS.ADMIN.value),
 	getSingleTeacher
 );
+
+export default router;

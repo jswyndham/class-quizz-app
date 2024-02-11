@@ -23,6 +23,26 @@ export const createAndAssignQuiz = async (req, res) => {
 		const userId = req.user.userId;
 		let { class: classIds, ...quizData } = req.body;
 
+		// Sanitize quiz title and description
+		quizData.quizTitle = sanitizeHtml(quizData.quizTitle, sanitizeConfig);
+		quizData.quizDescription = sanitizeHtml(
+			quizData.quizDescription,
+			sanitizeConfig
+		);
+
+		// Sanitize questions
+		if (quizData.questions && quizData.questions.length > 0) {
+			quizData.questions = quizData.questions.map((question) => {
+				return {
+					...question,
+					questionText: sanitizeHtml(
+						question.questionText,
+						sanitizeConfig
+					),
+				};
+			});
+		}
+
 		// Validate the existence of class and fetch students
 		const classes = await ClassGroup.find({
 			_id: { $in: classIds },

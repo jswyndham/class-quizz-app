@@ -15,7 +15,6 @@ export const USER_STATUS = {
 // Quiz question type
 export const QUESTION_TYPE = {
 	MULTIPLE_CHOICE: { value: 'MULTIPLE_CHOICE', label: 'multiple choice' },
-	SHORT_ANSWER: { value: 'SHORT_ANSWER', label: 'short answer' },
 	LONG_ANSWER: { value: 'LONG_ANSWER', label: 'long answer' },
 };
 

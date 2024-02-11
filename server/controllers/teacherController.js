@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { getCache, setCache } from '../../utils/cache/cache';
-import Teacher from '../models/TeacherModel';
+import { getCache, setCache } from '../utils/cache/cache.js';
+import Teacher from '../models/TeacherModel.js';
 
 const hasPermission = (userRole, action) => {
 	return (
@@ -66,7 +66,7 @@ export const getAllTeachers = async (req, res) => {
 
 // Find a teacher by id
 export const getSingleTeacher = async (req, res) => {
-	const teacherId = req.params.teacherID;
+	const teacherId = req.params.teacherId;
 	const userId = req.user._id; // ID of the authenticated user
 	const cacheKey = `teacher_${teacherId}`;
 
