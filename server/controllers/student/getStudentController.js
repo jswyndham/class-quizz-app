@@ -1,13 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import Student from '../../models/StudentModel.js';
 import { getCache, setCache } from '../../utils/cache/cache.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
 
 // Find and return all students that are members of the student collection (across all classes)
 export const getAllStudents = async (req, res) => {

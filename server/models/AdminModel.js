@@ -10,7 +10,7 @@ const AdminSchema = new mongoose.Schema(
 		},
 
 		// Admin-specific roles or privileges
-		roles: [
+		adminRole: [
 			{
 				type: String,
 				enum: Object.values(ADMIN_STATUS).map((type) => type.value),
@@ -26,7 +26,6 @@ const AdminSchema = new mongoose.Schema(
 			},
 		],
 
-		// Additional fields specific to admin operations
 		lastLogin: {
 			type: Date,
 			default: Date.now,

@@ -3,15 +3,10 @@ import Student from '../../models/StudentModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { clearCache } from '../../utils/cache/cache.js';
-import { ROLE_PERMISSIONS } from '../../utils/constants.js';
 import AuditLog from '../../models/AuditLogModel.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
+import { USER_STATUS } from '../../utils/constants.js';
+import Teacher from '../../models/TeacherModel.js';
 
 // Function to dynamically generate a unique cache key based on user ID and query parameters. This will ensure that users only access the data relevant to their requests.
 const generateCacheKey = (userId, queryParams) => {
@@ -29,7 +24,7 @@ export const createClass = async (req, res) => {
 	const userRole = req.user.userStatus;
 
 	if (!hasPermission(userRole, 'CREATE_CLASS')) {
-		return res.status(403).json({
+		return res.status(StatusCodes.FORBIDDEN).json({
 			message: 'Forbidden: You do not have permission for this action',
 		});
 	}
@@ -44,7 +39,8 @@ export const createClass = async (req, res) => {
 		const classGroup = await ClassGroup.create({
 			...req.body,
 			createdBy: userId,
-			accessCode: accessCode,
+			classAdmin: userId, // Set the class creator as the admin
+			accessCode: accessCode, // Set the unique class access code
 		});
 
 		// Create a membership for the teacher in the newly created class
@@ -78,8 +74,8 @@ export const createClass = async (req, res) => {
 		}
 
 		// Clear the cache related to the user's classes
-		const classCacheKey = `class_${userId}`;
-		clearCache(classCacheKey);
+		const cacheKey = `class_${userId}`;
+		clearCache(cacheKey);
 
 		// Prepare response object
 		const response = {
@@ -110,7 +106,7 @@ export const updateClass = async (req, res) => {
 		const classId = req.params.id;
 
 		if (!hasPermission(userRole, 'UPDATE_CLASS')) {
-			return res.status(403).json({
+			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You do not have permission for this action',
 			});
@@ -126,7 +122,7 @@ export const updateClass = async (req, res) => {
 
 		// Check if the current user is the class admin
 		if (classGroup.admin.toString() !== userId) {
-			return res.status(403).json({
+			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You are not the administrator of this class',
 			});
@@ -173,7 +169,7 @@ export const deleteClass = async (req, res) => {
 		const classId = req.params.id;
 
 		if (!hasPermission(userRole, 'DELETE_CLASS')) {
-			return res.status(403).json({
+			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You do not have permission for this action',
 			});
@@ -189,7 +185,7 @@ export const deleteClass = async (req, res) => {
 
 		// Check if the current user is the class admin
 		if (classGroup.admin.toString() !== userId) {
-			return res.status(403).json({
+			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You are not the administrator of this class',
 			});
@@ -217,6 +213,7 @@ export const deleteClass = async (req, res) => {
 		}
 
 		// Clear the cache related to the user's classes
+		const cacheKey = `class_${userId}`;
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({

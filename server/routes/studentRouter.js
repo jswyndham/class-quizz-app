@@ -5,7 +5,6 @@ import {
 } from '../controllers/student/getStudentController.js';
 import { updateStudentPerformance } from '../controllers/student/manageStudentController.js';
 import {
-	authenticateUser,
 	authorizePermissions,
 	checkIsTeacher,
 } from '../middleWare/authMiddleware.js';
@@ -17,18 +16,16 @@ import {
 
 const router = Router();
 
-router.use(authenticateUser);
-
 // Get all students in a class
 router.get(
-	'/class/:classId',
+	'/all-students',
 	checkIsTeacher,
 	authorizePermissions(USER_STATUS.TEACHER.value),
 	getAllStudents
 );
 
 // Get a single student by ID
-router.get('/:studentId', validateStudentId, getSingleStudent);
+router.get('/performance/:studentId', validateStudentId, getSingleStudent);
 
 // Update student performance
 router.patch(

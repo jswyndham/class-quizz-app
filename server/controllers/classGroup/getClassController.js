@@ -3,14 +3,7 @@ import Student from '../../models/StudentModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache } from '../../utils/cache/cache.js';
-import { ROLE_PERMISSIONS } from '../../utils/constants.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
 
 // Validate ID format (example using a simple regex for MongoDB ObjectId)
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
@@ -36,7 +29,12 @@ export const getAllClasses = async (req, res) => {
 			const classGroups = await ClassGroup.find({
 				createdBy: userId,
 			})
-				.populate({ path: 'quizzes', options: { virtuals: true } })
+				.populate({ path: 'quizzes', options: { virtuals: true } }) // Populate quizzes mongoose ref
+				.populate({
+					path: 'membership',
+					select: 'firstName lastName email',
+					options: { virtuals: true },
+				}) // Populate students mongoose ref
 				.lean({ virtuals: true })
 				.exec();
 
@@ -71,7 +69,7 @@ export const getClass = async (req, res) => {
 		const classId = req.params.id;
 		const userId = req.user.userId;
 
-		// Unique cacheKey
+		// Unique cacheKey for the specific class
 		const cacheKey = `class_${userId}_${classId}`;
 
 		// Validate IDs
@@ -84,15 +82,18 @@ export const getClass = async (req, res) => {
 		const cachedClass = await getCache(cacheKey);
 		if (cachedClass) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-			console.log('Cache hit class: ', { classGroup: cachedClass });
 			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
-			console.log('Cache miss class: ', cachedClass);
+
 			const classGroup = await ClassGroup.findById(classId)
-				.populate('quizzes') // Populate quizzes mongoose ref
-				.populate('students') // Populate students mongoose ref
-				.lean({ virtuals: true })
+				.populate({ path: 'quizzes', options: { virtuals: true } })
+				.populate({
+					path: 'membership',
+					select: 'firstName lastName email',
+					options: { virtuals: true },
+				})
+				.lean({ virtuals: true }) // Make sure this is at the end
 				.exec();
 
 			if (!classGroup) {
@@ -100,6 +101,10 @@ export const getClass = async (req, res) => {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: 'Class not found' });
 			}
+
+			// Adding counts manually if virtuals are not working
+			classGroup.quizCount = classGroup.quizzes.length;
+			classGroup.memberCount = classGroup.membership.length;
 
 			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not part of the Mongoose schema.
 			classGroup.quizzes.forEach((quiz) => {

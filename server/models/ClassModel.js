@@ -11,7 +11,7 @@ const ClassSchema = new mongoose.Schema(
 			type: mongoose.Types.ObjectId,
 			ref: 'User',
 		},
-		admin: {
+		classAdmin: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 			required: true,
@@ -39,5 +39,15 @@ const ClassSchema = new mongoose.Schema(
 
 // Indexing the membership field
 ClassSchema.index({ membership: 1 });
+
+// Virtual field to get the count of quizzes
+ClassSchema.virtual('quizCount').get(function () {
+	return this.quizzes.length;
+});
+
+// Virtual field to get the count of members in each class
+ClassSchema.virtual('memberCount').get(function () {
+	return this.membership.length;
+});
 
 export default mongoose.model('Class', ClassSchema);

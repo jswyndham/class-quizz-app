@@ -8,14 +8,9 @@ import {
 	validateAccessCode,
 	validateStudentIdParam,
 } from '../validators/membershipValidator.js';
-import {
-	authenticateUser,
-	authorizePermissions,
-} from '../middleWare/authMiddleware.js';
+import { authorizePermissions } from '../middleWare/authMiddleware.js';
 
 const router = Router();
-
-router.use(authenticateUser);
 
 router.route('/').post(validateAccessCode, createMembership);
 

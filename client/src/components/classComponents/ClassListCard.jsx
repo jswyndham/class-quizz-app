@@ -1,5 +1,21 @@
 // Accessing props from the parent component, ClassListMenu
 const ClassListCard = ({ clickClassListCard, className, subject }) => {
+	// function to truncate string (cut short with periods)
+	function truncateString(str, maxLength) {
+		if (str.length > maxLength) {
+			return str.substring(0, maxLength - 3) + '...';
+		}
+		return str;
+	}
+
+	// Class name with trunate function
+	const classNameOriginal = `${className}`;
+	const classNameTrunicate = truncateString(classNameOriginal, 30);
+
+	// Class subject - turn string to capitals
+	const subjectOriginal = `${subject}`;
+	const subjectToCapital = subjectOriginal.toUpperCase();
+
 	return (
 		<>
 			{/* Class List Menu */}
@@ -9,10 +25,10 @@ const ClassListCard = ({ clickClassListCard, className, subject }) => {
 			>
 				<div className="flex flex-col h-fit p-2">
 					<h3 className="text-md text-forth font-bold">
-						{className}
+						{classNameTrunicate}
 					</h3>
-					<p className="text-sm text-third italic font-sans ml-1">
-						{subject}
+					<p className="text-xs text-third italic font-sans ml-1">
+						{subjectToCapital}
 					</p>
 				</div>
 			</article>

@@ -1,6 +1,6 @@
 import User from '../models/UserModel.js';
 import { StatusCodes } from 'http-status-codes';
-import { USER_STATUS } from '../utils/constants.js';
+import { ADMIN_STATUS, USER_STATUS } from '../utils/constants.js';
 import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
 import { UnauthenticatedError } from '../errors/customErrors.js';
 import { createJWT } from '../utils/tokenUtils.js';
@@ -22,11 +22,11 @@ export const register = async (req, res) => {
 
 		// Determine the user role
 		let userRole;
-		let adminRoles = [];
+		let adminRole = [];
 
 		if (isFirstAccount) {
 			userRole = USER_STATUS.ADMIN.value;
-			adminRoles.push(ADMIN_STATUS.SUPER_ADMIN.value);
+			adminRole.push(ADMIN_STATUS.SUPER_ADMIN.value);
 		} else {
 			userRole = req.body.userStatus.value || USER_STATUS.STUDENT.value;
 		}
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
 				await Teacher.create({ user: user._id });
 				break;
 			case USER_STATUS.ADMIN.value:
-				await Admin.create({ user: user._id });
+				await Admin.create({ user: user._id, adminRole: adminRole });
 				break;
 		}
 

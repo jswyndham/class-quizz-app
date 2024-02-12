@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { createQuiz } from '../../features/quiz/quizAPI';
-import { uploadCloudinaryFile } from '../../features/cloudinary/cloudinaryAPI';
+import { createQuiz } from '../features/quiz/quizAPI';
+import { uploadCloudinaryFile } from '../features/cloudinary/cloudinaryAPI';
+import QuizHooks from '../hooks/QuizHooks';
 
 const quizFormHandlers = () => {
 	// STATE HOOKS

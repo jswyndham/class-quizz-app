@@ -21,7 +21,8 @@ export const createAndAssignQuiz = async (req, res) => {
 
 		// User ID and class IDs
 		const userId = req.user.userId;
-		let { class: classIds, ...quizData } = req.body;
+		const classId = req.params.classId;
+		let { ...quizData } = req.body;
 
 		// Sanitize quiz title and description
 		quizData.quizTitle = sanitizeHtml(quizData.quizTitle, sanitizeConfig);
@@ -45,7 +46,7 @@ export const createAndAssignQuiz = async (req, res) => {
 
 		// Validate the existence of class and fetch students
 		const classes = await ClassGroup.find({
-			_id: { $in: classIds },
+			_id: { $in: classId },
 		}).populate('membership');
 
 		if (classes.length !== classIds.length) {
@@ -58,8 +59,17 @@ export const createAndAssignQuiz = async (req, res) => {
 		const newQuiz = await Quiz.create({
 			...quizData,
 			createdBy: userId,
-			class: classIds,
+			class: classId,
 		});
+
+		// After creating the quiz, update each class with the new quiz ID
+		await Promise.all(
+			classIds.map(async (classId) => {
+				await ClassGroup.findByIdAndUpdate(classId, {
+					$push: { quizzes: newQuiz._id },
+				});
+			})
+		);
 
 		// Prepare bulk operations (use the bulkWrite() method) for updating student quiz attempts. This method sends all update operations to MongoDB in a single request, and reduces network overhead and database load.
 		const bulkOps = [];
@@ -92,12 +102,12 @@ export const createAndAssignQuiz = async (req, res) => {
 		});
 		await auditLog.save();
 
-		// Clear the cache for affected classes and the new quiz
-		classIds.forEach((classId) => {
+		// Clear the cache for affected classes, the new quiz, and all quizzes by the user
+		classId.forEach((classId) => {
 			clearCache(`class_${classId}`);
 		});
-
 		clearCache(`quiz_${newQuiz._id}`);
+		clearCache(`quiz_${userId}`); // Clear cache for all quizzes by the user
 
 		// Send response
 		res.status(StatusCodes.CREATED).json({

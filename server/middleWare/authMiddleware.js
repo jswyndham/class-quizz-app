@@ -5,19 +5,28 @@ import {
 import { verifyJWT } from '../utils/tokenUtils.js';
 
 export const authenticateUser = (req, res, next) => {
-	const { token } = req.cookies;
-	if (!token) throw new UnauthenticatedError('Authenication invalid');
+	// First, try to get the token from the cookie
+	let token = req.cookies.token;
+
+	// If token is not found in cookie, check the authorization header
+	if (!token) {
+		token = req.headers.authorization?.split(' ')[1];
+	}
+
+	// If no token is found in either place, throw an error
+	if (!token) {
+		throw new UnauthenticatedError('Authentication invalid');
+	}
 
 	try {
-		// Attach the user info as an object to the verification request
+		// Verify the token and attach the user info to the request
 		const { userId, userStatus } = verifyJWT(token);
 		req.user = { userId, userStatus };
 
 		console.log('Authenticated user:', req.user);
-
 		next();
 	} catch (error) {
-		throw new UnauthenticatedError('Authenication invalid');
+		throw new UnauthenticatedError('Authentication invalid');
 	}
 };
 

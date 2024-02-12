@@ -35,7 +35,6 @@ const ClassListMenu = () => {
 	const userRole = currentUser?.userStatus;
 
 	useEffect(() => {
-		console.log('Dispatching fetchClasses - CLassListMenu');
 		dispatch(fetchClasses());
 	}, [dispatch]);
 

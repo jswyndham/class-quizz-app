@@ -1,13 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache } from '../utils/cache/cache.js';
 import Teacher from '../models/TeacherModel.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../utils/hasPermission.js';
 
 // Find and return all teachers that are members of the teacher collection (across all classes)
 export const getAllTeachers = async (req, res) => {
@@ -17,7 +11,7 @@ export const getAllTeachers = async (req, res) => {
 	const cacheKey = `allTeachers_page${page}_limit${limit}`;
 
 	if (!hasPermission(userRole, 'GET_ALL_TEACHERS')) {
-		return res.status(403).json({
+		return res.status(StatusCodes.FORBIDDEN).json({
 			message: 'Forbidden: You do not have permission for this action',
 		});
 	}
@@ -71,14 +65,14 @@ export const getSingleTeacher = async (req, res) => {
 	const cacheKey = `teacher_${teacherId}`;
 
 	if (!hasPermission(userRole, 'GET_SINGLE_TEACHER')) {
-		return res.status(403).json({
+		return res.status(StatusCodes.FORBIDDEN).json({
 			message: 'Forbidden: You do not have permission for this action',
 		});
 	}
 
 	// Check if the authenticated user is the same as the requested teacher
 	if (userId.toString() !== teacherId) {
-		return res.status(403).json({
+		return res.status(StatusCodes.FORBIDDEN).json({
 			message:
 				'Forbidden: You do not have permission to access this data',
 		});

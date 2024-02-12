@@ -45,9 +45,11 @@ const classSlice = createSlice({
 			})
 			.addCase(fetchClassById.fulfilled, (state, action) => {
 				// Handle fetching single class by ID
-				const fetchedClass = action.payload;
+				state.loading = false;
+				const fetchedClass = action.payload.classGroup;
 				if (fetchedClass && fetchedClass._id) {
 					state.classesById[fetchedClass._id] = fetchedClass;
+					state.currentClass = fetchedClass._id;
 				} else {
 					console.error('No valid class data in payload');
 				}

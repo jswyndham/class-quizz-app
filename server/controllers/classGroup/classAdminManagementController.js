@@ -1,21 +1,14 @@
 import ClassGroup from '../../models/ClassModel.js';
 import AuditLog from '../../models/AuditLogModel';
-import { ROLE_PERMISSIONS } from '../../utils/constants.js';
 import { StatusCodes } from 'http-status-codes';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
 
 // Controller to transfer class admin rights
 export const transferClassAdmin = async (req, res) => {
 	// User permissions
 	const userRole = req.user.userStatus;
 	if (!hasPermission(userRole, 'TRANSFER_ADMIN_RIGHTS')) {
-		return res.status(403).json({
+		return res.status(StatusCodes.FORBIDDEN).json({
 			message: 'Forbidden: You do not have permission for this action',
 		});
 	}
@@ -27,18 +20,20 @@ export const transferClassAdmin = async (req, res) => {
 		// Fetch the class
 		const classGroup = await ClassGroup.findById(classId);
 		if (!classGroup) {
-			return res.status(404).json({ message: 'Class not found' });
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Class not found' });
 		}
 
 		// Check if the current user is the admin
-		if (classGroup.admin.toString() !== currentUserId) {
+		if (classGroup.classAdmin.toString() !== currentUserId) {
 			return res
 				.status(403)
 				.json({ message: 'You are not the admin of this class' });
 		}
 
 		// Update the class admin
-		classGroup.admin = newAdminUserId;
+		classGroup.classAdmin = newAdminUserId;
 		await classGroup.save();
 
 		// Create an audit log for the transfer

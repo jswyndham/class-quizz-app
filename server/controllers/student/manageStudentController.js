@@ -1,13 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import Student from '../../models/StudentModel.js';
 import { clearCache } from '../../utils/cache/cache.js';
-
-const hasPermission = (userRole, action) => {
-	return (
-		ROLE_PERMISSIONS[userRole] &&
-		ROLE_PERMISSIONS[userRole].includes(action)
-	);
-};
+import hasPermission from '../../utils/hasPermission.js';
 
 // Update student's performance after taking a quiz
 export const updateStudentPerformance = async (req, res) => {

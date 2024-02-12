@@ -20,7 +20,6 @@ const ClassContainer = () => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		console.log('Dispatching fetchClasses - ClassContainer');
 		dispatch(fetchClasses());
 	}, [dispatch]);
 

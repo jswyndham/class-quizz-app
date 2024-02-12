@@ -24,10 +24,7 @@ import {
 	fetchQuizById,
 } from '../../features/quiz/quizAPI';
 import CopyItem from '../CopyItem';
-import {
-	fetchClasses,
-	fetchClassById,
-} from '../../features/classGroup/classAPI';
+import { fetchClasses } from '../../features/classGroup/classAPI';
 import { selectQuizDataArray } from '../../features/quiz/quizSelectors';
 
 dayjs.extend(advancedFormat);
@@ -42,8 +39,6 @@ const QuizCard = ({
 	gradientClass,
 }) => {
 	const quizData = useSelector(selectQuizDataArray);
-
-	const { id } = useParams();
 
 	const createdData = dayjs(createdAt).format('MMMM D, YYYY');
 	const updatedData = dayjs(updatedAt).format('MMMM D, YYYY');

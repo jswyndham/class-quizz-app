@@ -93,8 +93,6 @@ export const getStudentMemberships = async (req, res) => {
 		const userRole = req.user.userStatus;
 		const studentId = req.params.studentId;
 
-		console.log('Requested studentId:', studentId);
-
 		if (!hasPermission(userRole, 'GET_ALL_STUDENT_MEMBERSHIPS')) {
 			return res.status(403).json({
 				message:
