@@ -1,7 +1,7 @@
 import { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchClassById } from '../features/classGroup/classAPI';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { QuizCard } from '../components/quizComponents';
 import QuizCardGradientValues from '../components/quizComponents/QuizCardGradientValues';
 import { PiUserSquareLight } from 'react-icons/pi';
@@ -58,7 +58,7 @@ const ClassLayout = () => {
 						{classItem.accessCode}
 					</p>
 				</div>
-				<h2 className="my-2 text-3xl font-bold text-forth">
+				<h2 className="p-3 text-3xl font-bold text-forth">
 					{classItem.className}
 				</h2>
 			</article>
@@ -79,10 +79,13 @@ const ClassLayout = () => {
 				</div>
 
 				<div className="relative hover:cursor-pointer group">
-					<IoIosAddCircleOutline className="mx-1 font-bold text-third group-hover:text-forth" />
-					<div className="absolute text-center w-24 py-2 px-3 bg-slate-500 top-12 -right-4 opacity-0 rounded-md font-bold group-hover:opacity-100 text-sm text-white font-roboto pointer-events-none">
-						<p>Add Quiz</p>
-					</div>
+					<Link to="/dashboard/add-quiz">
+						<IoIosAddCircleOutline className="mx-1 font-bold text-third group-hover:text-forth" />
+
+						<div className="absolute text-center w-24 py-2 px-3 bg-slate-500 top-12 -right-4 opacity-0 rounded-md font-bold group-hover:opacity-100 text-sm text-white font-roboto pointer-events-none">
+							<p>Add Quiz</p>
+						</div>
+					</Link>
 				</div>
 			</article>
 
