@@ -2,7 +2,7 @@ import React from 'react';
 
 const FormRow = ({ type, name, labelText, defaultValue, value, onChange }) => {
 	return (
-		<div className="flex flex-col m-1">
+		<div className="flex flex-col py-1">
 			<label
 				htmlFor={name}
 				className="block mb-2 ml-4 text-xl font-medium text-gray-600 dark:text-white"

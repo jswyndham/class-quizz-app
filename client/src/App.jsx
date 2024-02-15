@@ -28,7 +28,6 @@ import { loader as adminLoader } from './pages/Admin';
 import { loader as quizLoader } from './pages/AllQuizzes';
 
 // Page actions
-import { action as registerAction } from './pages/Register';
 import { action as deleteClassAction } from './pages/DeleteClass';
 
 // Default theme
@@ -61,7 +60,6 @@ const router = createBrowserRouter([
 			{
 				path: 'register',
 				element: <Register />,
-				action: registerAction,
 			},
 
 			{

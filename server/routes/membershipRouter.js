@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { createMembership } from '../controllers/membership/createMembershipController.js';
 import {
 	getStudentMemberships,
 	getUserMembership,
@@ -12,8 +11,6 @@ import {
 import { authorizePermissions } from '../middleWare/authMiddleware.js';
 
 const router = Router();
-
-router.route('/').post(validateAccessCode, createMembership);
 
 router
 	.route('/:classId')

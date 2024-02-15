@@ -3,10 +3,7 @@ import { USER_STATUS } from '../utils/constants.js';
 
 const UserSchema = new mongoose.Schema(
 	{
-		firstName: {
-			type: String,
-			default: 'firstName',
-		},
+		firstName: String,
 		lastName: String,
 		email: String,
 		password: String,

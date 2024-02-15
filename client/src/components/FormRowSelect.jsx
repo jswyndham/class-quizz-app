@@ -7,10 +7,10 @@ const FormRowSelect = ({
 	onChange,
 }) => {
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col py-1">
 			<label
 				htmlFor={name}
-				className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+				className="block mb-2 ml-4 text-lg font-medium text-gray-900 dark:text-white"
 			>
 				{labelText || name}
 			</label>

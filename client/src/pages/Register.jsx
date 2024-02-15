@@ -1,38 +1,65 @@
-import { Form, redirect, useNavigation, Link } from 'react-router-dom';
+import { Form, useNavigation, Link } from 'react-router-dom';
 import { FormRow, FormRowSelect } from '../components';
-import customFetch from '../utils/customFetch.js';
 import { toast } from 'react-toastify';
 import { USER_STATUS } from '../../../server/utils/constants.js';
-
-// access all fields using fromData() method and turn entries into an object
-export const action = async ({ request }) => {
-	const formData = await request.formData();
-	const data = Object.fromEntries(formData);
-
-	try {
-		await customFetch.post('/auth/register', data);
-		toast.success('Registration successful');
-		return redirect('/login');
-	} catch (error) {
-		console.log(error);
-		toast.error(error?.response?.data?.msg);
-		return error;
-	}
-};
+import { useState } from 'react';
+import { registerUser } from '../features/authenticate/authAPI';
+import { useDispatch } from 'react-redux';
 
 const Register = () => {
+	const [freeRegistrationForm, setFreeRegistrationForm] = useState({
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: '',
+		confirmPassword: '',
+		location: '',
+		userStatus: '',
+	});
+
+	const handleChange = (e) => {
+		setFreeRegistrationForm({
+			...freeRegistrationForm,
+			[e.target.name]: e.target.value,
+		});
+	};
+
 	// Filter out admin as a status option for new users
 	const statusOptions = Object.values(USER_STATUS).filter(
 		(status) => status !== USER_STATUS.ADMIN
 	);
 
-	const navigation = useNavigation();
+	const navigate = useNavigation();
+	const dispatch = useDispatch();
 
-	const isSubmitting = navigation.state === 'submitting';
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		console.log('Submit has been pressed');
+
+		// Check if passwords match
+		if (
+			freeRegistrationForm.password !==
+			freeRegistrationForm.confirmPassword
+		) {
+			toast.error('Passwords do not match');
+			return;
+		}
+		// Exclude confirmPassword from the data sent to the backend
+		const { confirmPassword, ...userData } = freeRegistrationForm;
+
+		// Run the redux slice
+		try {
+			await dispatch(registerUser(userData)).unwrap();
+			navigate('/dashboard');
+			toast.success('Registration successful');
+		} catch (error) {
+			toast.error(error || 'Login failed');
+		}
+	};
 
 	return (
-		<section className="flex justify-center align-middle p-12 md:p-24">
-			<article className="flex flex-col w-full md:w-fit py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
+		<section className="h-screen flex justify-center align-middle p-12 md:p-24 bg-gradient-to-br from-forth to-secondary">
+			<article className="flex flex-col w-full md:w-fit bg-white py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
 				<div className="w-full bg-blue-400 -mt-16 text-center">
 					<h1 className="m-6 text-3xl font-bold text-white">
 						Sign Up
@@ -40,34 +67,50 @@ const Register = () => {
 				</div>
 
 				<div className="flex justify-center align-middle">
-					<Form method="post" className="w-fit p-8 md:p-16">
+					<Form onSubmit={handleSubmit} className="w-fit p-8 md:p-16">
 						{/* FIRST NAME */}
 						<FormRow
 							type="text"
 							name="firstName"
 							labelText="first name"
-							defaultValue="James"
+							value={freeRegistrationForm.firstName}
+							onChange={handleChange}
 						/>
+
 						{/* LAST NAME */}
 						<FormRow
 							type="text"
 							name="lastName"
 							labelText="last name"
-							defaultValue="Saunders-Wyndham"
+							value={freeRegistrationForm.lastName}
+							onChange={handleChange}
 						/>
+
 						{/* EMAIL */}
 						<FormRow
 							type="email"
 							name="email"
 							labelText="email"
-							defaultValue="jsw@email.com"
+							value={freeRegistrationForm.email}
+							onChange={handleChange}
 						/>
-						{/* PASSWORD */}
+
+						{/* password */}
 						<FormRow
 							type="password"
 							name="password"
 							labelText="password"
-							defaultValue="password1234"
+							value={freeRegistrationForm.password}
+							onChange={handleChange}
+						/>
+
+						{/* Confirm password */}
+						<FormRow
+							type="password"
+							name="confirmPassword"
+							labelText="confirm password"
+							value={freeRegistrationForm.confirmPassword}
+							onChange={handleChange}
 						/>
 
 						{/* LOCATION */}
@@ -75,14 +118,17 @@ const Register = () => {
 							type="text"
 							name="location"
 							labelText="country location"
-							defaultValue="Japan"
+							value={freeRegistrationForm.location}
+							onChange={handleChange}
 						/>
 
 						{/* ROLE */}
-						<div className="mx-4 my-2">
+						<div className="mr-4 my-2">
 							<FormRowSelect
 								labelText="User Role"
 								name="userStatus"
+								value={freeRegistrationForm.userStatus}
+								onChange={handleChange}
 								list={statusOptions.map((status) => ({
 									label: status.label,
 									value: status.value,
@@ -94,10 +140,9 @@ const Register = () => {
 						<div className="flex flex-col justify-center">
 							<button
 								type="submit"
-								disabled={isSubmitting}
 								className="h-8 w-96 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 							>
-								{isSubmitting ? 'submitting...' : 'submit'}
+								submit
 							</button>
 
 							<div className="flex flex-row justify-center mt-6">
