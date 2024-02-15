@@ -235,10 +235,18 @@ const QuizCard = ({
 				>
 					<CardMenu
 						isShowClassMenu={isCardMenu}
+						listNameOne="Copy"
 						handleCopy={handleClassListOpen}
+						listNameTwo="Edit"
 						handleEdit={handleEditClick}
+						listNameThree="Delete"
 						handleDelete={openConfirmModal}
 						id={quizData._id}
+						menuConfig={{
+							copy: true, // show the first option
+							edit: true, // show the second option
+							delete: true, // show the third option
+						}}
 					/>
 				</div>
 

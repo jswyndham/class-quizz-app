@@ -15,6 +15,12 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			enum: Object.values(USER_STATUS).map((type) => type.value),
 		},
+		membership: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Membership',
+			},
+		],
 	},
 	{ timestamps: true }
 );

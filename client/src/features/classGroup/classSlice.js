@@ -5,6 +5,7 @@ import {
 	createClass,
 	updateClass,
 	deleteClass,
+	deleteClassMember,
 } from './classAPI';
 
 const initialState = {
@@ -95,6 +96,18 @@ const classSlice = createSlice({
 				state.allClassIds = state.allClassIds.filter(
 					(id) => id !== action.payload
 				);
+				state.error = null;
+			})
+			.addCase(deleteClassMember.fulfilled, (state, action) => {
+				state.loading = false;
+				const { classId, userId } = action.payload;
+				const classData = state.classesById[classId];
+				if (classData && classData.membership) {
+					// Remove the member from the membership array
+					classData.membership = classData.membership.filter(
+						(member) => member.user.toString() !== userId
+					);
+				}
 				state.error = null;
 			});
 	},

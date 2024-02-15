@@ -51,8 +51,15 @@ export const register = async (req, res) => {
 				break;
 		}
 
-		// Create new membership
-		await Membership.create({ user: user._id, classList: [] });
+		// Create new membership for the user
+		const membership = await Membership.create({
+			user: user._id,
+			classList: [],
+		});
+
+		// Update user's membership array
+		user.membership = [membership._id];
+		await user.save();
 
 		// Create an audit log entry of the user's action
 		if (user._id) {

@@ -35,7 +35,7 @@ const QuizContainer = () => {
 		return str;
 	}
 
-	// Handlers
+	// Handles the navigation link to the class layout page
 	const handleClassLink = (_id) => {
 		navigate(`/dashboard/class/${_id}`);
 	};
@@ -65,7 +65,7 @@ const QuizContainer = () => {
 
 	return (
 		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">
-			<div className="w-full flex flex-col justify-start">
+			<section className="w-full flex flex-col justify-start">
 				{classData.map((classes) => {
 					// Class name with trunate function
 					const classNameOriginal = `${classes.className}`;
@@ -74,7 +74,7 @@ const QuizContainer = () => {
 						27
 					);
 					return (
-						<div key={classes._id} className="my-4">
+						<article key={classes._id} className="my-4">
 							<div
 								onClick={() => handleClassLink(classes._id)}
 								className="w-full h-fit bg-forth text-primary p-2 border-b-4 border-primary shadow-lg shadow-slate-400 hover:cursor-pointer"
@@ -87,7 +87,7 @@ const QuizContainer = () => {
 								</h2>
 							</div>
 
-							<div className="p-3 flex justify-center">
+							<article className="p-3 flex justify-center">
 								<div
 									className={
 										quizData.length === 1
@@ -105,11 +105,11 @@ const QuizContainer = () => {
 										/>
 									))}
 								</div>
-							</div>
-						</div>
+							</article>
+						</article>
 					);
 				})}
-			</div>
+			</section>
 		</section>
 	);
 };

@@ -7,10 +7,7 @@ const MembershipSchema = new mongoose.Schema({
 		ref: 'User',
 		required: true,
 	},
-	userStatus: {
-		type: String,
-		enum: Object.values(USER_STATUS).map((type) => type.value),
-	},
+
 	classList: [
 		{
 			class: {

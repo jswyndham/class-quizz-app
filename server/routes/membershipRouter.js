@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { createMembership } from '../controllers/membership/createMembershipController.js';
 import {
-	createMembership,
-	deleteMembership,
 	getStudentMemberships,
-} from '../controllers/membershipController.js';
+	getUserMembership,
+} from '../controllers/membership/getMembershipController.js';
+// import { removeMembership } from '../controllers/membership/removeMembershipController.js';
 import {
 	validateAccessCode,
 	validateStudentIdParam,
@@ -15,15 +16,22 @@ const router = Router();
 router.route('/').post(validateAccessCode, createMembership);
 
 router
-	.route('/student/:studentId')
+	.route('/:classId')
 	.get(
 		validateStudentIdParam,
 		authorizePermissions('ADMIN', 'TEACHER'),
 		getStudentMemberships
 	);
-
 router
-	.route('/class/:classId/:userId')
-	.delete(authorizePermissions('ADMIN', 'TEACHER'), deleteMembership);
+	.route('/user/:userId/membership/:classId')
+	.get(
+		validateStudentIdParam,
+		authorizePermissions('ADMIN', 'TEACHER'),
+		getUserMembership
+	);
+
+// router
+// 	.route('/class/:classId/:userId')
+// 	.delete(authorizePermissions('ADMIN', 'TEACHER'), removeMembership);
 
 export default router;

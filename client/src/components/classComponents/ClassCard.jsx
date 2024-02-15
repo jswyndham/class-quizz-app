@@ -129,9 +129,16 @@ const ClassCard = ({ _id, className, subject, school, classStatus }) => {
 				>
 					<CardMenu
 						isShowClassMenu={isClassCardMenu}
+						listNameTwo="Edit"
 						handleEdit={handleEditClick}
+						listNameThree="Delete"
 						handleDelete={openConfirmModal}
 						id={classData._id}
+						menuConfig={{
+							copy: false, // hide the first option
+							edit: true, // show the second option
+							delete: true, // show the third option
+						}}
 					/>
 				</div>
 			</article>

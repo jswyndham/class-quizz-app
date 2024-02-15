@@ -70,7 +70,7 @@ export const getClass = async (req, res) => {
 		const userId = req.user.userId;
 
 		// Unique cacheKey for the specific class
-		const cacheKey = `class_${userId}_${classId}`;
+		const cacheKey = `class_${classId}`;
 
 		// Validate IDs
 		if (!isValidObjectId(classId) || !isValidObjectId(userId)) {
@@ -90,10 +90,14 @@ export const getClass = async (req, res) => {
 				.populate({ path: 'quizzes', options: { virtuals: true } })
 				.populate({
 					path: 'membership',
-					select: 'firstName lastName email',
-					options: { virtuals: true },
+					populate: {
+						path: 'user',
+						model: 'User',
+						select: 'firstName lastName email userStatus',
+						options: { virtuals: true },
+					},
 				})
-				.lean({ virtuals: true }) // Make sure this is at the end
+				.lean({ virtuals: true })
 				.exec();
 
 			if (!classGroup) {

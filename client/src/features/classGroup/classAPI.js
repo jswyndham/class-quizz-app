@@ -81,3 +81,16 @@ export const deleteClass = createAsyncThunk(
 		}
 	}
 );
+
+// Async thunk to remove a member
+export const deleteClassMember = createAsyncThunk(
+	'class/removeMember',
+	async ({ classId, userId }, { rejectWithValue }) => {
+		try {
+			await customFetch.delete(`/class/${classId}/members/${userId}`);
+			return { classId, userId };
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);
