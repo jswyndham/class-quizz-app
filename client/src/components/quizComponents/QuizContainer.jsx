@@ -6,17 +6,21 @@ import QuizCardGradientValues from './QuizCardGradientValues';
 import { useNavigate } from 'react-router';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 import { selectQuizDataArray } from '../../features/quiz/quizSelectors';
+import AddButton from '../AddButton';
 
 const MemoizedQuizCard = memo(QuizCard);
 
 const QuizContainer = () => {
 	const navigate = useNavigate();
 
-	const userData = useSelector((state) => state.user.currentUser);
 	const quizData = useSelector(selectQuizDataArray);
 	const classData = useSelector(selectClassDataArray);
 	const isLoading = useSelector((state) => state.class.loading);
 	const { error } = useSelector((state) => state.class);
+	const currentUser = useSelector((state) => state.user.currentUser);
+
+	// Access userStatus to determin user access
+	const userRole = currentUser?.userStatus;
 
 	const dispatch = useDispatch();
 

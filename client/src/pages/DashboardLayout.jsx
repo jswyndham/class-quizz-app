@@ -8,12 +8,14 @@ import {
 } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SmallSidebar, Navbar } from '../components';
-import customFetch from '../utils/customFetch';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCurrentUser } from '../features/user/userAPI';
+import { logoutUser } from '../features/authenticate/authAPI';
 import DashboardLayoutHooks from '../hooks/DashboardLayoutHooks';
 import ClassListMenu from '../components/classComponents/ClassListMenu';
+import { fetchClasses } from '../features/classGroup/classAPI';
+import { fetchQuizzes } from '../features/quiz/quizAPI';
 
 const DashboardContext = createContext();
 
@@ -76,13 +78,6 @@ const DashboardLayout = () => {
 		localStorage.setItem('theme', newDarkTheme ? 'dark' : 'light');
 	};
 
-	// Handle user logout
-	const logoutUser = async () => {
-		navigate('/');
-		await customFetch.get('/auth/logout');
-		toast.success('Logging out...');
-	};
-
 	const value = useMemo(
 		() => ({
 			user,
@@ -93,7 +88,6 @@ const DashboardLayout = () => {
 			setisDarkTheme,
 			toggleDarkTheme,
 			toggleSidebar,
-			logoutUser,
 		}),
 		[user, showSidebar, isDarkTheme, showLogout]
 	);

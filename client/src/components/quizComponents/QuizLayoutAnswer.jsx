@@ -20,7 +20,7 @@ const QuizLayoutAnswer = ({ index, answerType, answers, correctAnswer }) => {
 				className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 			/>
 
-			<div className="absolute ms-8 w-11/12 h-fit bg-amber-50 py-1 px-3">
+			<div className="absolute ms-8 w-11/12 h-fit bg-amber-50 py-1 px-3 rounded-md">
 				<label
 					htmlFor="default-radio-2"
 					className="text-xl font-medium text-gray-900 dark:text-gray-300"

@@ -5,20 +5,22 @@ const QuizLayoutQuestion = ({
 	uploadedImageUrl,
 }) => {
 	return (
-		<div className="w-full h-fit bg-blue-100">
-			<div className="mb-2 mx-4 pt-1">
-				<p className="underline underline-offset-2">
-					Question {questionNumber}
-				</p>
-			</div>
-			<div className="flex flex-row-reverse  pt-3 pr-6">
-				<p className="text-lg italic">
-					{points} {points === 1 ? 'point' : 'points'}
-				</p>
-			</div>
-			<div className="flex flex-col m-2">
+		<section className="w-full h-fit bg-slate-200">
+			<article className="flex flex-row justify-between align-middle pt-3 bg-forth text-white">
+				<div className="pb-3 px-6 ">
+					<p className="font-robotoCondensed font-bold text-2xl lg:text-3xl underline underline-offset-4">
+						Question {questionNumber}.
+					</p>
+				</div>
+				<div className="flex flex-row-reverse pb-3 pr-6">
+					<p className="text-lg lg:text-xl font-roboto italic">
+						{points} {points === 1 ? 'point' : 'points'}
+					</p>
+				</div>
+			</article>
+			<article className="flex flex-col m-2 pb-4 ">
 				<div
-					className="text-3xl pb-4 px-2 lg:px-8 responsive-iframe"
+					className="text-2xl lg:text-3xl p-2 lg:px-8 responsive-iframe"
 					dangerouslySetInnerHTML={{ __html: question }}
 				/>
 				{uploadedImageUrl && (
@@ -30,8 +32,8 @@ const QuizLayoutQuestion = ({
 						/>
 					</div>
 				)}
-			</div>
-		</div>
+			</article>
+		</section>
 	);
 };
 

@@ -44,8 +44,8 @@ const QuizLayout = () => {
 
 	return (
 		<section className="w-full h-fit flex flex-col justify-center">
-			<div className="mt-36 mb-6">
-				<h2 className="text-4xl font-serif text-blue-800 text-center">
+			<div className="mt-28 lg:mt-36 mb-6 mx-4 border-t-4 border-t-secondary border-b-4 border-b-secondary">
+				<h2 className="text-3xl py-2 md:text-4xl font-serif font-semibold text-forth text-center">
 					{currentQuiz.quizTitle}
 				</h2>
 			</div>
@@ -62,7 +62,7 @@ const QuizLayout = () => {
 								question={question.questionText}
 							/>
 
-							<ol className="p-6 text-xl">
+							<ol className="px-6 pb-3 text-lg lg:text-xl font-roboto">
 								{question.answerType ===
 								QUESTION_TYPE.MULTIPLE_CHOICE.value
 									? question.options.map((option, index) => (

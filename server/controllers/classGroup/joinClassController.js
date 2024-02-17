@@ -1,15 +1,14 @@
 import ClassGroup from '../../models/ClassModel.js';
-import Student from '../../models/StudentModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { clearCache } from '../../utils/cache/cache.js';
 import hasPermission from '../../utils/hasPermission.js';
-import QuizAttempt from '../../models/QuizAttemptModel.js';
 import User from '../../models/UserModel.js';
 
 // Controller to allow students to join a class with an access code
 export const joinClassWithCode = async (req, res) => {
 	const { accessCode } = req.body;
+	console.log('Received join request for access code:', accessCode);
 	const userId = req.user.userId;
 	const userRole = req.user.userStatus;
 
@@ -69,7 +68,8 @@ export const joinClassWithCode = async (req, res) => {
 
 		res.status(StatusCodes.OK).json({
 			message: 'Joined class successfully',
-			membership,
+			membership: membership,
+			classData: classGroup,
 		});
 	} catch (error) {
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

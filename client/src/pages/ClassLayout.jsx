@@ -59,7 +59,7 @@ const ClassLayout = () => {
 	}
 
 	return (
-		<section className="pt-32 w-full h-full flex flex-col items-center overflow-hidden">
+		<section className="pt-20 lg:pt-32 w-full h-full flex flex-col items-center overflow-hidden">
 			<article className="w-full bg-primary text-center border-t-4 border-t-forth border-b-4 border-b-forth mb-6">
 				<div className="flex justify-start m-3 font-roboto">
 					<p className="mr-1 italic">join code:</p>
@@ -72,7 +72,7 @@ const ClassLayout = () => {
 				</h2>
 			</article>
 
-			<article className="flex justify-start w-full ml-6 px-4 pt-5 pb-8 text-5xl">
+			<article className="flex justify-start w-full ml:2 lg:ml-6 px-4 pt-2 lg:pt-5 pb-4 lg:pb-8 text-5xl">
 				<div className="relative mx-2 hover:cursor-pointer group">
 					<CiViewList
 						onClick={showQuizzes}

@@ -94,3 +94,21 @@ export const deleteClassMember = createAsyncThunk(
 		}
 	}
 );
+
+export const joinClassWithCode = createAsyncThunk(
+	'class/joinClassWithCode',
+	async (accessCode, { rejectWithValue }) => {
+		try {
+			console.log('Sending join request with access code:', accessCode);
+			const response = await customFetch.post(
+				`${BASE_URL}/joinWithCode`,
+				{ accessCode }
+			);
+			console.log('Received response:', response.data);
+			return response.data;
+		} catch (error) {
+			console.error('Error in join request:', error);
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);

@@ -20,10 +20,10 @@ export const updateQuiz = async (req, res) => {
 
 		const userId = req.user.userId;
 		const quizId = req.params.id; // ID of the quiz being updated
-		let { class: classIds, ...quizData } = req.body; // Extract class IDs and quiz data from request
+		let { class: classId, ...quizData } = req.body; // Extract class IDs and quiz data from request
 
-		// Ensure classIds is always an array for consistent processing
-		classIds = Array.isArray(classIds) ? classIds : [classIds];
+		// Ensure classId is always an array for consistent processing
+		classId = Array.isArray(classId) ? classId : [classId];
 
 		// Sanitize and update questions data
 		quizData.questions = quizData.questions.map((question) => {
@@ -43,7 +43,7 @@ export const updateQuiz = async (req, res) => {
 		// Find and update the quiz
 		const updatedQuiz = await Quiz.findByIdAndUpdate(
 			quizId,
-			{ ...quizData, class: classIds },
+			{ ...quizData, class: classId },
 			{ new: true, timestamps: true }
 		).populate({ path: 'class' });
 

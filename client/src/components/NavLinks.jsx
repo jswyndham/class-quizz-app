@@ -25,8 +25,8 @@ const NavLinks = ({ closeSidebar }) => {
 						className="flex flex-row hover:text-yellow-200"
 						onClick={() => closeSidebar()}
 					>
-						<span className="text-3xl my-6 mr-3">{icon}</span>
-						<span className="text-xl my-6">{text}</span>
+						<span className="text-3xl my-4 mr-3">{icon}</span>
+						<span className="text-xl my-4">{text}</span>
 					</NavLink>
 				);
 			})}

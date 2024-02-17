@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { FormRowSelect } from '../';
 import QuizHooks from '../../hooks/QuizHooks';
-import { useNavigation, Form } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegImage } from 'react-icons/fa6';
@@ -14,7 +14,8 @@ import {
 } from '../quizComponents';
 import { QUESTION_TYPE } from '../../../../server/utils/constants';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
-import quizFormHandlers from '../../handlers/quizFormHandlers';
+import { createQuiz } from '../../features/quiz/quizAPI';
+import { toast } from 'react-toastify';
 
 const QuizForm = () => {
 	// STATE HOOKS
@@ -25,29 +26,24 @@ const QuizForm = () => {
 		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
-		setCorrectAnswer,
+		setQuiz,
+		setQuizTitle,
 		updateAnswerType,
-		deleteQuizForm,
+		updateQuestion,
+		updateOption,
+		setCorrectAnswer,
+		addNewQuestion,
+		addOptionToQuestion,
+		deleteOption,
 	} = QuizHooks({});
 
-	const {
-		handleQuizTitleChange,
-		handleQuizDuration,
-		updateQuestionText,
-		updateQuestionPoints,
-		handleRadioChange,
-		handleFileChange,
-		handleAddNewQuestion,
-		handleAddOption,
-		handleOptionTextChange,
-		handleDeleteOption,
-		handleSubmit,
-	} = quizFormHandlers({});
+	const quizError = useSelector((state) => state.quiz.error);
 
 	const dispatch = useDispatch();
 
-	const navigation = useNavigation();
-	const isSubmitting = navigation.state === 'submitting';
+	const navigate = useNavigate();
+
+	console.log('Selected Class ID:', selectedClassId);
 
 	// Accessing classes for dropdown menu selection
 	const classData = useSelector(selectClassDataArray);
@@ -57,13 +53,142 @@ const QuizForm = () => {
 		dispatch(fetchClasses());
 	}, [dispatch]);
 
-	// Quiz form
+	// *************** HANDLERS *********************
+
+	// Add quiz title
+	const handleQuizTitleChange = (e) => {
+		setQuizTitle(e.target.value);
+	};
+
+	// Handle quiz duration (timer)
+	const handleQuizDuration = (duration) => {
+		setQuiz((prevQuiz) => ({
+			...prevQuiz,
+			quizDuration: Number(duration),
+		}));
+	};
+
+	// Add text to question
+	const updateQuestionText = (questionIndex, newText, e) => {
+		// Ensure newText is a string
+		newText = String(newText);
+
+		const updatedQuestion = {
+			...quiz.questions[questionIndex],
+
+			questionText: newText,
+		};
+
+		updateQuestion(questionIndex, updatedQuestion);
+	};
+
+	// Add points to question
+	const updateQuestionPoints = (questionIndex, e) => {
+		const points = parseInt(e.target.value, 10) || 0;
+		const updatedQuestion = {
+			...quiz.questions[questionIndex],
+			points: points,
+		};
+
+		updateQuestion(questionIndex, updatedQuestion);
+	};
+
+	// Handles the changes to the radio button which triggers changes to the 'isCorrect' boolean parameter in the Quiz schema
+	const handleRadioChange = (questionIndex, optionIndex) => {
+		setCorrectAnswer(questionIndex, optionIndex);
+	};
+
+	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
+	const handleFileChange = async (e, questionIndex) => {
+		const file = e.target.files[0];
+		if (file) {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			try {
+				const uploadResult = await dispatch(
+					uploadCloudinaryFile(formData)
+				).unwrap();
+				const updatedQuestion = {
+					...quiz.questions[questionIndex],
+					uploadedImageUrl: uploadResult.url,
+				};
+				updateQuestion(questionIndex, updatedQuestion);
+			} catch (error) {
+				console.error('Failed to upload file:', error);
+				toast.error('Failed to upload file');
+			}
+		}
+	};
+
+	// ADD NEW QUESTION
+	const handleAddNewQuestion = () => {
+		addNewQuestion();
+	};
+
+	// ADD NEW OPTION (ANSWER) TO QUESTION
+	const handleAddOption = (questionIndex) => {
+		addOptionToQuestion(questionIndex);
+	};
+
+	// ADD OPTION (ANSWER) TEXT
+	const handleOptionTextChange = (questionIndex, optionIndex, e) => {
+		const updatedOption = {
+			...quiz.questions[questionIndex].options[optionIndex],
+			optionText: e.target.value,
+		};
+		updateOption(questionIndex, optionIndex, updatedOption);
+	};
+
+	// DELETE OPTION
+	const handleDeleteOption = (questionIndex, optionIndex) => {
+		deleteOption(questionIndex, optionIndex);
+	};
+
+	// Handle quiz form submission
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		// Add the selected class ID to the quiz data
+		const formData = {
+			...quiz,
+			backgroundColor: quizBackgroundColor,
+			classId: selectedClassId ? [selectedClassId] : [],
+		};
+
+		try {
+			const createdQuizResponse = await dispatch(
+				createQuiz(formData)
+			).unwrap();
+			dispatch(fetchClasses());
+			if (createdQuizResponse && createdQuizResponse.classId) {
+				dispatch(fetchClassById(createdQuizResponse.classId));
+			}
+
+			navigate(`/dashboard/class/${selectedClassId}`);
+			toast.success('Quiz successfully added');
+
+			// Clear local storage
+			localStorage.removeItem('quizData');
+			quiz.questions.forEach((_, index) => {
+				localStorage.removeItem(`editorContent-${index}`);
+			});
+		} catch (error) {
+			console.error('Failed to create quiz:', error);
+			toast.error(
+				// redux error state
+				quizError || 'An error occurred while creating the quiz'
+			);
+		}
+	};
+
+	// ************ QUIZ FORM ****************
 	return (
 		<div className="flex justify-center items-center w-full h-fit">
 			<Form
 				method="post"
 				onSubmit={handleSubmit}
-				className="flex flex-col w-full lg:max-w-4xl justify-center items-center drop-shadow-lg my-4 px-2"
+				className="flex flex-col w-full lg:max-w-4xl justify-center items-center drop-shadow-lg my-4 px-6 shadow-md shadow-slate-400"
 			>
 				<div className="flex flex-col justify-center w-full my-1">
 					<label htmlFor="questionText" className="text-lg my-4">
@@ -114,16 +239,19 @@ const QuizForm = () => {
 					</div>
 
 					{/* Quiz duration (quiz timer) */}
-					<label htmlFor="quizDuration">
-						Quiz Duration (in minutes):
-					</label>
-					<input
-						id="quizDuration"
-						type="number"
-						value={quiz.quizDuration}
-						onChange={(e) => handleQuizDuration(e.target.value)}
-						min="1"
-					/>
+					<div className="w-fit m-6 pl-2 bg-slate-100 rounded-lg">
+						<label className="text-lg pr-3" htmlFor="quizDuration">
+							Quiz Duration (in minutes):
+						</label>
+						<input
+							id="quizDuration"
+							type="number"
+							value={quiz.quizDuration}
+							onChange={(e) => handleQuizDuration(e.target.value)}
+							min="1"
+							className="w-24 p-2 border border-slate-400 rounded-md bg-white"
+						/>
+					</div>
 
 					{/* Quiz question section */}
 					{quiz.questions.map((question, questionIndex) => (
@@ -134,7 +262,7 @@ const QuizForm = () => {
 						>
 							<div className="my-3 mx-4">
 								{/* Used the map index to number the questions */}
-								<p className="underline underline-offset-2 italic">
+								<p className="font-robotoCondensed text-3xl font-bold text-forth underline underline-offset-2">
 									Question {questionIndex + 1}
 								</p>
 							</div>
@@ -281,7 +409,7 @@ const QuizForm = () => {
 						type="submit"
 						className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 					>
-						{isSubmitting ? 'submitting...' : 'create'}
+						create
 					</button>
 				</div>
 			</Form>

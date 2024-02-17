@@ -5,6 +5,7 @@ import { USER_STATUS } from '../../../server/utils/constants.js';
 import { useState } from 'react';
 import { registerUser } from '../features/authenticate/authAPI';
 import { useDispatch } from 'react-redux';
+import logo from '../assets/images/quizgate-logo.png';
 
 const Register = () => {
 	const [freeRegistrationForm, setFreeRegistrationForm] = useState({
@@ -58,15 +59,15 @@ const Register = () => {
 	};
 
 	return (
-		<section className="h-screen flex justify-center align-middle p-12 md:p-24 bg-gradient-to-br from-forth to-secondary">
-			<article className="flex flex-col w-full md:w-fit bg-white py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
-				<div className="w-full bg-blue-400 -mt-16 text-center">
-					<h1 className="m-6 text-3xl font-bold text-white">
+		<section className="h-screen flex justify-center align-middle sm:p-3 md:p-24 bg-gradient-to-br from-forth to-secondary">
+			<article className="flex flex-col w-fit bg-white py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">
+				<div className="w-full bg-blue-400 -mt-16 text-center rounded-t-lg">
+					<h1 className="m-6 text-4xl font-bold text-white font-robotoCondensed">
 						Sign Up
 					</h1>
 				</div>
 
-				<div className="flex justify-center align-middle">
+				<div className="h-fit bg-white flex justify-center align-middle">
 					<Form onSubmit={handleSubmit} className="w-fit p-8 md:p-16">
 						{/* FIRST NAME */}
 						<FormRow
@@ -140,7 +141,7 @@ const Register = () => {
 						<div className="flex flex-col justify-center">
 							<button
 								type="submit"
-								className="h-8 w-96 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+								className="h-12 w-72 mx-6 md:mx-14 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 							>
 								submit
 							</button>
@@ -153,6 +154,9 @@ const Register = () => {
 							</div>
 						</div>
 					</Form>
+				</div>
+				<div className="flex justify-center m-auto p-4 ">
+					<img src={logo} alt="QuizGate logo" className="flex w-72" />
 				</div>
 			</article>
 		</section>

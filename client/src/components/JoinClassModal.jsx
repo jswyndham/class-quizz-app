@@ -1,8 +1,14 @@
 import { useState } from 'react';
 
-const JoinClassModal = ({ isOpen, onConfirm, onCancel, heading, message }) => {
-	const [inputValue, setInputValue] = useState('');
-
+const JoinClassModal = ({
+	isOpen,
+	onConfirm,
+	onCancel,
+	heading,
+	message,
+	accessCode,
+	setAccessCode,
+}) => {
 	if (!isOpen) {
 		console.log('isOpen is triggered');
 		return null;
@@ -11,29 +17,30 @@ const JoinClassModal = ({ isOpen, onConfirm, onCancel, heading, message }) => {
 	}
 
 	const handleInputChange = (event) => {
-		setInputValue(event.target.value);
+		setAccessCode(event.target.value);
 	};
 
-	const isJoinDisabled = !inputValue;
+	const isJoinDisabled = !accessCode;
 
 	return (
 		<article>
 			<div className="fixed h-full w-full top-0 left-0 bg-gray-700 inset-0 opacity-70 z-40"></div>
 			<div className="fixed inset-0 flex items-center justify-center z-50">
 				<div className="flex h-fit w-fit mx-2 lg:mx-0 rounded-lg drop-shadow-md shadow-md shadow-slate-400 border-solid border-2 border-third bg-white">
-					<div className="flex flex-col modal w-96">
+					<div className="flex flex-col items-center modal min-w-full max-w-xl">
+						{/* ****** Modal heading & message ********** */}
 						<div className="w-8/12 font-roboto flex flex-col justify-start mt-8 mb-6 ml-10">
-							<p className="text-xl md:text-2xl font-bold mb-3">
+							<h2 className="text-xl md:text-2xl font-bold mb-3">
 								{heading}
-							</p>
+							</h2>
 							<p className="text-lg md:text-xl">{message}</p>
 						</div>
-						<div className="ml-10 my-3">
+						<div className="w-full flex justify-center px-6 my-3">
 							<input
 								type="text"
-								className="bg-slate-100 rounded-md p-2 border border-slate-400"
-								value={inputValue}
-								onChange={handleInputChange}
+								className="w-8/12 bg-slate-100 rounded-md p-2 border border-slate-400"
+								value={accessCode} // Use accessCode here
+								onChange={handleInputChange} // Update on change
 							/>
 						</div>
 						<div className="flex flex-row justify-start my-7 mx-4">

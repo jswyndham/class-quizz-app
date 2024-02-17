@@ -167,8 +167,9 @@ export const logout = async (req, res) => {
 			await auditLog.save();
 		}
 
-		const userCacheKey = `user_${userId}`;
-		clearCache(userCacheKey);
+		clearCache(`user_${userId}`);
+		clearCache(`quiz_${userId}`);
+		clearCache(`class_${userId}`);
 
 		res.status(StatusCodes.OK).json({ msg: 'User logged out' });
 	} catch (error) {

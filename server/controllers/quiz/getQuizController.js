@@ -49,7 +49,7 @@ export const getAllQuizzes = async (req, res) => {
 export const getQuiz = async (req, res) => {
 	const quizId = req.params.id;
 	const userId = req.user.userId;
-	const cacheKey = `quiz_${userId}_${quizId}`;
+	const cacheKey = `quiz_${quizId}`;
 
 	try {
 		const cachedQuiz = getCache(cacheKey);

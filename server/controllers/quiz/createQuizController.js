@@ -21,9 +21,9 @@ export const createAndAssignQuiz = async (req, res) => {
 
 		// User ID and class IDs
 		const userId = req.user.userId;
-		const classId = req.params.classId;
+		// const classId = req.params.classId;
 		let { ...quizData } = req.body;
-
+		const { classId } = req.body;
 		// Sanitize quiz title and description
 		quizData.quizTitle = sanitizeHtml(quizData.quizTitle, sanitizeConfig);
 		quizData.quizDescription = sanitizeHtml(
@@ -49,7 +49,9 @@ export const createAndAssignQuiz = async (req, res) => {
 			_id: { $in: classId },
 		}).populate('membership');
 
-		if (classes.length !== classIds.length) {
+		console.log('Classes:', classes, 'Class IDs:', classId);
+
+		if (classes.length !== classId.length) {
 			return res.status(StatusCodes.BAD_REQUEST).json({
 				message: 'One or more class IDs are invalid or do not exist.',
 			});
@@ -64,7 +66,7 @@ export const createAndAssignQuiz = async (req, res) => {
 
 		// After creating the quiz, update each class with the new quiz ID
 		await Promise.all(
-			classIds.map(async (classId) => {
+			classId.map(async (classId) => {
 				await ClassGroup.findByIdAndUpdate(classId, {
 					$push: { quizzes: newQuiz._id },
 				});

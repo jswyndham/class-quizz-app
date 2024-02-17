@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { USER_STATUS } from '../utils/constants.js';
 
 const MembershipSchema = new mongoose.Schema({
 	user: {

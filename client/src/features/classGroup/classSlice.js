@@ -6,6 +6,7 @@ import {
 	updateClass,
 	deleteClass,
 	deleteClassMember,
+	joinClassWithCode,
 } from './classAPI';
 
 const initialState = {
@@ -27,7 +28,6 @@ const classSlice = createSlice({
 				state.loading = true;
 				state.error = null;
 			})
-
 			.addCase(fetchClasses.fulfilled, (state, action) => {
 				state.loading = false;
 				action.payload.classGroups.forEach((classGroup) => {
@@ -66,18 +66,6 @@ const classSlice = createSlice({
 				const newClass = action.payload.classGroup;
 				state.classesById[newClass._id] = newClass;
 				state.allClassIds.push(newClass._id);
-
-				// const classData = action.payload.classGroup;
-				// if (classData && classData._id) {
-				// 	state.currentClass = classData; // Store the state in 'currentClass'
-				// 	// Update allClassIds array if it doesn't include class '_id'
-				// 	if (!state.allClassIds.includes(classData._id)) {
-				// 		state.allClassIds.push(classData._id);
-				// 	}
-				// } else {
-				// 	console.error('No valid class data in payload');
-				// }
-
 				state.error = null;
 			})
 			// Update existing class
@@ -109,6 +97,38 @@ const classSlice = createSlice({
 					);
 				}
 				state.error = null;
+			})
+			// Handle joining a class with a code
+			.addCase(joinClassWithCode.pending, (state) => {
+				console.log('Join class request pending');
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(joinClassWithCode.fulfilled, (state, action) => {
+				state.loading = false;
+				const classData = action.payload.classData;
+				console.log('Class Data: ', classData);
+
+				if (classData && classData._id) {
+					state.classesById[classData._id] = classData;
+					if (!state.allClassIds.includes(classData._id)) {
+						state.allClassIds.push(classData._id);
+					}
+				} else {
+					console.error(
+						'Invalid class data in joinClassWithCode response'
+					);
+				}
+
+				state.error = null;
+			})
+			.addCase(joinClassWithCode.rejected, (state, action) => {
+				console.error(
+					'Join class request failed:',
+					action.error.message
+				);
+				state.loading = false;
+				state.error = action.payload.error || 'Unknown error occurred';
 			});
 	},
 });

@@ -41,7 +41,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(fetchQuizzes.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 			})
 
 			// Fetch quiz by id
@@ -66,7 +66,7 @@ const quizSlice = createSlice({
 				state.error = null;
 			})
 			.addCase(fetchQuizById.rejected, (state, action) => {
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 				state.loading = false;
 			})
 
@@ -82,7 +82,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(createQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.message;
 			})
 
 			// Update existing quiz
@@ -99,7 +99,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(updateQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 			})
 
 			// Copy a quiz and place in a new class
@@ -124,7 +124,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(copyQuizToClass.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 			})
 
 			// Delete quiz
@@ -139,7 +139,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(deleteQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 			})
 
 			// Add question to quiz
@@ -160,7 +160,7 @@ const quizSlice = createSlice({
 			})
 			.addCase(addQuestionToQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.payload.msg;
 			});
 	},
 });
