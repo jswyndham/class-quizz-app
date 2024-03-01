@@ -1,10 +1,11 @@
 import { body, param, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 
 // Middleware for validating quizAttemptId format
 export const validateQuizAttemptId = (req, res, next) => {
-	const { id } = req.params;
+	const { quizAttemptId } = req.params;
 
-	if (!isValidObjectId(id)) {
+	if (!mongoose.Types.ObjectId.isValid(quizAttemptId)) {
 		return res
 			.status(400)
 			.json({ message: 'Invalid quiz attempt ID format' });

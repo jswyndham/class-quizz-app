@@ -27,6 +27,21 @@ const userSlice = createSlice({
 				state.loading = false;
 				state.error = action.error.message;
 			});
+		// Get single memberhip number
+		// .addCase(getUserMembership.pending, (state) => {
+		// 	state.loading = true;
+		// 	state.error = null;
+		// })
+		// .addCase(getUserMembership.fulfilled, (state, action) => {
+		// 	state.loading = false;
+		// 	state.currentMembership = action.payload.membership;
+		// 	console.log('Fetched Membership:', state.currentMembership);
+		// 	state.error = null;
+		// })
+		// .addCase(getUserMembership.rejected, (state, action) => {
+		// 	state.loading = false;
+		// 	state.error = action.payload || action.error.message;
+		// });
 	},
 });
 

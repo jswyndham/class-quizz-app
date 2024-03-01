@@ -6,7 +6,6 @@ const MembershipSchema = new mongoose.Schema({
 		ref: 'User',
 		required: true,
 	},
-
 	classList: [
 		{
 			class: {
@@ -18,6 +17,12 @@ const MembershipSchema = new mongoose.Schema({
 				type: Date,
 				default: Date.now,
 			},
+			quizAttempts: [
+				{
+					type: mongoose.Schema.Types.ObjectId,
+					ref: 'QuizAttempt',
+				},
+			],
 		},
 	],
 });

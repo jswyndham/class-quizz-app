@@ -13,6 +13,7 @@ import { IoPeopleSharp } from 'react-icons/io5';
 import JoinClassModal from '../JoinClassModal';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 import { toast } from 'react-toastify';
+import { selectMembershipDataArray } from '../../features/membership/membershipSelectors';
 
 const MemoizedClassListCard = memo(ClassListCard);
 
@@ -26,18 +27,20 @@ const ClassListMenu = () => {
 
 	const classData = useSelector(selectClassDataArray);
 
-	const currentUser = useSelector((state) => state.user.currentUser);
+	const currentUser = useSelector((state) => state.user.currentUser); // Get current user data
+	const membershipData = useSelector(selectMembershipDataArray); // Get membership data
+	// Access userStatus to determin user access
+	const userRole = currentUser?.userStatus;
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const menuRef = useRef();
 
-	// Access userStatus to determin user access
-	const userRole = currentUser?.userStatus;
-
 	useEffect(() => {
-		dispatch(fetchClasses());
-	}, [dispatch]);
+		if (currentUser) {
+			dispatch(fetchClasses());
+		}
+	}, [currentUser, dispatch]);
 
 	// Click outside the card menu to close
 	useEffect(() => {
@@ -87,7 +90,7 @@ const ClassListMenu = () => {
 			const result = await dispatch(
 				joinClassWithCode(accessCode)
 			).unwrap();
-			handleJoinButtonClose();
+			handleJoinButtonClose(e);
 			toast.success('Successfully joined the class');
 		} catch (error) {
 			console.error('Failed to join class:', error);
@@ -133,17 +136,36 @@ const ClassListMenu = () => {
 					</h2>
 				</div>
 				<div className="w-full h-fit grid grid-cols-1">
-					{Array.isArray(classData) &&
-						classData.map((classGroup) => (
-							<MemoizedClassListCard
-								key={classGroup._id}
-								clickClassListCard={() =>
-									handleClassLink(classGroup._id)
-								}
-								className={classGroup.className}
-								subject={classGroup.subject}
-							/>
-						))}
+					{/* TEACHER & ADMIN use condition */}
+					{userRole === 'TEACHER' || userRole === 'ADMIN'
+						? Array.isArray(classData) &&
+						  classData.map((classGroup) => (
+								<MemoizedClassListCard
+									key={classGroup._id}
+									clickClassListCard={() =>
+										handleClassLink(classGroup._id)
+									}
+									className={classGroup.className}
+									subject={classGroup.subject}
+								/>
+						  ))
+						: // STUDENT as a class member condition
+						userRole === 'STUDENT'
+						? membershipData.map((membershipClassGroup) => (
+								<MemoizedClassListCard
+									key={membershipClassGroup._id}
+									clickClassListCard={() =>
+										handleClassLink(
+											membershipClassGroup._id
+										)
+									}
+									className={
+										membershipClassGroup._doc.className
+									}
+									subject={membershipClassGroup._doc.subject}
+								/>
+						  ))
+						: null}
 				</div>
 			</article>
 			{/* Delete quiz modal */}

@@ -11,7 +11,8 @@ const Login = () => {
 	const [formData, setFormData] = useState({ email: '', password: '' });
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { loading, error } = useSelector((state) => state.user.user);
+	const isLoading = useSelector((state) => state.auth.loading);
+	const error = useSelector((state) => state.auth.error);
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -65,10 +66,10 @@ const Login = () => {
 						<div className="flex flex-col justify-center w-fit">
 							<button
 								type="submit"
-								disabled={loading}
+								disabled={isLoading}
 								className="h-12 w-64 mx-12 mt-10 mb-4 bg-white text-lg text-forth font-bold border-solid border-2 border-secondary rounded-lg drop-shadow-lg hover:bg-secondary hover:text-white hover:font-bold hover:shadow-2xl hover:drop-shadow-xl active:shadow-sm active:bg-third"
 							>
-								{loading ? 'submitting...' : 'login'}
+								{isLoading ? 'Logging in...' : 'login'}
 							</button>
 							{error && <p style={{ color: 'red' }}>{error}</p>}
 							<div className="flex flex-row justify-center mt-6">

@@ -11,7 +11,7 @@ import { withValidationErrors } from './validationHelpers.js';
 
 // Validator for studentId as a route parameter
 export const validateStudentIdParam = withValidationErrors([
-	param('studentId').custom(async (value, { req }) => {
+	param('userId').custom(async (value, { req }) => {
 		if (!mongoose.Types.ObjectId.isValid(value)) {
 			throw new BadRequestError('Invalid student ID');
 		}

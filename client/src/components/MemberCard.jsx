@@ -114,17 +114,19 @@ const MemberCard = ({
 
 			<article className="relative h-fit w-full lg:max-w-4xl my-2 md:mx-6 lg:mx-12 shadow-md shadow-gray-400 rounded-b-md ">
 				<div className="relative flex flex-row justify-between h-fit p-1 border-1 border-slate-300 rounded-t-md">
-					<div className="flex flex-col lg:flex-row justify-start lg:justify-between w-full h-full pr-24 bg-slate-200 rounded-md bg-opacity-70">
-						<p className="mx-3 mt-1 lg:my-1 text-lg text-forth font-bold hover:cursor-pointer">
+					<div className="flex flex-col xl:flex-row justify-start xl:justify-between w-full h-full pr-24 bg-slate-200 rounded-md bg-opacity-70">
+						<p className="w-72 mx-3 mt-1 lg:my-1 text-lg text-forth font-bold hover:cursor-pointer">
 							{lastName}, {firstName}
 						</p>
 
-						<p className="text-zinc-600 hover:cursor-pointer hover:text-blue-500 active:text-blue-700 pl-3 lg:pl-0 lg:mt-1">
-							{email}
-						</p>
-						<p className="pl-3 pb-1 lg:mt-1 lg:pl-0 lg:pb-0">
-							{userStatus}
-						</p>
+						<div className="flex mx-1 lg:-mt-2 lg:pl-3 xl:pl-0 xl:mt-0 flex-col lg:flex-row xl:justify-around">
+							<p className="w-80 xl:text-center text-zinc-600 hover:cursor-pointer hover:text-blue-500 active:text-blue-700 pl-3 lg:pl-0 lg:mt-1">
+								{email}
+							</p>
+							<p className="w-36 pb-1 lg:mt-1 pl-3 lg:pl-0">
+								{userStatus}
+							</p>
+						</div>
 					</div>
 				</div>
 

@@ -12,7 +12,17 @@ export const getCurrentUser = async (req, res) => {
 		console.log(`Cache miss for allQuizzes key: ${cacheKey}`);
 
 		if (!userData) {
-			const user = await User.findById(req.user.userId);
+			const user = await User.findById(req.user.userId)
+				.populate({
+					path: 'membership',
+					populate: {
+						path: 'classList.class',
+						model: 'Class',
+						select: 'className subject school',
+					},
+				})
+				.exec();
+
 			if (!user) throw new Error('User not found');
 
 			// Create clone of the user object and remove password (sanitizing user data)

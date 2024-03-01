@@ -14,4 +14,5 @@ export { default as Profile } from './Profile';
 export { default as Admin } from './Admin';
 export { default as ClassLayout } from './ClassLayout';
 export { default as QuizLayout } from './QuizLayout';
+export { default as QuizAttemptLayout } from './QuizAttemptLayout';
 export { default as AddQuiz } from './AddQuiz';

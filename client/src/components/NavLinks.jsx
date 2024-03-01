@@ -1,9 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import links from '../utils/links';
 import { NavLink } from 'react-router-dom';
 
 const NavLinks = ({ closeSidebar }) => {
-	const dispatch = useDispatch();
 	const currentUser = useSelector((state) => state.user.currentUser);
 
 	if (!currentUser) {

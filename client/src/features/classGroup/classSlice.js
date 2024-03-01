@@ -30,9 +30,28 @@ const classSlice = createSlice({
 			})
 			.addCase(fetchClasses.fulfilled, (state, action) => {
 				state.loading = false;
-				action.payload.classGroups.forEach((classGroup) => {
-					state.classesById[classGroup._id] = classGroup;
-				});
+
+				if (
+					action.payload.role === 'TEACHER' ||
+					action.payload.role === 'ADMIN'
+				) {
+					action.payload.classGroups.forEach((classGroup) => {
+						state.classesById[classGroup._id] = classGroup;
+					});
+					state.allClassIds = action.payload.classGroups.map(
+						(classGroup) => classGroup._id
+					);
+				} else if (action.payload.role === 'STUDENT') {
+					action.payload.classGroups.forEach((classData) => {
+						state.classesById[classData._id] = {
+							...classData,
+							quizAttempts: classData.quizAttempts,
+						};
+					});
+					state.allClassIds = action.payload.classGroups.map(
+						(classData) => classData._id
+					);
+				}
 				state.error = null;
 			})
 			.addCase(fetchClasses.rejected, (state, action) => {

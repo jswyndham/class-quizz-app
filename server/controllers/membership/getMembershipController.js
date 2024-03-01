@@ -1,109 +1,61 @@
-import User from '../../models/UserModel.js';
 import Membership from '../../models/MembershipModel.js';
 import { getCache, setCache } from '../../utils/cache/cache.js';
 import hasPermission from '../../utils/hasPermission.js';
 import { StatusCodes } from 'http-status-codes';
 
 // Get (find) all the class memberships a single student has joined
-export const getStudentMemberships = async (req, res) => {
+export const getAllMemberships = async (req, res) => {
 	try {
+		const userId = req.user.userId;
 		const userRole = req.user.userStatus;
-		const userId = req.params.userId; // Using userId instead of studentId
 
-		if (!hasPermission(userRole, 'GET_ALL_STUDENT_MEMBERSHIPS')) {
-			return res.status(403).json({
-				message:
-					'Forbidden: You do not have permission for this action',
-			});
-		}
+		console.log('USER ID: ', userId);
 
-		const cacheKey = `memberships_user_${userId}`;
+		// Define a cache key unique to the user
+		const cacheKey = `membership_${userId}`;
 
-		// Try to retrieve from cache first
-		const cachedData = await getCache(cacheKey);
+		// Attempt to get cached data
+		let cachedData = await getCache(cacheKey);
+
+		// If cache is hit, return the cached data
 		if (cachedData) {
-			return res.status(StatusCodes.OK).json({ memberships: cachedData });
+			console.log(`Cache hit for key: ${cacheKey}`);
+			return res.status(StatusCodes.OK).json({ classGroups: cachedData });
 		}
 
-		// Query the User model for membership data
-		const userData = await User.findById(userId)
-			.select('membership')
+		let classGroups = [];
+
+		// Fetch all memberships for the user and populate class details and quizAttempts
+		const memberships = await Membership.find()
 			.populate({
-				path: 'membership',
+				path: 'classList',
+				populate: { path: 'class' }, // Populating quizzes for each class
+			})
+			.populate({
+				path: 'classList.quizAttempts',
 				populate: {
-					path: 'classList.class',
-					model: 'Class',
-					select: 'className subject school',
-				},
+					path: 'quiz',
+					select: 'quizTitle questions backgroundColor totalPoints createdAt updatedAt isActive isVisibleBeforeStart availableFrom availableUntil duration',
+				}, // Populating the quiz details in quizAttempts
 			})
-			.lean();
+			.lean()
+			.exec();
 
-		if (!userData) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ message: 'User not found' });
-		}
+		// Transform the data to have class details along with corresponding quizAttempts
+		classGroups = memberships.flatMap((m) =>
+			m.classList.map((cl) => ({
+				...cl.class, // Spread the class details
+				quizAttempts: cl.quizAttempts, // Include quizAttempts
+			}))
+		);
 
-		// Cache the retrieved data
-		await setCache(cacheKey, userData.membership, 3600); // Cache for 1 hour
+		// Cache the newly fetched data
+		setCache(cacheKey, classGroups, 3600);
 
-		res.status(StatusCodes.OK).json({ memberships: userData.membership });
+		// Send the classGroups in the response
+		res.status(StatusCodes.OK).json({ classGroups });
 	} catch (error) {
-		console.error('Error getting user memberships:', error);
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
-		});
-	}
-};
-
-// Get (find) a single user's membership details
-export const getUserMembership = async (req, res) => {
-	try {
-		const userRole = req.user.userStatus;
-		const userId = req.params.userId;
-		const membershipId = req.params.membershipId;
-
-		if (!hasPermission(userRole, 'GET_USER_MEMBERSHIP')) {
-			return res.status(403).json({
-				message:
-					'Forbidden: You do not have permission for this action',
-			});
-		}
-
-		const cacheKey = `membership_user_${userId}_${membershipId}`;
-
-		// Try to retrieve from cache first
-		const cachedMembership = await getCache(cacheKey);
-		if (cachedMembership) {
-			return res
-				.status(StatusCodes.OK)
-				.json({ membership: cachedMembership });
-		}
-
-		// Query the Membership model
-		const membershipData = await Membership.findOne({
-			_id: membershipId,
-			user: userId,
-		})
-			.populate({
-				path: 'classList.class',
-				model: 'Class',
-				select: 'className subject school',
-			})
-			.lean();
-
-		if (!membershipData) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ message: 'Membership not found' });
-		}
-
-		// Cache the retrieved data
-		await setCache(cacheKey, membershipData, 3600); // Cache for 1 hour
-
-		res.status(StatusCodes.OK).json({ membership: membershipData });
-	} catch (error) {
-		console.error('Error getting user membership:', error);
+		console.error('Error in getAllClasses:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});

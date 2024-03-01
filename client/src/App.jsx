@@ -17,6 +17,7 @@ import {
 	DashboardLayout,
 	ClassLayout,
 	QuizLayout,
+	QuizAttemptLayout,
 	AddQuiz,
 	AllQuizzes,
 } from './pages';
@@ -89,7 +90,10 @@ const router = createBrowserRouter([
 						path: 'quiz/:id',
 						element: <QuizLayout />,
 					},
-
+					{
+						path: 'quizAttempt/:id',
+						element: <QuizAttemptLayout />,
+					},
 					{
 						path: `edit-quiz/:id`,
 						element: <EditQuiz />,

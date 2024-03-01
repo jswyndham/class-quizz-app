@@ -1,6 +1,7 @@
 import { Form } from 'react-router-dom';
 import { FormRow, FormRowSelect } from '..';
 import { useNavigation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ClassForm = ({
 	onSubmit,
@@ -18,7 +19,7 @@ const ClassForm = ({
 	schoolDefault,
 }) => {
 	const navigation = useNavigation();
-	const isSubmitting = navigation.state === 'submitting';
+	const isLoading = useSelector((state) => state.class.loading);
 	return (
 		<div className="flex justify-center align-middle">
 			<Form
@@ -67,7 +68,7 @@ const ClassForm = ({
 						type="submit"
 						className="h-8 w-full 2xl:w-60 mt-8 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 					>
-						{isSubmitting ? 'submitting...' : 'submit'}
+						{isLoading ? 'submitting...' : 'submit'}
 					</button>
 				</div>
 			</Form>

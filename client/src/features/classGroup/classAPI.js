@@ -12,12 +12,19 @@ const shouldFetchClassById = (_id, state) => {
 // Get all classes
 export const fetchClasses = createAsyncThunk(
 	'class/fetchClasses',
-	async (_, { rejectWithValue }) => {
+	async (_, { getState, rejectWithValue }) => {
 		try {
-			const response = await customFetch.get(BASE_URL);
-			return response.data;
+			const state = getState();
+			const userRole = state.user.currentUser?.userStatus;
+
+			if (!userRole) {
+				throw new Error('User role not available');
+			}
+
+			const response = await customFetch.get(`/class?role=${userRole}`);
+			return { classGroups: response.data.classGroups, role: userRole };
 		} catch (error) {
-			console.error(`Error fetching class with ID ${_id}:`, error);
+			console.error('Error fetching classes:', error);
 			return rejectWithValue(error.response?.data || error.message);
 		}
 	}

@@ -10,50 +10,36 @@ const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
 // Controller to retrieve all classes
 export const getAllClasses = async (req, res) => {
-	const userId = req.user.userId;
-	// Setting the cacheKey parameters
-	const cacheKey = `class_${userId}`;
-
 	try {
-		const cachedData = getCache(cacheKey);
+		const userId = req.user.userId;
+		const userRole = req.user.userStatus;
 
-		// If the cached data exists, retrieve the existing data.
+		// Define a cache key unique to the user
+		const cacheKey = `class_${userId}`;
+
+		// Attempt to get cached data
+		let cachedData = await getCache(cacheKey);
+
+		// If cache is hit, return the cached data
 		if (cachedData) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-
 			return res.status(StatusCodes.OK).json({ classGroups: cachedData });
-		} else {
-			console.log(`Cache miss for key: ${cacheKey}`);
-			// Find all classes organized by createdBy user
-
-			const classGroups = await ClassGroup.find({
-				createdBy: userId,
-			})
-				.populate({ path: 'quizzes', options: { virtuals: true } }) // Populate quizzes mongoose ref
-				.populate({
-					path: 'membership',
-					select: 'firstName lastName email',
-					options: { virtuals: true },
-				}) // Populate students mongoose ref
-				.lean({ virtuals: true })
-				.exec();
-
-			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not actual parts of the Mongoose schema.
-			classGroups.forEach((classGroup) => {
-				classGroup.quizzes.forEach((quiz) => {
-					quiz.questionCount = quiz.questions.length;
-					quiz.totalPoints = quiz.questions.reduce(
-						(sum, question) => sum + question.points,
-						0
-					);
-				});
-			});
-
-			// Set data cache
-			setCache(cacheKey, classGroups, 3600); // 1 hour
-
-			res.status(StatusCodes.OK).json({ classGroups });
 		}
+
+		let classGroups = [];
+
+		// Fetch all class groups created by the user and populate quizzes and membership details
+		classGroups = await ClassGroup.find({ createdBy: userId })
+			.populate('quizzes')
+			.populate('membership')
+			.lean({ virtuals: true })
+			.exec();
+
+		// Cache the newly fetched data
+		setCache(cacheKey, classGroups, 3600);
+
+		// Send the classGroups in the response
+		res.status(StatusCodes.OK).json({ classGroups });
 	} catch (error) {
 		console.error('Error in getAllClasses:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -79,10 +65,10 @@ export const getClass = async (req, res) => {
 				.json({ message: 'Invalid ID format' });
 		}
 
-		const cachedClass = await getCache(cacheKey);
-		if (cachedClass) {
+		const cachedData = await getCache(cacheKey);
+		if (cachedData) {
 			console.log(`Cache hit for key: ${cacheKey}`);
-			return res.status(StatusCodes.OK).json({ classGroup: cachedClass });
+			return res.status(StatusCodes.OK).json({ classGroup: cachedData });
 		} else {
 			console.log(`Cache miss for key: ${cacheKey}`);
 

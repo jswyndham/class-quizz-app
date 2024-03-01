@@ -1,10 +1,10 @@
-import { Form, useNavigation, Link } from 'react-router-dom';
+import { Form, Link, useNavigate } from 'react-router-dom';
 import { FormRow, FormRowSelect } from '../components';
 import { toast } from 'react-toastify';
 import { USER_STATUS } from '../../../server/utils/constants.js';
 import { useState } from 'react';
 import { registerUser } from '../features/authenticate/authAPI';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import logo from '../assets/images/quizgate-logo.png';
 
 const Register = () => {
@@ -18,20 +18,22 @@ const Register = () => {
 		userStatus: '',
 	});
 
-	const handleChange = (e) => {
-		setFreeRegistrationForm({
-			...freeRegistrationForm,
-			[e.target.name]: e.target.value,
-		});
-	};
+	const isLoading = useSelector((state) => state.auth.loading);
 
 	// Filter out admin as a status option for new users
 	const statusOptions = Object.values(USER_STATUS).filter(
 		(status) => status !== USER_STATUS.ADMIN
 	);
 
-	const navigate = useNavigation();
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
+
+	const handleChange = (e) => {
+		setFreeRegistrationForm({
+			...freeRegistrationForm,
+			[e.target.name]: e.target.value,
+		});
+	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -51,7 +53,7 @@ const Register = () => {
 		// Run the redux slice
 		try {
 			await dispatch(registerUser(userData)).unwrap();
-			navigate('/dashboard');
+			navigate('/login');
 			toast.success('Registration successful');
 		} catch (error) {
 			toast.error(error || 'Login failed');
@@ -141,9 +143,10 @@ const Register = () => {
 						<div className="flex flex-col justify-center">
 							<button
 								type="submit"
+								disabled={isLoading}
 								className="h-12 w-72 mx-6 md:mx-14 mt-10 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 							>
-								submit
+								{isLoading ? 'submitting...' : 'submit'}
 							</button>
 
 							<div className="flex flex-row justify-center mt-6">

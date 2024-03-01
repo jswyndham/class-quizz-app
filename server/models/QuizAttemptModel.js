@@ -17,9 +17,9 @@ const answerSchema = new mongoose.Schema({
 
 const QuizAttemptSchema = new mongoose.Schema(
 	{
-		student: {
+		member: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Student',
+			ref: 'Membership',
 			required: true,
 		},
 		quiz: {

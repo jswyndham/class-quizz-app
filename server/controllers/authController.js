@@ -21,14 +21,12 @@ export const register = async (req, res) => {
 		const isFirstAccount = (await User.countDocuments()) === 0;
 
 		// Determine the user role
-		let userRole;
+		let userRole = req.body.userStatus || USER_STATUS.STUDENT.value;
 		let adminRole = [];
 
 		if (isFirstAccount) {
 			userRole = USER_STATUS.ADMIN.value;
 			adminRole.push(ADMIN_STATUS.SUPER_ADMIN.value);
-		} else {
-			userRole = req.body.userStatus.value || USER_STATUS.STUDENT.value;
 		}
 
 		// Create the user
@@ -37,19 +35,6 @@ export const register = async (req, res) => {
 			password: hashedPassword,
 			userStatus: userRole,
 		});
-
-		// Create role-specific profiles
-		switch (userRole) {
-			case USER_STATUS.STUDENT.value:
-				await Student.create({ user: user._id });
-				break;
-			case USER_STATUS.TEACHER.value:
-				await Teacher.create({ user: user._id });
-				break;
-			case USER_STATUS.ADMIN.value:
-				await Admin.create({ user: user._id, adminRole: adminRole });
-				break;
-		}
 
 		// Create new membership for the user
 		const membership = await Membership.create({
@@ -61,16 +46,38 @@ export const register = async (req, res) => {
 		user.membership = [membership._id];
 		await user.save();
 
-		// Create an audit log entry of the user's action
-		if (user._id) {
-			const auditLog = new AuditLog({
-				action: 'REGISTER',
-				subjectType: 'Registered as user',
-				userId: user._id,
-				details: { reason: 'User registered' },
-			});
-			await auditLog.save();
+		// Create role-specific profiles
+		switch (userRole) {
+			case USER_STATUS.STUDENT.value:
+				await Student.create({
+					user: user._id,
+					membership: [membership._id],
+				});
+				break;
+			case USER_STATUS.TEACHER.value:
+				await Teacher.create({
+					user: user._id,
+					classMembership: [membership._id],
+				});
+				break;
+			case USER_STATUS.ADMIN.value:
+				await Admin.create({
+					user: user._id,
+					adminRole: adminRole,
+					classMembership: [membership._id],
+				});
+				break;
 		}
+
+		// Create an audit log entry of the user's action
+		const auditLog = new AuditLog({
+			action: 'REGISTER',
+			subjectType: 'User',
+			subjectId: user._id,
+			userId: user._id,
+			details: { reason: 'User registered' },
+		});
+		await auditLog.save();
 
 		res.status(StatusCodes.CREATED).json({
 			msg: 'User registered',

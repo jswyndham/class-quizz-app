@@ -8,7 +8,14 @@ const StudentSchema = new mongoose.Schema(
 			ref: 'User',
 			required: true,
 		},
-
+		membrship: [
+			{
+				membership: {
+					type: mongoose.Types.ObjectId,
+					ref: 'Membership',
+				},
+			},
+		],
 		performance: [
 			{
 				class: {
@@ -16,7 +23,7 @@ const StudentSchema = new mongoose.Schema(
 					ref: 'Class',
 				},
 				totalScore: Number,
-				quizzesTaken: [
+				quizAttempts: [
 					{
 						quiz: {
 							type: mongoose.Types.ObjectId,
