@@ -42,12 +42,12 @@ ClassSchema.index({ membership: 1 });
 
 // Virtual field to get the count of quizzes
 ClassSchema.virtual('quizCount').get(function () {
-	return this.quizzes.length;
+	return this.quizzes ? this.quizzes.length : 0;
 });
 
 // Virtual field to get the count of members in each class
 ClassSchema.virtual('memberCount').get(function () {
-	return this.membership.length;
+	return this.membership ? this.membership.length : 0;
 });
 
 export default mongoose.model('Class', ClassSchema);

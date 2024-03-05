@@ -102,12 +102,18 @@ export const login = async (req, res) => {
 	try {
 		// Find the user by email
 		const user = await User.findOne({ email: req.body.email });
+		if (!user) {
+			throw new UnauthenticatedError('User not found');
+		}
 
 		// Validate user credentials
-		const isValidUser =
-			user && (await comparePassword(req.body.password, user.password));
-
-		if (!isValidUser) throw new UnauthenticatedError('Invalid login');
+		const isValidUser = await comparePassword(
+			req.body.password,
+			user.password
+		);
+		if (!isValidUser) {
+			throw new UnauthenticatedError('Invalid login');
+		}
 
 		// Create a JWT for the user
 		const token = createJWT({
@@ -115,12 +121,9 @@ export const login = async (req, res) => {
 			userStatus: user.userStatus,
 		});
 
-		// Set cookie to expire in one day
+		// Set authentication cookie
 		const oneDay = 1000 * 60 * 60 * 24;
-
 		const isProduction = process.env.NODE_ENV === 'production';
-
-		// Set the authentication cookie
 		res.cookie('token', token, {
 			httpOnly: true, // prevent client-side script access to the cookie
 			expires: new Date(Date.now() + oneDay),
@@ -128,24 +131,32 @@ export const login = async (req, res) => {
 			sameSite: isProduction ? 'None' : 'Lax', // use 'None' for cross-site requests in production
 		});
 
-		// Cache user data after successful login
-		const userData = { ...user.toObject(), password: undefined }; // Exclude password
-		const userCacheKey = `user_${user._id}`;
-		setCache(userCacheKey, userData, 3600);
-
-		// Create an audit log entry of the user's action
-		if (user._id) {
-			const auditLog = new AuditLog({
-				action: 'LOGIN',
-				subjectType: 'Login user',
-				userId: user._id,
-				details: { reason: 'User logged in' },
-			});
-			await auditLog.save();
+		// Attempt to cache user data
+		try {
+			const userData = { ...user.toObject(), password: undefined }; // Exclude password
+			const userCacheKey = `user_${user._id}`;
+			await setCache(userCacheKey, userData, 3600);
+		} catch (cacheError) {
+			console.error('Failed to cache user data:', cacheError);
+			// Continue without caching if an error occurs
 		}
 
-		res.status(StatusCodes.OK).json({ msg: 'User is logged in' });
+		// Audit log for user login
+		const auditLog = new AuditLog({
+			action: 'LOGIN',
+			subjectType: 'User',
+			subjectId: user._id,
+			userId: user._id,
+			details: { reason: 'User logged in' },
+		});
+		await auditLog.save();
+
+		res.status(StatusCodes.OK).json({
+			msg: 'User is logged in',
+			user: { id: user._id, email: user.email },
+		});
 	} catch (error) {
+		console.error('Error during login:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: error.message,
 		});
@@ -155,7 +166,7 @@ export const login = async (req, res) => {
 // Controller for logging out a user and removing the authentication cookie
 export const logout = async (req, res) => {
 	try {
-		const userId = req.user._id;
+		const userId = req.user.userId;
 
 		// Set the cookie to a dummy value and make it expire immediately
 		res.cookie('token', 'logout', {
@@ -175,8 +186,10 @@ export const logout = async (req, res) => {
 		}
 
 		clearCache(`user_${userId}`);
+		clearCache(`user_${req.user._id}`);
 		clearCache(`quiz_${userId}`);
 		clearCache(`class_${userId}`);
+		clearCache(`membership_${userId}`);
 
 		res.status(StatusCodes.OK).json({ msg: 'User logged out' });
 	} catch (error) {

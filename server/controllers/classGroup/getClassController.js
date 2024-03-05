@@ -5,6 +5,21 @@ import { StatusCodes } from 'http-status-codes';
 import { getCache, setCache } from '../../utils/cache/cache.js';
 import hasPermission from '../../utils/hasPermission.js';
 
+function processClassGroupVirtualsAndCache(classGroup, cacheKey) {
+	classGroup.quizCount = classGroup.quizzes.length;
+	classGroup.memberCount = classGroup.membership.length;
+
+	classGroup.quizzes.forEach((quiz) => {
+		quiz.questionCount = quiz.questions.length;
+		quiz.totalPoints = quiz.questions.reduce(
+			(sum, question) => sum + question.points,
+			0
+		);
+	});
+
+	setCache(cacheKey, classGroup, 3600);
+}
+
 // Validate ID format (example using a simple regex for MongoDB ObjectId)
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
@@ -51,68 +66,50 @@ export const getAllClasses = async (req, res) => {
 // Controller to retrieve a single class
 export const getClass = async (req, res) => {
 	try {
-		// Convert query parameters to a string for the cache key
-		const classId = req.params.id;
-		const userId = req.user.userId;
+		const classId = req.params.classId;
 
-		// Unique cacheKey for the specific class
-		const cacheKey = `class_${classId}`;
-
-		// Validate IDs
-		if (!isValidObjectId(classId) || !isValidObjectId(userId)) {
+		// Validate classId
+		if (!isValidObjectId(classId)) {
 			return res
 				.status(StatusCodes.BAD_REQUEST)
-				.json({ message: 'Invalid ID format' });
+				.json({ message: 'Invalid Class ID format' });
 		}
+
+		console.log('CLASS ID: ', classId);
+		const cacheKey = `class_${classId}`;
 
 		const cachedData = await getCache(cacheKey);
 		if (cachedData) {
 			console.log(`Cache hit for key: ${cacheKey}`);
 			return res.status(StatusCodes.OK).json({ classGroup: cachedData });
-		} else {
-			console.log(`Cache miss for key: ${cacheKey}`);
-
-			const classGroup = await ClassGroup.findById(classId)
-				.populate({ path: 'quizzes', options: { virtuals: true } })
-				.populate({
-					path: 'membership',
-					populate: {
-						path: 'user',
-						model: 'User',
-						select: 'firstName lastName email userStatus',
-						options: { virtuals: true },
-					},
-				})
-				.lean({ virtuals: true })
-				.exec();
-
-			if (!classGroup) {
-				return res
-					.status(StatusCodes.NOT_FOUND)
-					.json({ message: 'Class not found' });
-			}
-
-			// Adding counts manually if virtuals are not working
-			classGroup.quizCount = classGroup.quizzes.length;
-			classGroup.memberCount = classGroup.membership.length;
-
-			// Manually add virtual fields to each quiz in classGroups. This has to be done here because the virtual fields are calaulated properties and not part of the Mongoose schema.
-			classGroup.quizzes.forEach((quiz) => {
-				quiz.questionCount = quiz.questions.length;
-				quiz.totalPoints = quiz.questions.reduce(
-					(sum, question) => sum + question.points,
-					0
-				);
-			});
-
-			// Cache the class data
-			setCache(cacheKey, classGroup, 3600); // Caching for 1 hour
-
-			res.status(StatusCodes.OK).json({ classGroup });
 		}
+
+		const classGroup = await ClassGroup.findById(classId)
+			.populate({ path: 'quizzes', options: { virtuals: true } })
+			.populate({
+				path: 'membership',
+				populate: {
+					path: 'user',
+					model: 'User',
+					select: 'firstName lastName email userStatus',
+				},
+			})
+			.lean({ virtuals: true })
+			.exec();
+
+		if (!classGroup) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Class not found' });
+		}
+
+		// Processing virtuals and caching
+		processClassGroupVirtualsAndCache(classGroup, cacheKey);
+		res.status(StatusCodes.OK).json({ classGroup });
 	} catch (error) {
+		console.error('Error retrieving class:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: error.message,
+			message: 'Error retrieving class',
 		});
 	}
 };
@@ -123,7 +120,7 @@ export const getClassMemberships = async (req, res) => {
 		const page = parseInt(req.query.page) || 1;
 		const limit = parseInt(req.query.limit) || 20; // Number of students per page
 		const skip = (page - 1) * limit;
-		const classId = req.params.id;
+		const classId = req.params.classId;
 		const userRole = req.user.userStatus;
 
 		if (!hasPermission(userRole, 'GET_CLASS_MEMBERS')) {

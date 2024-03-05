@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import User from '../models/UserModel.js';
 import ClassGroup from '../models/ClassModel.js';
+
 import { getCache, setCache } from '../utils/cache/cache.js';
 
 // Controller to get the current user
@@ -17,8 +18,14 @@ export const getCurrentUser = async (req, res) => {
 					path: 'membership',
 					populate: {
 						path: 'classList.class',
-						model: 'Class',
 						select: 'className subject school',
+					},
+				})
+				.populate({
+					path: 'membership',
+					populate: {
+						path: 'classList.quizAttempts',
+						select: 'quiz completed isVisibleToStudent',
 					},
 				})
 				.exec();

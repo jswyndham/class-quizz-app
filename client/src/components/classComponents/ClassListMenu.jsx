@@ -14,6 +14,7 @@ import JoinClassModal from '../JoinClassModal';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 import { toast } from 'react-toastify';
 import { selectMembershipDataArray } from '../../features/membership/membershipSelectors';
+import { fetchMemberships } from '../../features/membership/membershipAPI';
 
 const MemoizedClassListCard = memo(ClassListCard);
 
@@ -29,12 +30,15 @@ const ClassListMenu = () => {
 
 	const currentUser = useSelector((state) => state.user.currentUser); // Get current user data
 	const membershipData = useSelector(selectMembershipDataArray); // Get membership data
+
 	// Access userStatus to determin user access
 	const userRole = currentUser?.userStatus;
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const menuRef = useRef();
+
+	console.log('Selector Output:', membershipData);
 
 	useEffect(() => {
 		if (currentUser) {
@@ -57,6 +61,8 @@ const ClassListMenu = () => {
 		};
 	}, [isCardMenu]);
 
+	// *********** HANDLER FUNCTIONS *******************
+
 	// Toggles the card menu visibility
 	const handleButtonMenuClick = (e) => {
 		e.stopPropagation();
@@ -71,6 +77,7 @@ const ClassListMenu = () => {
 	const handleJoinButtonClose = (e) => {
 		e.stopPropagation();
 		setIsJoinModal(!isJoinModal);
+		setAccessCode(''); // Reset the accessCode state
 	};
 
 	const handleCreateClassButton = (e) => {
@@ -78,11 +85,11 @@ const ClassListMenu = () => {
 		navigate('/dashboard/add-class');
 	};
 
-	// Handlers
 	const handleClassLink = (_id) => {
 		navigate(`/dashboard/class/${_id}`);
 	};
 
+	// Handles the submission of the access code for a user to become a member of join a class group
 	const handleJoinClass = async (e) => {
 		e.preventDefault();
 		console.log('Attempting to join class with code:', accessCode); // Log to verify
@@ -90,7 +97,9 @@ const ClassListMenu = () => {
 			const result = await dispatch(
 				joinClassWithCode(accessCode)
 			).unwrap();
+			setAccessCode(''); // Reset the accessCode state
 			handleJoinButtonClose(e);
+			dispatch(fetchMemberships());
 			toast.success('Successfully joined the class');
 		} catch (error) {
 			console.error('Failed to join class:', error);
@@ -137,33 +146,34 @@ const ClassListMenu = () => {
 				</div>
 				<div className="w-full h-fit grid grid-cols-1">
 					{/* TEACHER & ADMIN use condition */}
+
 					{userRole === 'TEACHER' || userRole === 'ADMIN'
 						? Array.isArray(classData) &&
 						  classData.map((classGroup) => (
-								<MemoizedClassListCard
-									key={classGroup._id}
-									clickClassListCard={() =>
-										handleClassLink(classGroup._id)
-									}
-									className={classGroup.className}
-									subject={classGroup.subject}
-								/>
+								<div key={classGroup._id}>
+									<MemoizedClassListCard
+										key={classGroup._id}
+										clickClassListCard={() =>
+											handleClassLink(classGroup._id)
+										}
+										className={classGroup.className}
+										subject={classGroup.subject}
+									/>
+								</div>
 						  ))
 						: // STUDENT as a class member condition
 						userRole === 'STUDENT'
-						? membershipData.map((membershipClassGroup) => (
-								<MemoizedClassListCard
-									key={membershipClassGroup._id}
-									clickClassListCard={() =>
-										handleClassLink(
-											membershipClassGroup._id
-										)
-									}
-									className={
-										membershipClassGroup._doc.className
-									}
-									subject={membershipClassGroup._doc.subject}
-								/>
+						? membershipData.map((membership) => (
+								<div key={membership._id}>
+									<MemoizedClassListCard
+										key={membership._id}
+										clickClassListCard={() =>
+											handleClassLink(membership._id)
+										}
+										className={membership.className}
+										subject={membership.subject}
+									/>
+								</div>
 						  ))
 						: null}
 				</div>

@@ -13,10 +13,10 @@ export const fetchCurrentUser = createAsyncThunk(
 			);
 			return response.data;
 		} catch (error) {
-			console.error('Error in getUser:', error);
-			return rejectWithValue(
-				error.response ? error.response.data : error.message
-			);
+			console.error('Error finding current user:', error);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: error.message,
+			});
 		}
 	}
 );

@@ -21,14 +21,14 @@ const ClassForm = ({
 	const navigation = useNavigation();
 	const isLoading = useSelector((state) => state.class.loading);
 	return (
-		<div className="flex justify-center align-middle">
+		<div className="w-full h-full max-w-lg mx-3 my-6 rounded-lg bg-white flex justify-center border border-slate-400 shadow-xl shadow-slate-500">
 			<Form
 				method="post"
 				key={classKey}
 				onSubmit={onSubmit}
-				className="flex flex-col p-24 drop-shadow-lg 2xl:ml-20"
+				className="w-11/12 flex flex-col justify-center px-4 py-10 drop-shadow-lg"
 			>
-				<div className="w-fit mx-4 my-2">
+				<div className="w-full ml-2 my-2">
 					<FormRow
 						type="text"
 						name="className"
@@ -40,8 +40,8 @@ const ClassForm = ({
 					/>
 				</div>
 
-				<div className="flex flex-col 2xl:flex-row mx-4">
-					<div className="mx-4 my-2">
+				<div className="w-full flex flex-col">
+					<div className="w-full ml-2 my-2">
 						<FormRow
 							type="text"
 							name="subject"
@@ -53,7 +53,7 @@ const ClassForm = ({
 						/>
 					</div>
 
-					<div className="mx-4 my-2">
+					<div className="w-full ml-2 my-2">
 						<FormRow
 							type="text"
 							name="school"
@@ -66,7 +66,7 @@ const ClassForm = ({
 					</div>
 					<button
 						type="submit"
-						className="h-8 w-full 2xl:w-60 mt-8 bg-blue-400 text-white rounded-lg drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+						className="h-10 w-11/12 2xl:w-60 mt-10  bg-blue-400 text-white text-lg font-bold rounded-lg ml-2 drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 					>
 						{isLoading ? 'submitting...' : 'submit'}
 					</button>

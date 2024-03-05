@@ -23,6 +23,8 @@ const generateAccessCode = () => {
 export const createClass = async (req, res) => {
 	const userRole = req.user.userStatus;
 
+	const { className, subject, school } = req.body;
+
 	if (!hasPermission(userRole, 'CREATE_CLASS')) {
 		return res.status(StatusCodes.FORBIDDEN).json({
 			message: 'Forbidden: You do not have permission for this action',
@@ -32,27 +34,44 @@ export const createClass = async (req, res) => {
 	try {
 		const userId = req.user.userId;
 
+		// Validate request body
+		if (!className || !subject || !school) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				message: 'Missing required fields',
+			});
+		}
+
+		// Check for existing class name
+		const existingClass = await ClassGroup.findOne({ className });
+		if (existingClass) {
+			return res.status(StatusCodes.CONFLICT).json({
+				message: 'Class name already exists',
+			});
+		}
+
 		// Generate a unique access code for the new class
 		const accessCode = generateAccessCode();
 
 		// Create a new class with the provided data and the generated access code
 		const classGroup = await ClassGroup.create({
-			...req.body,
+			className,
+			subject,
+			school,
 			createdBy: userId,
 			classAdmin: userId, // Set the class creator as the admin
 			accessCode: accessCode, // Set the unique class access code
 		});
 
-		// Create a membership for the teacher in the newly created class
-		const newMembership = await Membership.create({
-			user: userId,
-			userStatus: USER_STATUS.TEACHER.value,
-			classList: [{ class: classGroup._id }],
-		});
+		// Update or create the user's membership
+		const membership = await Membership.findOneAndUpdate(
+			{ user: userId },
+			{ $addToSet: { classList: { class: classGroup._id } } },
+			{ new: true, upsert: true }
+		);
 
-		// Update the classGroup to include the new membership
+		// Add membership to the class group
 		await ClassGroup.findByIdAndUpdate(classGroup._id, {
-			$push: { members: newMembership._id },
+			$addToSet: { membership: membership._id },
 		});
 
 		// Update the teacher's document to include this class in their classAdministered array
@@ -103,7 +122,7 @@ export const updateClass = async (req, res) => {
 		// Verify user permissions
 		const userRole = req.user.userStatus;
 		const userId = req.user.userId;
-		const classId = req.params.id;
+		const classId = req.params.classId;
 
 		if (!hasPermission(userRole, 'UPDATE_CLASS')) {
 			return res.status(StatusCodes.FORBIDDEN).json({
@@ -126,6 +145,19 @@ export const updateClass = async (req, res) => {
 				message:
 					'Forbidden: You are not the administrator of this class',
 			});
+		}
+
+		// Check for existing class name conflict (if className is being updated)
+		if (req.body.className) {
+			const existingClass = await ClassGroup.findOne({
+				className: req.body.className,
+				_id: { $ne: classId },
+			});
+			if (existingClass) {
+				return res.status(StatusCodes.CONFLICT).json({
+					message: 'Class name already exists',
+				});
+			}
 		}
 
 		const updatedClass = await ClassGroup.findByIdAndUpdate(
@@ -166,7 +198,7 @@ export const deleteClass = async (req, res) => {
 		// Verify user permissions
 		const userRole = req.user.userStatus;
 		const userId = req.user.userId;
-		const classId = req.params.id;
+		const classId = req.params.classId;
 
 		if (!hasPermission(userRole, 'DELETE_CLASS')) {
 			return res.status(StatusCodes.FORBIDDEN).json({

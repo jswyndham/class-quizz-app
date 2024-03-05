@@ -15,7 +15,7 @@ const ClassContainer = () => {
 	const classData = useSelector(selectClassDataArray);
 	const userData = useSelector((state) => state.user.currentUser);
 	const isLoading = useSelector((state) => state.class.loading);
-	const { error } = useSelector((state) => state.class);
+	const error = useSelector((state) => state.class.error);
 
 	const dispatch = useDispatch();
 

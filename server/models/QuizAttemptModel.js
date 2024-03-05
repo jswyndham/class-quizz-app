@@ -22,6 +22,11 @@ const QuizAttemptSchema = new mongoose.Schema(
 			ref: 'Membership',
 			required: true,
 		},
+		class: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Class', // Reference to associated Class
+			required: true,
+		},
 		quiz: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Quiz',

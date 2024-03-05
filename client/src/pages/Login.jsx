@@ -71,7 +71,11 @@ const Login = () => {
 							>
 								{isLoading ? 'Logging in...' : 'login'}
 							</button>
-							{error && <p style={{ color: 'red' }}>{error}</p>}
+							<div className="flex justify-center">
+								<p className="text-lg font-bold text-red-600">
+									{error}
+								</p>
+							</div>
 							<div className="flex flex-row justify-center mt-6">
 								<p className="mx-2 text-xl">
 									Not yet a member?

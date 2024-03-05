@@ -188,42 +188,50 @@ const QuizForm = () => {
 			<Form
 				method="post"
 				onSubmit={handleSubmit}
-				className="flex flex-col w-full lg:max-w-4xl justify-center items-center drop-shadow-lg my-4 px-6 shadow-md shadow-slate-400"
+				className="flex flex-col w-full bg-white lg:max-w-4xl justify-center items-center drop-shadow-lg my-4 px-6 shadow-md shadow-slate-400"
 			>
-				<div className="flex flex-col justify-center w-full my-1">
-					<label htmlFor="questionText" className="text-lg my-4">
-						Quiz Title
-					</label>
+				<div className="flex flex-col justify-center w-full my-1 ">
+					<div className="bg-slate-200 my-4 rounded-lg p-1 border border-slate-400 drop-shadow-xl">
+						<label
+							htmlFor="questionText"
+							className="text-2xl text-forth font-quizgate mx-4 my-2 tracking-wide"
+						>
+							Quiz Title:
+						</label>
 
-					{/* Input for quiz title */}
-					<div>
-						<input
-							type="text"
-							name="quizTitle"
-							value={quiz.quizTitle}
-							onChange={handleQuizTitleChange}
-							placeholder="Quiz Title"
-							className="border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						/>
+						{/* Input for quiz title */}
+						<div>
+							<input
+								type="text"
+								name="quizTitle"
+								value={quiz.quizTitle}
+								onChange={handleQuizTitleChange}
+								placeholder="Enter Quiz Title"
+								className="border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							/>
+						</div>
 					</div>
 
 					{/* Select background color for quiz card display */}
-					<div className="mx-1 my-3">
-						<p className="my-1">Choose a color for the quiz: </p>
-
-						<QuizFormColorSelection
-							selectedColor={quizBackgroundColor}
-							onSelectColor={setQuizBackgroundColor}
-						/>
+					<div className="bg-slate-200 mx-1 my-3 p-1 rounded-lg drop-shadow-xl border border-slate-400">
+						<p className="text-2xl text-forth font-quizgate mx-4 my-2 tracking-wide">
+							Choose a color for the quiz title:{' '}
+						</p>
+						<div className="w-full h-fit bg-white rounded-lg p-1">
+							<QuizFormColorSelection
+								selectedColor={quizBackgroundColor}
+								onSelectColor={setQuizBackgroundColor}
+							/>
+						</div>
 					</div>
 
 					{/* Select a class to add quiz */}
 					<div>
 						{classData && classData.length > 0 && (
-							<div className="flex flex-col md:mx-4 my-3">
+							<div className="flex flex-col md:mx-4 my-4 text-forth font-roboto text-xl bg-slate-100 rounded-lg p-2 border border-slate-400 drop-shadow-xl">
 								<FormRowSelect
 									name="classId"
-									labelText="Add a class"
+									labelText="Choose your group:"
 									list={classData.map((cls) => ({
 										key: cls._id,
 										value: cls._id,
@@ -239,8 +247,11 @@ const QuizForm = () => {
 					</div>
 
 					{/* Quiz duration (quiz timer) */}
-					<div className="w-fit m-6 pl-2 bg-slate-100 rounded-lg">
-						<label className="text-lg pr-3" htmlFor="quizDuration">
+					<div className="w-fit m-6 p-2 bg-slate-100 rounded-lg border border-slate-400 drop-shadow-lg">
+						<label
+							className="text-xl text-forth font-roboto mx-4 my-2 tracking-wide"
+							htmlFor="quizDuration"
+						>
 							Quiz Duration (in minutes):
 						</label>
 						<input
@@ -327,49 +338,53 @@ const QuizForm = () => {
 							</div>
 
 							{/* The question section, which includes the 'Question Type' and the 'Question Text' rich text editor (tinyMCE) */}
-							<QuizFormQuestion
-								key={questionIndex}
-								questionIndex={questionIndex}
-								questionTextValue={question.questionText}
-								questionTypeValue={question.answerType}
-								uploadedImageUrl={question.uploadedImageUrl}
-								questionTypeOnChange={(e) =>
-									updateAnswerType(
-										questionIndex,
-										e.target.value
-									)
-								}
-								onQuestionTextChange={updateQuestionText}
-							/>
+							<div className="px-3">
+								<QuizFormQuestion
+									key={questionIndex}
+									questionIndex={questionIndex}
+									questionTextValue={question.questionText}
+									questionTypeValue={question.answerType}
+									uploadedImageUrl={question.uploadedImageUrl}
+									questionTypeOnChange={(e) =>
+										updateAnswerType(
+											questionIndex,
+											e.target.value
+										)
+									}
+									onQuestionTextChange={updateQuestionText}
+								/>
+							</div>
 
 							{/* Multiple choice answer section */}
-							{question.options.map((option, optionIndex) => (
-								<QuizFormAnswer
-									key={optionIndex}
-									optionTextValue={option.optionText}
-									setCorrectAnswer={setCorrectAnswer}
-									onRadioChange={() =>
-										handleRadioChange(
-											questionIndex,
-											optionIndex
-										)
-									}
-									checkedIsCorrect={option.isCorrect}
-									onOptionTextChange={(newText) =>
-										handleOptionTextChange(
-											questionIndex,
-											optionIndex,
-											newText
-										)
-									}
-									onDelete={() =>
-										handleDeleteOption(
-											questionIndex,
-											optionIndex
-										)
-									}
-								/>
-							))}
+							<div className="mx-2">
+								{question.options.map((option, optionIndex) => (
+									<QuizFormAnswer
+										key={optionIndex}
+										optionTextValue={option.optionText}
+										setCorrectAnswer={setCorrectAnswer}
+										onRadioChange={() =>
+											handleRadioChange(
+												questionIndex,
+												optionIndex
+											)
+										}
+										checkedIsCorrect={option.isCorrect}
+										onOptionTextChange={(newText) =>
+											handleOptionTextChange(
+												questionIndex,
+												optionIndex,
+												newText
+											)
+										}
+										onDelete={() =>
+											handleDeleteOption(
+												questionIndex,
+												optionIndex
+											)
+										}
+									/>
+								))}
+							</div>
 
 							{/* Button to add an extra answer option. Conditionally render the "Add Option" button */}
 							{question.answerType ===
@@ -407,9 +422,9 @@ const QuizForm = () => {
 				<div className="flex justify-center w-8/12 mx-4 my-12">
 					<button
 						type="submit"
-						className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+						className="w-7/12 text-white bg-blue-700 hover:bg-blue-800 active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 					>
-						create
+						Create Quiz
 					</button>
 				</div>
 			</Form>

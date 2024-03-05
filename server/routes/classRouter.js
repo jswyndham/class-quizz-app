@@ -29,7 +29,7 @@ router.post('/', validateClassInput, createClass);
 
 // Route to get, update, and delete a specific class by ID
 router
-	.route('/:id')
+	.route('/:classId')
 	.get(getClass)
 	.patch(validateIdParam, validateClassInput, updateClass)
 	.delete(validateIdParam, deleteClass);

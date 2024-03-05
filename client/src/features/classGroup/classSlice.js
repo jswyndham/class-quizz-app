@@ -147,7 +147,7 @@ const classSlice = createSlice({
 					action.error.message
 				);
 				state.loading = false;
-				state.error = action.payload.error || 'Unknown error occurred';
+				state.error = action.payload.message || action.payload.msg;
 			});
 	},
 });

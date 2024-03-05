@@ -27,23 +27,25 @@ const AddClass = () => {
 	};
 
 	return (
-		<section className="flex justify-center align-middle w-full h-full bg-secondary pt-32">
-			<article className="flex flex-col w-full overflow-hidden">
+		<section className="flex justify-center align-middle w-full h-full bg-gradient-to-br from-white to-secondary pt-20 lg:pt-32">
+			<article className="flex flex-col w-full">
 				<div className="w-full bg-blue-400  text-center">
 					<h1 className="m-6 text-3xl font-bold text-white">
 						Add Class
 					</h1>
 				</div>
-				<ClassForm
-					classKey={classGroup._id}
-					onSubmit={handleSubmit}
-					nameRow={setClassName}
-					nameValue={classGroup.className}
-					subjectRow={setClassSubject}
-					subjectValue={classGroup.subject}
-					schoolRow={setClassSchool}
-					schoolValue={classGroup.school}
-				/>
+				<div className="flex justify-center md:mt-20">
+					<ClassForm
+						classKey={classGroup._id}
+						onSubmit={handleSubmit}
+						nameRow={setClassName}
+						nameValue={classGroup.className}
+						subjectRow={setClassSubject}
+						subjectValue={classGroup.subject}
+						schoolRow={setClassSchool}
+						schoolValue={classGroup.school}
+					/>
+				</div>
 			</article>
 		</section>
 	);

@@ -51,8 +51,6 @@ const QuizAttemptCard = ({
 		);
 	}
 
-	console.log('Quiz Attempt ID:', quizAttemptId, typeof quizAttemptId);
-
 	return (
 		<>
 			{/* Quiz card */}

@@ -32,18 +32,17 @@ const QuizContainer = () => {
 	const userRole = currentUser?.userStatus;
 
 	useEffect(() => {
-		dispatch(fetchQuizzes());
 		if (userRole === 'TEACHER' || userRole === 'ADMIN') {
 			// Fetch class data for TEACHER/ADMIN
 			dispatch(fetchClasses());
 		} else if (userRole === 'STUDENT') {
 			// Fetch membership data for STUDENTS
-			console.log('FETCH MEMBERSHIPS: ', fetchMemberships);
 			dispatch(fetchMemberships());
 		}
 	}, [dispatch, userRole]);
 
-	console.log('Membership Data: ', membershipData);
+	console.log('Membership Data (students): ', membershipData);
+	console.log('Class Data (teachers): ', classData);
 
 	const { determineGradientClass } = QuizCardGradientValues({});
 
@@ -151,9 +150,8 @@ const QuizContainer = () => {
 								return console.log('NO CLASS LIST ITEM...');
 							}
 
-							// Access className from _doc
-							const classNameOriginal =
-								classGroupItem._doc?.className;
+							// Access className
+							const classNameOriginal = classGroupItem?.className;
 							if (!classNameOriginal) {
 								return console.log('No class name found.');
 							}
@@ -165,7 +163,7 @@ const QuizContainer = () => {
 							);
 							return (
 								<article
-									key={classGroupItem._doc._id}
+									key={classGroupItem._id}
 									className="my-4"
 								>
 									<div

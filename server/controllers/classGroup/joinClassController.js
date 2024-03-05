@@ -1,6 +1,6 @@
 import ClassGroup from '../../models/ClassModel.js';
 import Membership from '../../models/MembershipModel.js';
-import Student from '../../models/StudentModel.js';
+import QuizAttempt from '../../models/QuizAttemptModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { clearCache } from '../../utils/cache/cache.js';
 import hasPermission from '../../utils/hasPermission.js';
@@ -9,7 +9,9 @@ import hasPermission from '../../utils/hasPermission.js';
 export const joinClassWithCode = async (req, res) => {
 	const { accessCode } = req.body;
 	const userId = req.user.userId;
+	const membershipId = req.params.membershipId;
 	const userRole = req.user.userStatus;
+	const classId = req.params.classId;
 
 	if (!hasPermission(userRole, 'JOIN_CLASS')) {
 		return res
@@ -19,25 +21,60 @@ export const joinClassWithCode = async (req, res) => {
 
 	try {
 		// Find the class group by access code
-		const classGroup = await ClassGroup.findOne({ accessCode })
-			.populate('quizzes') // Assuming you have quizzes linked to ClassGroup
-			.populate({
-				path: 'membership',
-				populate: {
-					path: 'user', // Populate user data in membership if needed
-				},
-			});
+		const classGroup = await ClassGroup.findOne({ accessCode }).populate(
+			'quizzes'
+		);
 		if (!classGroup) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ message: 'Class not found' });
 		}
 
-		// Update or create the user's membership
+		// Check if the user is already a member of the class
+		const existingMembership = await Membership.findOne({
+			user: userId,
+			'classList.class': classGroup._id,
+		});
+		if (existingMembership) {
+			return res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ message: 'You are already a member of this class' });
+		}
+
+		// Update the user's membership
 		const membership = await Membership.findOneAndUpdate(
 			{ user: userId },
 			{ $addToSet: { classList: { class: classGroup._id } } },
 			{ new: true, upsert: true }
+		);
+
+		// Clone existing quizzes and create quiz attempts
+		const quizAttempts = await Promise.all(
+			classGroup.quizzes.map(async (quiz) => {
+				return QuizAttempt.create({
+					member: userId,
+					quiz: quiz._id,
+					class: classGroup._id,
+					answers: [],
+					isVisibleToStudent: true,
+				});
+			})
+		);
+
+		// Add quiz attempts to the user's membership
+		await Membership.findByIdAndUpdate(
+			membership._id,
+			{
+				$push: {
+					'classList.$[elem].quizAttempts': {
+						$each: quizAttempts.map((qa) => qa._id),
+					},
+				},
+			},
+			{
+				arrayFilters: [{ 'elem.class': classGroup._id }],
+				new: true,
+			}
 		);
 
 		// Add membership to the class group
@@ -45,38 +82,14 @@ export const joinClassWithCode = async (req, res) => {
 			$addToSet: { membership: membership._id },
 		});
 
-		// Update the membership with the class's quiz attempts
-		await Membership.updateOne(
-			{ _id: membership._id, 'classList.class': classGroup._id },
-			{
-				$addToSet: {
-					'classList.$.quizAttempts': {
-						$each: classGroup.quizAttempt.map((qa) => qa._id),
-					},
-				},
-			}
-		);
-
-		// Update quizzes taken in the Student schema
-		await Student.updateOne(
-			{ user: userId, 'performance.class': classGroup._id },
-			{
-				$addToSet: {
-					'performance.$.quizAttempts': {
-						$each: classGroup.quizAttempt.map((qa) => qa._id),
-					},
-				},
-			},
-			{ upsert: true }
-		);
-
 		// Clear related caches
-		clearCache(`class_${classGroup._id}`);
+		clearCache(`class_${classId}`);
 		clearCache(`membership_${userId}`);
+		clearCache(`membership_${membershipId}`);
 		clearCache(`user_${userId}`);
 
 		res.status(StatusCodes.OK).json({
-			message: 'Joined class successfully',
+			message: 'Joined class and quizzes assigned successfully',
 			classData: classGroup,
 		});
 	} catch (error) {

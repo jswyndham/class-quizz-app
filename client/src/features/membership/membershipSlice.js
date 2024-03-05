@@ -21,18 +21,17 @@ const membershipSlice = createSlice({
 			})
 			.addCase(fetchMemberships.fulfilled, (state, action) => {
 				state.loading = false;
-				action.payload.classGroups.forEach((membershipData) => {
-					// Assuming each item in classGroups array is a membership object
-					state.membershipById[membershipData._id] = membershipData;
+				state.membershipById = {};
+				state.allMembershipIds = [];
+				action.payload.classGroups.forEach((group) => {
+					state.membershipById[group._id] = group;
+					state.allMembershipIds.push(group._id);
 				});
-				state.allMembershipIds = action.payload.classGroups.map(
-					(membershipData) => membershipData._id
-				);
 				state.error = null;
 			})
 			.addCase(fetchMemberships.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.error.message;
+				state.error = action.error.message || action.error.msg;
 			})
 			// Delete a membership
 			.addCase(removeMembership.pending, (state) => {

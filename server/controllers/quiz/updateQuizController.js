@@ -18,9 +18,10 @@ export const updateQuiz = async (req, res) => {
 			});
 		}
 
+		const classId = req.params.classId;
 		const userId = req.user.userId;
 		const quizId = req.params.id; // ID of the quiz being updated
-		let { class: classId, ...quizData } = req.body; // Extract class IDs and quiz data from request
+		let { ...quizData } = req.body; // Extract class IDs and quiz data from request
 
 		// Ensure classId is always an array for consistent processing
 		classId = Array.isArray(classId) ? classId : [classId];

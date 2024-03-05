@@ -17,7 +17,8 @@ export const copyQuizToClass = async (req, res) => {
 			});
 		}
 
-		const { quizId, classId } = req.params;
+		const { quizId } = req.params;
+		const classId = req.params.classId;
 
 		// Validate if the class exists
 		const classGroup = await ClassGroup.findById(classId);

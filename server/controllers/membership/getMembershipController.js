@@ -9,8 +9,6 @@ export const getAllMemberships = async (req, res) => {
 		const userId = req.user.userId;
 		const userRole = req.user.userStatus;
 
-		console.log('USER ID: ', userId);
-
 		// Define a cache key unique to the user
 		const cacheKey = `membership_${userId}`;
 
@@ -23,13 +21,12 @@ export const getAllMemberships = async (req, res) => {
 			return res.status(StatusCodes.OK).json({ classGroups: cachedData });
 		}
 
-		let classGroups = [];
-
 		// Fetch all memberships for the user and populate class details and quizAttempts
-		const memberships = await Membership.find()
+		const userMembership = await Membership.findOne({ user: userId })
+			.populate({ path: 'user', select: 'firstName lastName email' })
 			.populate({
 				path: 'classList',
-				populate: { path: 'class' }, // Populating quizzes for each class
+				populate: { path: 'class', select: 'className subject school' }, // Populating quizzes for each class
 			})
 			.populate({
 				path: 'classList.quizAttempts',
@@ -41,13 +38,20 @@ export const getAllMemberships = async (req, res) => {
 			.lean()
 			.exec();
 
-		// Transform the data to have class details along with corresponding quizAttempts
-		classGroups = memberships.flatMap((m) =>
-			m.classList.map((cl) => ({
-				...cl.class, // Spread the class details
-				quizAttempts: cl.quizAttempts, // Include quizAttempts
-			}))
-		);
+		if (!userMembership) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'No memberships found for the user' });
+		}
+
+		// The field parameters have to be clearly defined due to the application of the lean() method. Used a spread operator here, but it let in too many JavaScript elements that messed with the mapping function.
+		const classGroups = userMembership.classList.map((cl) => ({
+			_id: cl.class._id.toString(),
+			className: cl.class.className,
+			subject: cl.class.subject,
+			school: cl.class.school,
+			quizAttempts: cl.quizAttempts,
+		}));
 
 		// Cache the newly fetched data
 		setCache(cacheKey, classGroups, 3600);
