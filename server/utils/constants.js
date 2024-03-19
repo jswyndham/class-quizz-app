@@ -18,6 +18,17 @@ export const QUESTION_TYPE = {
 	LONG_ANSWER: { value: 'LONG_ANSWER', label: 'long answer' },
 };
 
+// Days of the week, used in create class and class management
+export const DAYS_OF_THE_WEEK = {
+	MONDAY: { value: 'MONDAY', label: 'Monday' },
+	TUESDAY: { value: 'TUESDAY', label: 'Tuesday' },
+	WEDNESDAY: { value: 'WEDNESDAY', label: 'Wednesday' },
+	THURSDAY: { value: 'THURSDAY', label: 'Thursday' },
+	FRIDAY: { value: 'FRIDAY', label: 'Friday' },
+	SATURDAY: { value: 'SATURDAY', label: 'Saturday' },
+	SUNDAY: { value: 'SUNDAY', label: 'Sunday' },
+};
+
 // Member status for admin group members
 export const ADMIN_STATUS = {
 	SITE_MANAGER: {

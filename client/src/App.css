@@ -71,3 +71,22 @@ img.responsive {
 	margin: 5px;
 	border-radius: 10px; /* Optional for rounded corners */
 }
+
+/* Hide the tooltip in Quiz form by default */
+.hover-target {
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Reveal the tooltip in Quiz form on hover */
+.hover-trigger:hover .hover-target {
+	opacity: 1;
+	visibility: visible;
+}
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+	z-index: 1000; /* High enough to be on top of other elements */
+	position: relative; /* Ensure the z-index is effective */
+}

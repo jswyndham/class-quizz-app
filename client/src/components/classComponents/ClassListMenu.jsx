@@ -83,6 +83,7 @@ const ClassListMenu = () => {
 	const handleCreateClassButton = (e) => {
 		e.stopPropagation();
 		navigate('/dashboard/add-class');
+		setIsCardMenu(!isCardMenu);
 	};
 
 	const handleClassLink = (_id) => {

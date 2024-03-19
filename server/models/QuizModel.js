@@ -55,9 +55,13 @@ const QuizSchema = new mongoose.Schema(
 			type: String,
 			default: '', // URL or path to the wallpaper image
 		},
-		isActive: {
-			type: Boolean,
-			default: false,
+		startDate: {
+			type: Date,
+			required: true,
+		},
+		endDate: {
+			type: Date,
+			required: true,
 		},
 	},
 	{
@@ -75,6 +79,12 @@ QuizSchema.virtual('questionCount').get(function () {
 // Virtual field to calculate total points
 QuizSchema.virtual('totalPoints').get(function () {
 	return this.questions.reduce((sum, question) => sum + question.points, 0);
+});
+
+// Virtual field or method to determine if the quiz is active
+QuizSchema.virtual('isActive').get(function () {
+	const now = new Date();
+	return now >= this.startDate && now <= this.endDate;
 });
 
 export default mongoose.model('Quiz', QuizSchema);

@@ -4,7 +4,10 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 const QuizHooks = (initialQuizData) => {
 	const [quiz, setQuiz] = useState({
 		quizTitle: initialQuizData.quizTitle || '',
-		quizDuration: initialQuizData.quizDuration || '',
+		startDate: initialQuizData.startDate || '',
+		endDate: initialQuizData.endDate || '',
+		duration: initialQuizData.duration || '',
+		quizDescription: initialQuizData.quizDescription || '',
 		questions: initialQuizData.questions || [
 			{
 				questionText: '',
@@ -154,6 +157,21 @@ const QuizHooks = (initialQuizData) => {
 		}));
 	};
 
+	// State to set the quiz start date and end date
+	const [dateRange, setDateRange] = useState([
+		{
+			startDate: new Date(),
+			endDate: null,
+			key: 'selection',
+		},
+	]);
+
+	const [startTime, setStartTime] = useState(new Date());
+	const [endTime, setEndTime] = useState(new Date());
+
+	// State to handle steps between form pages
+	const [currentStep, setCurrentStep] = useState(1);
+
 	return {
 		quiz,
 		selectedFile,
@@ -161,6 +179,10 @@ const QuizHooks = (initialQuizData) => {
 		selectedClassId,
 		quizBackgroundColor,
 		selectedQuestionIndex,
+		dateRange,
+		startTime,
+		endTime,
+		currentStep,
 		selectQuestion,
 		setQuizBackgroundColor,
 		setSelectedClassId,
@@ -176,6 +198,10 @@ const QuizHooks = (initialQuizData) => {
 		addOptionToQuestion,
 		deleteOption,
 		deleteQuizForm,
+		setDateRange,
+		setStartTime,
+		setEndTime,
+		setCurrentStep,
 	};
 };
 

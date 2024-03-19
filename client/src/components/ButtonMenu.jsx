@@ -11,7 +11,7 @@ const ButtonMenu = ({
 		<div
 			className={
 				isShowButtonMenu
-					? 'absolute visible w-56 h-fit p-1 font-roboto bg-white rounded-lg shadow-xl shadow-gray-500 drop-shadow-lg transition-all ease-in-out duration-100 top-7 right-1 lg:top-8 lg:right-3 z-20'
+					? 'absolute visible right-1 lg:-right-1 w-56 h-fit p-1 font-roboto bg-white rounded-lg shadow-xl shadow-gray-500 drop-shadow-lg transition-all ease-in-out duration-100 top-7 lg:top-8  z-20'
 					: 'absolute invisible'
 			}
 		>
