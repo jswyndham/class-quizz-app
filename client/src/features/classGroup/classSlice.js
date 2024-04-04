@@ -61,7 +61,6 @@ const classSlice = createSlice({
 			// Fetch single class by id
 			.addCase(fetchClassById.pending, (state) => {
 				state.loading = true;
-				state.error = null;
 			})
 			.addCase(fetchClassById.fulfilled, (state, action) => {
 				// Handle fetching single class by ID

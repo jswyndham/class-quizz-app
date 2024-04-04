@@ -9,112 +9,69 @@ import hasPermission from '../../utils/hasPermission.js';
 // Controller to update an existing quiz
 export const updateQuiz = async (req, res) => {
 	try {
-		// Verify user permissions
+		// ************** Verify user permissions ************
 		const userRole = req.user.userStatus;
 		if (!hasPermission(userRole, 'UPDATE_QUIZ')) {
-			return res.status(403).json({
+			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You do not have permission for this action',
 			});
 		}
 
-		const classId = req.params.classId;
-		const userId = req.user.userId;
+		// ************** Define params ******************
 		const quizId = req.params.id; // ID of the quiz being updated
-		let { ...quizData } = req.body; // Extract class IDs and quiz data from request
+		const userId = req.user.userId;
+		const { ...quizData } = req.body;
 
-		// Ensure classId is always an array for consistent processing
-		classId = Array.isArray(classId) ? classId : [classId];
-
-		// Sanitize and update questions data
-		quizData.questions = quizData.questions.map((question) => {
-			const correctOption = question.options.find(
-				(option) => option.isCorrect
-			);
-			return {
-				...question,
-				questionText: sanitizeHtml(
-					question.questionText,
-					sanitizeConfig
-				),
-				correctAnswer: correctOption ? correctOption.optionText : null,
-			};
-		});
-
-		// Find and update the quiz
-		const updatedQuiz = await Quiz.findByIdAndUpdate(
-			quizId,
-			{ ...quizData, class: classId },
-			{ new: true, timestamps: true }
-		).populate({ path: 'class' });
-
-		if (!updatedQuiz) {
-			return res
-				.status(StatusCodes.NOT_FOUND)
-				.json({ msg: 'Quiz not found' });
-		}
-
-		// Fetch student quiz attempts in bulk
-		const studentQuizAttempts = await QuizAttempt.find({
-			quiz: updatedQuiz._id,
-		});
-
-		// Prepare bulk operations (use the bulkWrite() method) for updating student quiz attempts. This method sends all update operations to MongoDB in a single request, and reduces network overhead and database load.
-		const bulkOps = studentQuizAttempts.map((studentQuizAttempt) => ({
-			updateOne: {
-				filter: { _id: studentQuizAttempt._id },
-				update: {
-					answers: updatedQuiz.questions.map((question) => {
-						const correspondingAnswer =
-							studentQuizAttempt.answers.find((a) =>
-								a.questionId.equals(question._id)
-							);
-						return {
-							questionId: question._id,
-							selectedOption: correspondingAnswer
-								? correspondingAnswer.selectedOption
-								: null,
-							responseText: correspondingAnswer
-								? correspondingAnswer.responseText
-								: null,
-						};
-					}),
-				},
-			},
+		// ********** Sanitize HTML content in quiz data ************
+		quizData.quizTitle = sanitizeHtml(quizData.quizTitle, sanitizeConfig);
+		quizData.quizDescription = sanitizeHtml(
+			quizData.quizDescription,
+			sanitizeConfig
+		);
+		quizData.questions = quizData.questions.map((question) => ({
+			...question,
+			questionText: sanitizeHtml(question.questionText, sanitizeConfig),
 		}));
 
-		// Perform the bulk update in one database operation
-		await QuizAttempt.bulkWrite(bulkOps);
+		// ** Find the existing quiz **
+		const quiz = await Quiz.findById(quizId);
+		if (!quiz) {
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: 'Quiz not found' });
+		}
 
-		// Manual computation of virtual fields
-		updatedQuiz.totalPoints = updatedQuiz.questions.reduce(
-			(sum, question) => sum + question.points,
-			0
-		);
-		updatedQuiz.questionCount = updatedQuiz.questions.length;
+		// ** Check if the quiz is within set active period **
+		const now = new Date();
+		if (now >= quiz.startDate && now <= quiz.endDate) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				message: 'Quiz cannot be edited during its active period',
+			});
+		}
 
-		// Log the update action in the audit log
-		const auditLog = new AuditLog({
-			action: 'UPDATE_OWN_QUIZ',
-			subjectType: 'Quiz',
-			subjectId: updatedQuiz._id,
-			userId: userId,
-			details: { reason: 'Quiz updated' },
+		// *** Update the quiz ***
+		const updatedQuiz = await Quiz.findByIdAndUpdate(quizId, quizData, {
+			new: true,
 		});
-		await auditLog.save();
 
-		// Clear relevant caches
-		clearCache(`class_${userId}`);
+		// ************* Clear relevant caches **************
+		clearCache(`quiz_${quizId}`);
 		clearCache(`quiz_${userId}`);
+		clearCache(`user_${userId}`);
+		clearCache(`class_${userId}`);
 
+		console.log('Updated Quiz Load: ', updatedQuiz);
+
+		//  **************** Send response ******************
 		res.status(StatusCodes.OK).json({
-			msg: 'Quiz updated successfully',
+			message: 'Quiz updated successfully',
 			quiz: updatedQuiz,
 		});
 	} catch (error) {
 		console.error('Error updating quiz:', error);
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			msg: error.message,
+			message: error.message,
 		});
 	}
 };

@@ -90,3 +90,13 @@ img.responsive {
 	z-index: 1000; /* High enough to be on top of other elements */
 	position: relative; /* Ensure the z-index is effective */
 }
+
+/* datepickerOverrides.css */
+.react-datepicker__time-list {
+	z-index: 1000 !important; /* High z-index */
+}
+
+/* target the container of the date picker */
+.my-datepicker-container .react-datepicker__time-container {
+	z-index: 1000 !important;
+}

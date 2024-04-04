@@ -23,12 +23,15 @@ const MemberCard = ({
 	const { id } = useParams(); // ID of the class
 	const userId = useSelector((state) => state.user.currentUser?._id); // ID of the current user
 
-	// const membershipId = useSelector(
-	// 	(state) => state.membership.currentMembership
-	// );
+	const membershipId = useSelector(
+		(state) => state.membership.currentMembership
+	);
 
 	console.log('class ID: ', id);
 	console.log('userId: ', userId);
+	console.log('membershipId: ', membershipId);
+
+	console.log('members: ', firstName, lastName);
 
 	// STATE HOOKS
 	// Manage the visibility of the card menu
@@ -112,7 +115,7 @@ const MemberCard = ({
 		<>
 			{/* Quiz card */}
 
-			<article className="relative h-fit w-full lg:max-w-4xl my-2 md:mx-6 lg:mx-12 shadow-md shadow-gray-400 rounded-b-md ">
+			<article className="relative h-fit w-full md:w-fit lg:max-w-4xl my-2 md:mx-6 lg:mx-12 shadow-md shadow-gray-400 rounded-b-md ">
 				<div className="relative flex flex-row justify-between h-fit p-1 border-1 border-slate-300 rounded-t-md">
 					<div className="flex flex-col xl:flex-row justify-start xl:justify-between w-full h-full pr-24 bg-slate-200 rounded-md bg-opacity-70">
 						<p className="w-72 mx-3 mt-1 lg:my-1 text-lg text-forth font-bold hover:cursor-pointer">

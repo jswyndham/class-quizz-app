@@ -67,7 +67,7 @@ const Login = () => {
 							<button
 								type="submit"
 								disabled={isLoading}
-								className="h-12 w-64 mx-12 mt-10 mb-4 bg-white text-lg text-forth font-bold border-solid border-2 border-secondary rounded-lg drop-shadow-lg hover:bg-secondary hover:text-white hover:font-bold hover:shadow-2xl hover:drop-shadow-xl active:shadow-sm active:bg-third"
+								className="h-12 w-64 mx-12 mt-10 mb-4 bg-blue-700 text-lg text-white font-bold border-solid border-2 border-slate-400 rounded-lg drop-shadow-lg hover:bg-forth hover:text-white hover:border-forth hover:font-bold hover:shadow-xl hover:shadow-slate-300 hover:drop-shadow-xl active:shadow-sm active:bg-white active:text-forth"
 							>
 								{isLoading ? 'Logging in...' : 'login'}
 							</button>

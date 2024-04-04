@@ -13,7 +13,7 @@ import hasPermission from '../../utils/hasPermission.js';
 // Controller to create a new quiz and assign it to students
 export const createAndAssignQuiz = async (req, res) => {
 	try {
-		// Verify user permissions
+		// *********** Permission based on user role **************
 		const userRole = req.user.userStatus;
 		if (!hasPermission(userRole, 'CREATE_QUIZ')) {
 			return res.status(StatusCodes.FORBIDDEN).json({
@@ -22,21 +22,11 @@ export const createAndAssignQuiz = async (req, res) => {
 			});
 		}
 
+		// ************** Define params ******************
 		const userId = req.user.userId;
-		let { ...quizData } = req.body;
-		const classIds = req.body.classId;
+		const { classId: classIds, ...quizData } = req.body;
 
-		// Validate classId array
-		if (
-			!Array.isArray(classIds) ||
-			classIds.some((id) => !mongoose.isValidObjectId(id))
-		) {
-			return res
-				.status(StatusCodes.BAD_REQUEST)
-				.json({ message: 'Invalid class IDs.' });
-		}
-
-		// Sanitize quiz data
+		// ************** Sanitize and structure quiz data *************
 		quizData.quizTitle = sanitizeHtml(quizData.quizTitle, sanitizeConfig);
 		quizData.quizDescription = sanitizeHtml(
 			quizData.quizDescription,
@@ -47,7 +37,29 @@ export const createAndAssignQuiz = async (req, res) => {
 			questionText: sanitizeHtml(question.questionText, sanitizeConfig),
 		}));
 
-		// Fetch classes and validate their existence
+		// ************** Validate class IDs ****************
+		if (
+			!Array.isArray(classIds) ||
+			classIds.some((id) => !mongoose.isValidObjectId(id))
+		) {
+			return res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ message: 'Invalid class IDs.' });
+		}
+
+		// ************* Create quiz bject **************
+		const newQuiz = await Quiz.create({
+			...quizData,
+			createdBy: userId,
+			class: classIds,
+		});
+
+		// ***** Update the specific ClassGroup to include quiz object ******
+		await ClassGroup.findByIdAndUpdate(req.body.classId, {
+			$push: { quizzes: newQuiz._id },
+		});
+
+		// ************ Find classes and validate existence ************
 		const classes = await ClassGroup.find({ _id: { $in: classIds } });
 		if (classes.length !== classIds.length) {
 			return res.status(StatusCodes.BAD_REQUEST).json({
@@ -55,64 +67,37 @@ export const createAndAssignQuiz = async (req, res) => {
 			});
 		}
 
-		// Create the new quiz
-		const newQuiz = await Quiz.create({
-			...quizData,
-			createdBy: userId,
-			class: classIds,
+		// ****** Create QuizAttempt documents for each class member ******
+		let quizAttemptBulkOps = [];
+		classes.forEach((classGroup) => {
+			classGroup.membership.forEach((member) => {
+				quizAttemptBulkOps.push({
+					insertOne: {
+						document: {
+							member: member,
+							quiz: newQuiz._id,
+							class: classGroup._id,
+							answers: [],
+							isVisibleToStudent: true, // default visibility
+						},
+					},
+				});
+			});
 		});
 
-		// Update classes with the new quiz
-		await ClassGroup.updateOne(
-			{ _id: classIds },
-			{ $push: { quizzes: newQuiz._id } }
-		);
-
-		// Prepare and execute bulk operations for QuizAttempt
-		const quizAttemptBulkOps = classes.flatMap((classGroup) =>
-			classGroup.membership.map((membership) => ({
-				insertOne: {
-					document: {
-						member: membership,
-						quiz: newQuiz._id,
-						class: classGroup._id,
-						answers: [],
-						isVisibleToStudent: true,
-					},
-				},
-			}))
-		);
-
-		// Execute bulk operations and update memberships
+		// ************ Perform bulk creation of quiz attempts **********
 		if (quizAttemptBulkOps.length > 0) {
-			const createdQuizAttempts = await QuizAttempt.bulkWrite(
-				quizAttemptBulkOps
-			);
-
-			// Iterate over each operation to update the corresponding membership
-			quizAttemptBulkOps.forEach(async (op, index) => {
-				const quizAttemptId = createdQuizAttempts.insertedIds[index];
-				const membershipId = op.insertOne.document.member;
-				const classIdForQuizAttempt = op.insertOne.document.class;
-
-				await Membership.updateOne(
-					{
-						_id: membershipId,
-						'classList.class': classIdForQuizAttempt,
-					},
-					{ $push: { 'classList.$.quizAttempts': quizAttemptId } }
-				);
-			});
+			await QuizAttempt.bulkWrite(quizAttemptBulkOps);
 		}
 
-		// Clear caches after all operations
+		// ************** Clear relevant caches ***************
 		classIds.forEach((cid) => clearCache(`class_${cid}`));
 		clearCache(`quiz_${newQuiz._id}`);
 		clearCache(`quiz_${userId}`);
+		clearCache(`user_${userId}`);
 		clearCache(`class_${userId}`);
-		clearCache(`membership_${userId}`);
 
-		// Audit log and response
+		// ********** Audit log entry ****************
 		const auditLog = new AuditLog({
 			action: 'CREATE_QUIZ',
 			subjectType: 'Quiz',
@@ -122,6 +107,7 @@ export const createAndAssignQuiz = async (req, res) => {
 		});
 		await auditLog.save();
 
+		//  **************** Send response ******************
 		res.status(StatusCodes.CREATED).json({
 			message: 'Quiz created and assigned to students',
 			quiz: newQuiz,

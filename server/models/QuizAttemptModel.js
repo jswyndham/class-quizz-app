@@ -49,10 +49,6 @@ const QuizAttemptSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
-		isVisibleToStudent: {
-			type: Boolean,
-			default: false,
-		},
 	},
 	{ timestamps: true }
 );

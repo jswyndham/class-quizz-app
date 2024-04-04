@@ -1,10 +1,12 @@
 import { Form } from 'react-router-dom';
 import { FormRow, FormRowSelect } from '..';
-import { useNavigation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { DAYS_OF_THE_WEEK } from '../../../../server/utils/constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDatePicker from 'react-datepicker';
+import classHooks from '../../hooks/ClassHooks';
+import 'react-datepicker/dist/react-datepicker.css';
+import '../../style/datepickerOverrides.css';
 
 const ClassForm = ({
 	onSubmit,
@@ -15,20 +17,60 @@ const ClassForm = ({
 	nameValue,
 	subjectValue,
 	schoolValue,
-	dayOfTheWeekRow,
+	classTimeValue,
+	classTimeRow,
 	dayOfTheWeekValue,
 }) => {
-	const navigation = useNavigation();
+	// State Hooks
+	const {
+		classGroup,
+		setDayOfTheWeek,
+		startTime,
+		setStartTime,
+		selectedDayOfTheWeek,
+		setSelectedDayOfTheWeek,
+	} = classHooks({});
+
 	const isLoading = useSelector((state) => state.class.loading);
 
 	// State to handle class times
-	const [startTime, setStartTime] = useState(new Date());
-	const [endTime, setEndTime] = useState(new Date());
+	// const [startTime, setStartTime] = useState(classTimeValue.start);
+	const [endTime, setEndTime] = useState(classTimeValue.end);
 	const [is24Hour, setIs24Hour] = useState(false); // false for 12-hour format
+
+	useEffect(() => {
+		console.log('useEffect in ClassForm:', classGroup.dayOfTheWeek);
+	}, [classGroup.dayOfTheWeek]);
+
+	console.log('DAYS_OF_THE_WEEK: ', classGroup.dayOfTheWeek);
+
+	const handleDayOfTheWeekChange = (e) => {
+		const selectedDay = e.target.value;
+		console.log('Day of the Week selected:', selectedDay);
+		setSelectedDayOfTheWeek(selectedDay);
+		setDayOfTheWeek(selectedDay); // assuming you still need to update classGroup
+	};
+
+	const handleSelectChange = (e) => {
+		const dayValue = e.target.value;
+		setSelectedDayOfTheWeek(dayValue);
+		handleDayChange(dayValue);
+	};
 
 	// Handle 12-24 hour schedule
 	const handleFormatToggle = () => {
 		setIs24Hour(!is24Hour);
+	};
+
+	// Handle class start and end time changes
+	const handleStartTimeChange = (date) => {
+		setStartTime(date);
+		classTimeRow(date, endTime); // Update class time when start time changes
+	};
+
+	const handleEndTimeChange = (date) => {
+		setEndTime(date);
+		classTimeRow(startTime, date); // Update class time when end time changes
 	};
 
 	return (
@@ -85,13 +127,13 @@ const ClassForm = ({
 						</label>
 						<FormRowSelect
 							list={Object.values(DAYS_OF_THE_WEEK).map(
-								(type) => ({
-									label: type.label,
-									value: type.value,
+								(day) => ({
+									label: day.label,
+									value: day.value,
 								})
 							)}
-							value={dayOfTheWeekValue}
-							onChange={dayOfTheWeekRow}
+							onChange={handleSelectChange}
+							value={classGroup.dayOfTheWeek}
 						/>
 					</div>
 
@@ -113,39 +155,41 @@ const ClassForm = ({
 						</div>
 
 						{/* Class Start Time Dropdown */}
-						<div className="w-full p-2 ml-2 my-3 bg-slate-200 rounded-lg">
+						<div className="relative z-50 my-datepicker-container w-full p-2 ml-2 my-3 bg-slate-200 rounded-lg">
 							<label className="mr-2">Start Time:</label>
 							<ReactDatePicker
 								selected={startTime}
-								onChange={(date) => setStartTime(date)}
+								onChange={handleStartTimeChange}
 								showTimeSelect
 								showTimeSelectOnly
 								timeIntervals={10}
 								timeCaption="Time"
 								dateFormat={is24Hour ? 'HH:mm' : 'h:mm aa'}
-								className="py-1 px-2 rounded-md"
+								className="relative py-1 px-2 rounded-md z-50"
+								value={classTimeValue}
 							/>
 						</div>
 
 						{/* Class End Time Dropdown */}
-						<div className="w-full p-2 ml-2 my-3 bg-slate-200 rounded-lg">
+						<div className="end-time-picker relative w-full p-2 ml-2 my-3 bg-slate-200 rounded-lg">
 							<label className="mr-4">End Time:</label>
 							<ReactDatePicker
 								selected={endTime}
-								onChange={(date) => setEndTime(date)}
+								onChange={handleEndTimeChange}
 								showTimeSelect
 								showTimeSelectOnly
 								timeIntervals={10}
 								timeCaption="Time"
 								dateFormat={is24Hour ? 'HH:mm' : 'h:mm aa'}
-								className="py-1 px-2 rounded-md"
+								value={classTimeValue}
+								className="relative py-1 px-2 rounded-md"
 							/>
 						</div>
 					</article>
 
 					<button
 						type="submit"
-						className="h-10 w-11/12 2xl:w-60 mt-10  bg-blue-400 text-white text-lg font-bold rounded-lg ml-2 drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
+						className="z-0 h-10 w-11/12 2xl:w-60 mt-10  bg-blue-400 text-white text-lg font-bold rounded-lg ml-2 drop-shadow-lg hover:bg-blue-600 hover:text-gray-100 hover:shadow-xl"
 					>
 						{isLoading ? 'submitting...' : 'submit'}
 					</button>

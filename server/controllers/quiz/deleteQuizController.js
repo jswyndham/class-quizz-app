@@ -21,16 +21,13 @@ export const deleteQuiz = async (req, res) => {
 		const userId = req.user.userId;
 		const quizId = req.params.id;
 
-		// Define and fetch the original quiz
-		const quiz = await Quiz.findById(quizId);
-		if (!quiz) {
+		// Find the quiz by id and delete
+		const deletedQuiz = await Quiz.findByIdAndDelete(quizId);
+		if (!deletedQuiz) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
 				.json({ msg: 'Quiz not found' });
 		}
-
-		/// Delete the quiz
-		await quiz.remove();
 
 		// Update classes and handle quiz attempts (if needed)
 		await ClassGroup.updateMany(
@@ -54,10 +51,16 @@ export const deleteQuiz = async (req, res) => {
 		const quizzesCacheKey = `quizzes_${userId}`;
 		// Clear cache for all classes
 		const allClassesCacheKey = `class_${userId}`;
+		// Clear cache for quiz attempt
+		const quizAttemptCacheKey = `quizAttempt_${quizAttemptId}`;
+
+		const membershipCacheKey = `membership_${userId}`;
 
 		clearCache(quizCacheKey);
 		clearCache(quizzesCacheKey);
 		clearCache(allClassesCacheKey);
+		clearCache(quizAttemptCacheKey);
+		clearCache(membershipCacheKey);
 
 		res.status(StatusCodes.OK).json({
 			msg: 'Quiz deleted',

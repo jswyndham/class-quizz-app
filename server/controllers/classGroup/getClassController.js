@@ -46,9 +46,20 @@ export const getAllClasses = async (req, res) => {
 		// Fetch all class groups created by the user and populate quizzes and membership details
 		classGroups = await ClassGroup.find({ createdBy: userId })
 			.populate('quizzes')
-			.populate('membership')
+			.populate({
+				path: 'membership',
+				populate: { path: 'user', select: 'firstName lastName email' },
+			})
 			.lean({ virtuals: true })
 			.exec();
+
+		// After fetching classGroups from the database, calculate virtual fields
+		classGroups.forEach((classGroup) => {
+			processClassGroupVirtualsAndCache(
+				classGroup,
+				`class_${classGroup._id}`
+			);
+		});
 
 		// Cache the newly fetched data
 		setCache(cacheKey, classGroups, 3600);
@@ -90,7 +101,6 @@ export const getClass = async (req, res) => {
 				path: 'membership',
 				populate: {
 					path: 'user',
-					model: 'User',
 					select: 'firstName lastName email userStatus',
 				},
 			})

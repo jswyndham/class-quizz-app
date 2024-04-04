@@ -52,7 +52,7 @@ export const createClass = createAsyncThunk(
 			const response = await customFetch.post(BASE_URL, classData);
 			return response.data;
 		} catch (error) {
-			console.error(`Error updating class with ID ${_id}:`, error);
+			console.error(`Error creating class:`, error);
 			return rejectWithValue(error.response?.data || error.message);
 		}
 	}
@@ -61,15 +61,16 @@ export const createClass = createAsyncThunk(
 // Edit and update class group
 export const updateClass = createAsyncThunk(
 	'class/updateClass',
-	async ({ _id, classData }, { rejectWithValue }) => {
+	async ({ classId, updatedClassData }, { rejectWithValue }) => {
 		try {
 			const response = await customFetch.patch(
-				`${BASE_URL}/${_id}`,
-				classData
+				`${BASE_URL}/${classId}`,
+				updatedClassData
 			);
+			console.log('Response API: ', response);
 			return response.data;
 		} catch (error) {
-			console.error(`Error updating class with ID ${_id}:`, error);
+			console.error(`Error updating class with ID ${classId}:`, error);
 			return rejectWithValue(error.response?.data || error.message);
 		}
 	}

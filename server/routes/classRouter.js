@@ -31,8 +31,8 @@ router.post('/', validateClassInput, createClass);
 router
 	.route('/:classId')
 	.get(getClass)
-	.patch(validateIdParam, validateClassInput, updateClass)
-	.delete(validateIdParam, deleteClass);
+	.patch(validateClassIdParam, validateClassInput, updateClass)
+	.delete(validateClassIdParam, deleteClass);
 
 // Route to get information on class memberships by class ID
 router.get('/members/:id', validateClassIdParam, getClassMemberships);

@@ -28,32 +28,25 @@ const QuizSchema = new mongoose.Schema(
 		quizTitle: String,
 		quizDescription: String,
 		isVisibleBeforeStart: Boolean,
-		availableFrom: Date,
-		availableUntil: Date,
 		releaseDate: {
 			type: Date,
 			default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default to one week after creation
 		},
 		questions: [questionSchema],
 		createdBy: {
-			type: mongoose.Types.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 		},
 		duration: Number, // Duration in minutes
 		category: String,
-		class: [
-			{
-				type: mongoose.Types.ObjectId,
-				ref: 'Class',
-			},
-		],
+		class: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Class',
+		},
+
 		backgroundColor: {
 			type: String,
 			default: '#FFFFFF',
-		},
-		wallpaper: {
-			type: String,
-			default: '', // URL or path to the wallpaper image
 		},
 		startDate: {
 			type: Date,
@@ -62,6 +55,10 @@ const QuizSchema = new mongoose.Schema(
 		endDate: {
 			type: Date,
 			required: true,
+		},
+		isVisibleToStudent: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{

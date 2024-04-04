@@ -14,6 +14,10 @@ const ClassSchema = new mongoose.Schema(
 		className: String,
 		subject: String,
 		school: String,
+		is24Hour: {
+			type: Boolean,
+			default: false,
+		},
 		dayOfTheWeek: {
 			type: String,
 			enum: Object.values(DAYS_OF_THE_WEEK).map((day) => day.value),
@@ -22,7 +26,7 @@ const ClassSchema = new mongoose.Schema(
 		classTime: TimeSchema,
 
 		createdBy: {
-			type: mongoose.Types.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 		},
 		classAdmin: {
@@ -30,9 +34,13 @@ const ClassSchema = new mongoose.Schema(
 			ref: 'User',
 			required: true,
 		},
+		wallpaper: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Wallpaper',
+		},
 		quizzes: [
 			{
-				type: mongoose.Types.ObjectId,
+				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Quiz',
 			},
 		],
@@ -43,7 +51,7 @@ const ClassSchema = new mongoose.Schema(
 		},
 		membership: [
 			{
-				type: mongoose.Types.ObjectId,
+				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Membership',
 			},
 		],

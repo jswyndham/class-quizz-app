@@ -5,9 +5,12 @@ import { getCache, setCache } from '../../utils/cache/cache.js';
 // Controller to get all quizzes by user
 export const getAllQuizzes = async (req, res) => {
 	try {
+		// ************** Define params ******************
+		const quizId = req.params.id;
 		const userId = req.user.userId;
 		const cacheKey = `quiz_${userId}`;
-		// Get previous set cache
+
+		// ********** Get previous set cache ************
 		const cachedData = getCache(cacheKey);
 
 		if (cachedData) {
@@ -47,11 +50,12 @@ export const getAllQuizzes = async (req, res) => {
 
 // Controller to get a single quiz
 export const getQuiz = async (req, res) => {
-	const quizId = req.params.id;
-	const userId = req.user.userId;
-	const cacheKey = `quiz_${quizId}`;
-
 	try {
+		// ************** Define params ******************
+		const quizId = req.params.id;
+		const userId = req.user.userId;
+		const cacheKey = `quiz_${quizId}`;
+
 		const cachedQuiz = getCache(cacheKey);
 		if (cachedQuiz) {
 			console.log(`Cache hit for key: ${cacheKey}`);

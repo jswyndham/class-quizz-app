@@ -4,9 +4,16 @@ import { QUESTION_TYPE } from '../../../server/utils/constants';
 const QuizHooks = (initialQuizData) => {
 	const [quiz, setQuiz] = useState({
 		quizTitle: initialQuizData.quizTitle || '',
-		startDate: initialQuizData.startDate || '',
-		endDate: initialQuizData.endDate || '',
+		backgroundColor: initialQuizData.backgroundColor || '#2D9596',
+		classId: initialQuizData.class?._id || '',
+		startDate: initialQuizData.startDate
+			? new Date(initialQuizData.startDate)
+			: new Date(),
+		endDate: initialQuizData.endDate
+			? new Date(initialQuizData.endDate)
+			: new Date(),
 		duration: initialQuizData.duration || '',
+		isVisibleToStudent: initialQuizData.isVisibleToStudent || false,
 		quizDescription: initialQuizData.quizDescription || '',
 		questions: initialQuizData.questions || [
 			{
@@ -23,17 +30,17 @@ const QuizHooks = (initialQuizData) => {
 
 	const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
 
-	const [selectedClassId, setSelectedClassId] = useState(
-		initialQuizData.class && initialQuizData.class.length > 0
-			? initialQuizData.class[0]
-			: []
-	);
+	// Handle the class ID to select a class in the dropdown menu
+	const setSelectedClassId = (classId) => {
+		setQuiz((prevQuiz) => ({ ...prevQuiz, classId }));
+	};
+
+	useEffect(() => {
+		console.log(quiz); // Log the updated state
+	}, [quiz]);
 
 	// State to control the selected question index when a QuizFormAnswer is interacted with in a Form.
 	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
-
-	// State for background color
-	const [quizBackgroundColor, setQuizBackgroundColor] = useState('#2D9596'); // default color
 
 	// Store quiz data in local storage with using quizForm
 	useEffect(() => {
@@ -166,8 +173,13 @@ const QuizHooks = (initialQuizData) => {
 		},
 	]);
 
-	const [startTime, setStartTime] = useState(new Date());
-	const [endTime, setEndTime] = useState(new Date());
+	// Handle the 'Quiz Access Period' state
+	const setStartDate = (date) => {
+		setQuiz((prevQuiz) => ({ ...prevQuiz, startDate: date }));
+	};
+	const setEndDate = (date) => {
+		setQuiz((prevQuiz) => ({ ...prevQuiz, endDate: date }));
+	};
 
 	// State to handle steps between form pages
 	const [currentStep, setCurrentStep] = useState(1);
@@ -176,15 +188,10 @@ const QuizHooks = (initialQuizData) => {
 		quiz,
 		selectedFile,
 		uploadedImageUrl,
-		selectedClassId,
-		quizBackgroundColor,
 		selectedQuestionIndex,
 		dateRange,
-		startTime,
-		endTime,
 		currentStep,
 		selectQuestion,
-		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuiz,
 		setUploadedImageUrl,
@@ -199,8 +206,8 @@ const QuizHooks = (initialQuizData) => {
 		deleteOption,
 		deleteQuizForm,
 		setDateRange,
-		setStartTime,
-		setEndTime,
+		setStartDate,
+		setEndDate,
 		setCurrentStep,
 	};
 };

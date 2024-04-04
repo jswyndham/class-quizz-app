@@ -40,12 +40,12 @@ const QuizForm = () => {
 		quiz,
 		selectedClassId,
 		quizBackgroundColor,
-		dateRange,
 		startTime,
 		endTime,
 		currentStep,
+		isVisible,
+		setIsVisible,
 		selectQuestion,
-		setQuizBackgroundColor,
 		setSelectedClassId,
 		setQuiz,
 		setQuizTitle,
@@ -57,8 +57,8 @@ const QuizForm = () => {
 		addOptionToQuestion,
 		deleteOption,
 		setDateRange,
-		setStartTime,
-		setEndTime,
+		setStartDate,
+		setEndDate,
 		setCurrentStep,
 	} = QuizHooks({});
 
@@ -68,6 +68,10 @@ const QuizForm = () => {
 
 	const navigate = useNavigate();
 
+	const isLoading = useSelector((state) => {
+		state.quiz.loading;
+	});
+
 	// Define how many steps you have to handle pagination
 	const totalSteps = 2;
 
@@ -75,11 +79,6 @@ const QuizForm = () => {
 
 	// Accessing classes for dropdown menu selection
 	const classData = useSelector(selectClassDataArray);
-
-	// Dispatch the action to fetch all classes for dropdown menu
-	useEffect(() => {
-		dispatch(fetchClasses());
-	}, [dispatch]);
 
 	// *************** HANDLERS *********************
 
@@ -92,7 +91,7 @@ const QuizForm = () => {
 	const handleQuizDuration = (duration) => {
 		setQuiz((prevQuiz) => ({
 			...prevQuiz,
-			quizDuration: Number(duration),
+			duration: Number(duration),
 		}));
 	};
 
@@ -121,6 +120,12 @@ const QuizForm = () => {
 		updateQuestion(questionIndex, updatedQuestion);
 	};
 
+	// Handle quiz visibilty
+	const handleIsVisible = (e) => {
+		e.preventDefault();
+		setIsVisible(!isVisible);
+	};
+
 	// Handles the changes to the radio button which triggers changes to the 'isCorrect' boolean parameter in the Quiz schema
 	const handleRadioChange = (questionIndex, optionIndex) => {
 		setCorrectAnswer(questionIndex, optionIndex);
@@ -132,11 +137,11 @@ const QuizForm = () => {
 	};
 
 	const handleStartDateChange = (date) => {
-		setStartTime(date);
+		setStartDate(date);
 	};
 
 	const handleEndDateChange = (date) => {
-		setEndTime(date);
+		setEndDate(date);
 	};
 
 	// HANDLE IMAGE UPLOAD FOR CLOUDINARY
@@ -193,10 +198,10 @@ const QuizForm = () => {
 		// Add the selected class ID to the quiz data
 		const formData = {
 			...quiz,
-			backgroundColor: quizBackgroundColor,
-			classId: selectedClassId ? [selectedClassId] : [],
-			startDate: dateRange[0].startDate,
-			endDate: dateRange[0].endDate,
+			backgroundColor: quiz.quizBackgroundColor,
+			classId: quiz.classId ? [quiz.classId] : [],
+			startDate: quiz.startDate.toISOString(),
+			endDate: quiz.endDate.toISOString(),
 		};
 
 		try {
@@ -227,13 +232,13 @@ const QuizForm = () => {
 
 	// ************ QUIZ FORM ****************
 	return (
-		<div className="flex justify-center items-center w-screen sm:w-full h-fit">
+		<section className="flex justify-center items-center w-screen sm:w-full h-fit">
 			<Form
 				method="post"
 				onSubmit={handleSubmit}
 				className="flex flex-col w-full bg-white md:max-w-4xl justify-center items-center drop-shadow-lg px-3 sm:px-3 lg:px-4 xl:px-6 my-4 shadow-md shadow-slate-400"
 			>
-				<div className="flex flex-col justify-center w-full my-1 ">
+				<article className="flex flex-col justify-center w-full my-1 ">
 					{currentStep === 1 && (
 						<>
 							{/* ********** QUIZ TITLE *********** */}
@@ -253,6 +258,7 @@ const QuizForm = () => {
 										</span>
 									</div>
 								</div>
+
 								{/* ********* Input for quiz title ******** */}
 								<div>
 									<input
@@ -286,11 +292,17 @@ const QuizForm = () => {
 
 								<div className="w-full h-fit bg-white rounded-lg p-1">
 									<QuizFormColorSelection
-										selectedColor={quizBackgroundColor}
-										onSelectColor={setQuizBackgroundColor}
+										selectedColor={quiz.backgroundColor}
+										onSelectColor={(newColor) =>
+											setQuiz((prevQuiz) => ({
+												...prevQuiz,
+												backgroundColor: newColor,
+											}))
+										}
 									/>
 								</div>
 							</div>
+
 							{/* ****** Select a class to add quiz ****** */}
 							<div className="flex flex-col my-4 text-forth font-roboto text-xl bg-slate-100 rounded-lg p-2 border border-slate-400 drop-shadow-xl">
 								<div className="flex flex-row justify-between">
@@ -316,7 +328,7 @@ const QuizForm = () => {
 												value: cls._id,
 												label: cls.className,
 											}))}
-											value={selectedClassId} // The state holding the selected class ID
+											value={quiz.classId} // The state holding the selected class ID
 											onChange={(e) =>
 												setSelectedClassId(
 													e.target.value
@@ -326,6 +338,7 @@ const QuizForm = () => {
 									</div>
 								)}
 							</div>
+
 							{/* ********* Quiz access period ********* */}
 							<div
 								className="w-full my-6 p-2 bg-slate-100 rounded-lg border border-slate-400 drop-shadow-lg"
@@ -351,32 +364,32 @@ const QuizForm = () => {
 									</div>
 								</div>
 
-								<div className="flex flex-col lg:flex-row justify-between py-3 xl:px-16">
-									<div className="flex justify-around p-3">
-										<label className="text-lg pr-3 mt-0.5 font-roboto">
+								<div className="flex flex-col lg:flex-row items-center py-3 xl:px-3">
+									<div className="flex flex-row lg:flex-col 3xl:flex-row py-3 px-5">
+										<label className="text-lg pr-3 pb-2 mt-0.5 font-roboto">
 											Start Time:
 										</label>
 										<ReactDatePicker
-											selected={startTime}
+											selected={quiz.startDate}
 											onChange={handleStartDateChange}
 											showTimeSelect
 											timeFormat="HH:mm"
-											timeIntervals={15}
+											timeIntervals={10}
 											timeCaption="time"
 											dateFormat="MMMM d, yyyy h:mm aa"
 											className="z-40 px-2 py-1 rounded-md border border-slate-300"
 										/>
 									</div>
-									<div className="flex justify-around p-3">
-										<label className="text-lg pr-3 font-roboto">
+									<div className="flex flex-row lg:flex-col 3xl:flex-row py-3 px-5">
+										<label className="text-lg pr-5 font-roboto">
 											End Time:
 										</label>
 										<ReactDatePicker
-											selected={endTime}
+											selected={quiz.endDate}
 											onChange={handleEndDateChange}
 											showTimeSelect
 											timeFormat="HH:mm"
-											timeIntervals={15}
+											timeIntervals={10}
 											timeCaption="time"
 											dateFormat="MMMM d, yyyy h:mm aa"
 											className="px-2 py-1 rounded-md border border-slate-300"
@@ -385,10 +398,41 @@ const QuizForm = () => {
 								</div>
 							</div>
 
+							{/* ************ isVisible switch *************** */}
+							<div
+								className="w-full my-6 p-4 bg-slate-100 rounded-lg border border-slate-400 drop-shadow-lg"
+								style={{
+									position: 'relative',
+									zIndex: '0',
+								}}
+							>
+								<label className="inline-flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										className="sr-only peer"
+										checked={quiz.isVisibleToStudent}
+										onChange={() =>
+											setQuiz((prev) => ({
+												...prev,
+												isVisibleToStudent:
+													!prev.isVisibleToStudent,
+											}))
+										}
+									/>
+									<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+									<span className="ms-5 text-xl md:text-2xl font-quizgate text-forth tracking-wider dark:text-gray-300">
+										Quiz is visible to student users
+									</span>
+								</label>
+							</div>
+
 							{/* ****** Quiz duration (quiz timer) ****** */}
 							<div
 								className="w-full my-6 p-2 bg-slate-100 rounded-lg border border-slate-400 drop-shadow-lg"
-								style={{ position: 'relative', zIndex: '0' }}
+								style={{
+									position: 'relative',
+									zIndex: '0',
+								}}
 							>
 								<div className="flex flex-row justify-start">
 									<label
@@ -402,7 +446,7 @@ const QuizForm = () => {
 										<input
 											id="quizDuration"
 											type="number"
-											value={quiz.quizDuration}
+											value={quiz.duration}
 											onChange={(e) =>
 												handleQuizDuration(
 													e.target.value
@@ -423,6 +467,7 @@ const QuizForm = () => {
 									</div>
 								</div>
 							</div>
+
 							{/* ******* Quiz description section ******* */}
 							<div className="z-0 w-full my-6 p-3 bg-slate-100 rounded-lg border border-slate-400 drop-shadow-lg">
 								<div className="flex flex-row justify-between">
@@ -455,7 +500,6 @@ const QuizForm = () => {
 					)}
 
 					{/* ******* Quiz question section ********** */}
-
 					{currentStep === 2 && (
 						<>
 							{quiz.questions.map((question, questionIndex) => (
@@ -496,7 +540,7 @@ const QuizForm = () => {
 												/>
 											</div>
 
-											{/* Input for image upload */}
+											{/* ******** Input for image upload ********** */}
 											<div className="flex flex-col justify-start bg-zinc-100 p-3 my-3 rounded-md drop-shadow-xl">
 												<label
 													htmlFor="imageText"
@@ -558,7 +602,7 @@ const QuizForm = () => {
 										/>
 									</div>
 
-									{/* Multiple choice answer section */}
+									{/* ******** Multiple choice answer section ******** */}
 									<div className="mx-2">
 										{question.options.map(
 											(option, optionIndex) => (
@@ -621,8 +665,8 @@ const QuizForm = () => {
 						</>
 					)}
 
+					{/* ********* Button - add another question ************ */}
 					<div className="flex justify-center my-4">
-						{/* Button to add another question to the form */}
 						{currentStep > 1 && (
 							<button
 								type="button"
@@ -635,7 +679,7 @@ const QuizForm = () => {
 						)}
 					</div>
 
-					{/* Navigation Buttons */}
+					{/* ************ Navigation Buttons ************** */}
 					{currentStep < totalSteps && (
 						<div className="flex justify-center">
 							<button
@@ -664,20 +708,28 @@ const QuizForm = () => {
 								</p>
 							</button>
 						)}
-						{/* Button to submit the form */}
 
+						{/* ************ Submit Button ************* */}
 						{currentStep > 1 && (
 							<button
 								type="submit"
-								className="flex justify-center text-center w-44 mt-4 lg:w-80 h-16 lg:px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+								className="flex justify-center items-center w-44 mt-4 lg:w-80 h-16 lg:px-4 py-2 text-white bg-blue-700 border-2 border-slate-500 hover:bg-blue-800 hover:text-primary active:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 							>
-								<p className="pt-2">Create Quiz</p>
+								{isLoading ? (
+									<p className="text-xl lg:text-3xl font-quizgate font-thin tracking-widest -ml-3">
+										SUBITTING...
+									</p>
+								) : (
+									<p className="text-xl lg:text-3xl font-roboto font-thin tracking-wide -ml-3 ">
+										SUBMIT
+									</p>
+								)}
 							</button>
 						)}
 					</div>
-				</div>
+				</article>
 			</Form>
-		</div>
+		</section>
 	);
 };
 

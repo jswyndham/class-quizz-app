@@ -22,9 +22,10 @@ export const getQuizAttempt = async (req, res) => {
 		}
 
 		// Directly find the quiz attempt by its ID and populate the quiz details
-		const quizAttempt = await QuizAttempt.findById(quizAttemptId).populate(
-			'quiz'
-		);
+		const quizAttempt = await QuizAttempt.findById(quizAttemptId).populate({
+			path: 'quiz',
+			select: 'isVisibleToStudent startDate endDate isActive',
+		});
 
 		if (!quizAttempt) {
 			return res

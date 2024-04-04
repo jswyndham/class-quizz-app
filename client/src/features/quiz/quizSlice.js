@@ -27,7 +27,7 @@ const quizSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 
-			// Get all quizzes
+			// ************** Fetch/Get all quizzes ***********
 			.addCase(fetchQuizzes.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -44,7 +44,7 @@ const quizSlice = createSlice({
 				state.error = action.payload.msg;
 			})
 
-			// Fetch quiz by id
+			// ************* Fetch/get quiz by id *************
 			.addCase(fetchQuizById.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -70,7 +70,7 @@ const quizSlice = createSlice({
 				state.loading = false;
 			})
 
-			// Create new quiz
+			// ********* Create new quiz ***************
 			.addCase(createQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -82,10 +82,11 @@ const quizSlice = createSlice({
 			})
 			.addCase(createQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.payload.message;
+				state.error = action.payload.message; // Extracting error message
+				toast.error(action.payload.message); // Displaying error message with toast
 			})
 
-			// Update existing quiz
+			// ************ Edit/Update existing quiz ***********
 			.addCase(updateQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -99,10 +100,10 @@ const quizSlice = createSlice({
 			})
 			.addCase(updateQuiz.rejected, (state, action) => {
 				state.loading = false;
-				state.error = action.payload.msg;
+				state.error = action.payload.msg || action.payload.message;
 			})
 
-			// Copy a quiz and place in a new class
+			// ************* Copy a quiz and place in a new class ************
 			.addCase(copyQuizToClass.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -127,7 +128,7 @@ const quizSlice = createSlice({
 				state.error = action.payload.msg;
 			})
 
-			// Delete quiz
+			// *************** Delete quiz *****************
 			.addCase(deleteQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;
@@ -142,7 +143,7 @@ const quizSlice = createSlice({
 				state.error = action.payload.msg;
 			})
 
-			// Add question to quiz
+			// ************* Add question to quiz ***************
 			.addCase(addQuestionToQuiz.pending, (state) => {
 				state.loading = true;
 				state.error = null;

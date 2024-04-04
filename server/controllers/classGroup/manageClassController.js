@@ -33,9 +33,18 @@ export const createClass = async (req, res) => {
 
 	try {
 		const userId = req.user.userId;
+		const { className, subject, school, dayOfTheWeek, classTime } =
+			req.body;
 
 		// Validate request body
-		if (!className || !subject || !school) {
+		if (
+			!className ||
+			!subject ||
+			!school ||
+			!dayOfTheWeek ||
+			!classTime.start ||
+			!classTime.end
+		) {
 			return res.status(StatusCodes.BAD_REQUEST).json({
 				message: 'Missing required fields',
 			});
@@ -57,6 +66,8 @@ export const createClass = async (req, res) => {
 			className,
 			subject,
 			school,
+			dayOfTheWeek,
+			classTime,
 			createdBy: userId,
 			classAdmin: userId, // Set the class creator as the admin
 			accessCode: accessCode, // Set the unique class access code
@@ -136,11 +147,11 @@ export const updateClass = async (req, res) => {
 		if (!classGroup) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
-				.json({ msg: 'Class not found' });
+				.json({ message: 'Class not found' });
 		}
 
 		// Check if the current user is the class admin
-		if (classGroup.admin.toString() !== userId) {
+		if (classGroup.classAdmin.toString() !== userId) {
 			return res.status(StatusCodes.FORBIDDEN).json({
 				message:
 					'Forbidden: You are not the administrator of this class',
@@ -160,29 +171,42 @@ export const updateClass = async (req, res) => {
 			}
 		}
 
+		// Prepare update object
+		const updateData = { ...req.body };
+
+		console.log('Update Class: ', updateData);
+
+		// Update class times if provided
+		if (req.body.dayOfTheWeek)
+			updateData.dayOfTheWeek = req.body.dayOfTheWeek;
+		if (req.body.classTime) updateData.classTime = req.body.classTime;
+
 		const updatedClass = await ClassGroup.findByIdAndUpdate(
 			classId,
-			req.body,
+			updateData,
 			{ new: true }
 		);
 
+		console.log('Updated Class data: ', updatedClass);
+
 		// Create an audit log entry of the user's action
-		if (classGroup) {
-			const auditLog = new AuditLog({
-				action: 'UPDATE_CLASS',
-				subjectType: 'Class',
-				subjectId: classGroup._id,
-				userId: req.user.userId,
-				details: { reason: 'Class updated' },
-			});
-			await auditLog.save();
-		}
+		// [Assuming AuditLog is a model for logging actions]
+		const auditLog = new AuditLog({
+			action: 'UPDATE_CLASS',
+			subjectType: 'Class',
+			subjectId: classGroup._id,
+			userId: userId,
+			details: { reason: 'Class updated' },
+		});
+		await auditLog.save();
 
 		// Clear the cache when updated
+		// [Assuming clearCache is a function to clear cache]
+		const cacheKey = `class_${userId}`;
 		clearCache(cacheKey);
 
 		res.status(StatusCodes.OK).json({
-			msg: 'Class was updated',
+			message: 'Class was updated',
 			class: updatedClass,
 		});
 	} catch (error) {

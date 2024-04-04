@@ -1,12 +1,16 @@
+// *************** React ********************
 import { useEffect, memo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
+
+// ************* React Components *************
 import QuizCard from './QuizCard';
 import QuizAttemptCard from './QuizAttemptCard';
-import { fetchQuizzes } from '../../features/quiz/quizAPI';
+import QuizCardGradientValues from './QuizCardGradientValues';
+
+// ****************** Redux ******************
+import { useSelector, useDispatch } from 'react-redux';
 import { selectClassDataArray } from '../../features/classGroup/classSelectors';
 import { selectMembershipDataArray } from '../../features/membership/membershipSelectors';
-import QuizCardGradientValues from './QuizCardGradientValues';
-import { useNavigate } from 'react-router';
 import { fetchClasses } from '../../features/classGroup/classAPI';
 import { fetchMemberships } from '../../features/membership/membershipAPI';
 import { selectQuizDataArray } from '../../features/quiz/quizSelectors';
@@ -18,7 +22,6 @@ const QuizContainer = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const quizAttemptData = useSelector(selectQuizAttemptDataArray);
 	const quizData = useSelector(selectQuizDataArray);
 	const classData = useSelector(selectClassDataArray);
 	const membershipData = useSelector(selectMembershipDataArray); // Get membership data
@@ -32,17 +35,18 @@ const QuizContainer = () => {
 	const userRole = currentUser?.userStatus;
 
 	useEffect(() => {
-		if (userRole === 'TEACHER' || userRole === 'ADMIN') {
-			// Fetch class data for TEACHER/ADMIN
-			dispatch(fetchClasses());
-		} else if (userRole === 'STUDENT') {
-			// Fetch membership data for STUDENTS
-			dispatch(fetchMemberships());
+		if (currentUser) {
+			if (userRole === 'TEACHER' || userRole === 'ADMIN') {
+				dispatch(fetchClasses());
+			} else if (userRole === 'STUDENT') {
+				dispatch(fetchMemberships());
+			}
 		}
-	}, [dispatch, userRole]);
+	}, [currentUser, dispatch, userRole]);
 
 	console.log('Membership Data (students): ', membershipData);
 	console.log('Class Data (teachers): ', classData);
+	console.log('user Data: ', currentUser);
 
 	const { determineGradientClass } = QuizCardGradientValues({});
 
@@ -92,7 +96,7 @@ const QuizContainer = () => {
 	}
 
 	return (
-		<section className="flex justify-center h-full w-full pt-36 pb-8 overflow-hidden">
+		<section className="flex justify-center h-full w-full pt-24 md:pt-36 pb-8 overflow-hidden">
 			<section className="w-full flex flex-col justify-start">
 				{userRole === 'TEACHER' || userRole === 'ADMIN'
 					? classData.map((classes) => {
@@ -143,6 +147,7 @@ const QuizContainer = () => {
 					: userRole === 'STUDENT'
 					? membershipData.map((classGroupItem) => {
 							// Make sure mapped array is not undefined or empty
+
 							if (
 								!classGroupItem.quizAttempts ||
 								classGroupItem.quizAttempts.length === 0
@@ -161,6 +166,7 @@ const QuizContainer = () => {
 								classNameOriginal,
 								27
 							);
+							console.log('classGroupItem:', classGroupItem);
 							return (
 								<article
 									key={classGroupItem._id}
@@ -191,19 +197,57 @@ const QuizContainer = () => {
 											}
 										>
 											{classGroupItem.quizAttempts.map(
-												(quizAttempt) => (
-													<MemoizedQuizAttemptCard
-														key={quizAttempt._id}
-														quizAttemptId={
-															quizAttempt._id
-														}
-														{...quizAttempt.quiz}
-														gradientClass={determineGradientClass(
-															quizAttempt.quiz
-																.backgroundColor
-														)}
-													/>
-												)
+												(quizAttempt) => {
+													console.log(
+														'Quiz Attempt Data:',
+														quizAttempt
+													);
+
+													// Calculate total points
+													const totalPoints =
+														quizAttempt.quiz &&
+														quizAttempt.quiz
+															.questions
+															? quizAttempt.quiz.questions.reduce(
+																	(
+																		acc,
+																		question
+																	) =>
+																		acc +
+																		(question.points ||
+																			0),
+																	0
+															  )
+															: 0;
+
+													return (
+														<MemoizedQuizAttemptCard
+															key={
+																quizAttempt._id
+															}
+															quizAttemptId={
+																quizAttempt._id
+															}
+															quizId={
+																quizAttempt.quiz
+																	._id
+															}
+															questionCount={
+																quizAttempt.quiz
+																	.questions
+																	.length
+															}
+															totalPoints={
+																totalPoints
+															}
+															{...quizAttempt.quiz}
+															gradientClass={determineGradientClass(
+																quizAttempt.quiz
+																	.backgroundColor
+															)}
+														/>
+													);
+												}
 											)}
 										</div>
 									</div>

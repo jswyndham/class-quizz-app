@@ -12,7 +12,7 @@ const QuizLayout = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const currentQuiz = useSelector((state) => state.quiz.currentQuiz);
-	const { error } = useSelector((state) => state.quiz);
+	const error = useSelector((state) => state.quiz.error);
 	const isLoading = useSelector((state) => state.quiz.loading);
 
 	useEffect(() => {

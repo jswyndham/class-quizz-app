@@ -7,3 +7,4 @@ export { default as QuizLayoutAnswer } from './QuizLayoutAnswer';
 export { default as QuizLayoutQuestion } from './QuizLayoutQuestion';
 export { default as QuizCardGradientValues } from './QuizCardGradientValues';
 export { default as QuizFormColorSelection } from './QuizFormColorSelection';
+export { default as QuizFormDescription } from './QuizFormDescription';

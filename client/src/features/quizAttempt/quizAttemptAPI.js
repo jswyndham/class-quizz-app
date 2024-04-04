@@ -11,6 +11,10 @@ export const fetchQuizAttempt = createAsyncThunk(
 			const response = await customFetch.get(
 				`${BASE_URL}/${quizAttemptId}`
 			);
+			if (!quizAttemptId) {
+				return rejectWithValue('Quiz Attempt ID is undefined');
+			}
+			console.log('Fetched Quiz Attempt:', response.data);
 			return response.data;
 		} catch (error) {
 			return rejectWithValue(error.response.data || error.message);

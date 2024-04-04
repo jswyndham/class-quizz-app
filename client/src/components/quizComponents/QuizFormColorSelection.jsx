@@ -14,7 +14,10 @@ const QuizFormColorSelector = ({ selectedColor, onSelectColor }) => {
 				<div
 					key={gradient.value}
 					className={`color-option ${gradient.class}`}
-					onClick={() => onSelectColor(gradient.value)}
+					onClick={() => {
+						console.log('Selected Color: ', gradient.value); // Debugging line
+						onSelectColor(gradient.value);
+					}}
 					style={{
 						outline:
 							selectedColor === gradient.value

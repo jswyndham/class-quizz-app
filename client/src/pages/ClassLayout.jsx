@@ -8,6 +8,7 @@ import QuizCardGradientValues from '../components/quizComponents/QuizCardGradien
 import { PiUserSquareLight } from 'react-icons/pi';
 import { CiViewList } from 'react-icons/ci';
 import { IoIosAddCircleOutline } from 'react-icons/io';
+import { selectClassDataArray } from '../features/classGroup/classSelectors';
 
 const MemoizedQuizCard = memo(QuizCard);
 const MemoizedMemberCard = memo(MemberCard);
@@ -15,21 +16,25 @@ const MemoizedMemberCard = memo(MemberCard);
 const ClassLayout = () => {
 	const { determineGradientClass } = QuizCardGradientValues({});
 
+	const classData = useSelector(selectClassDataArray);
+
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const classId = useSelector((state) => state.class.currentClass);
-	const classItem = useSelector(
-		(state) => state.class.classesById[classId] ?? null
-	);
-	const { error } = useSelector((state) => state.class);
+	const classItem = useSelector((state) => state.class.classesById[classId]);
+	const error = useSelector((state) => state.class.error);
 	const isLoading = useSelector((state) => state.class.loading);
+	const currentUser = useSelector((state) => state.user.currentUser); // Get current user data
 
 	// State to track the current active view
 	const [activeView, setActiveView] = useState('quizzes');
 
+	// First check current user or the object fields won't completely load. This makes sure that all necessary data dependencies are met before rendering the component.
 	useEffect(() => {
-		dispatch(fetchClassById(id));
-	}, [id, dispatch]);
+		if (currentUser) {
+			dispatch(fetchClassById(id));
+		}
+	}, [currentUser, id, dispatch]);
 
 	// Handlers to change the active view
 	const showQuizzes = () => setActiveView('quizzes');
@@ -134,7 +139,13 @@ const ClassLayout = () => {
 			)}
 
 			{activeView === 'members' && (
-				<section className="w-full px-4 flex flex-col items-center">
+				<section className="w-screen md:w-full px-2 lg:px-4 flex flex-col items-center">
+					<article className="w-full md:w-10/12 2xl:w-8/12 3xl:w-6/12 flex flex-col py-4 underline underline-offset-8 decoration-4 decoration-secondary">
+						<h2 className="text-left text-3xl lg:text-4xl py-3 ml-2 lg:ml-12 font-quizgate text-forth">
+							Group Member List
+						</h2>
+					</article>
+
 					{classItem.membership &&
 						classItem.membership.map((member) =>
 							member.user ? (

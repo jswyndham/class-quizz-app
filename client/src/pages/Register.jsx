@@ -35,9 +35,9 @@ const Register = () => {
 		});
 	};
 
+	// *************** Handle Submit ******************
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('Submit has been pressed');
 
 		// Check if passwords match
 		if (
@@ -60,6 +60,7 @@ const Register = () => {
 		}
 	};
 
+	// ***************** Signup Form ******************
 	return (
 		<section className="h-screen flex justify-center align-middle sm:p-3 md:p-24 bg-gradient-to-br from-forth to-secondary">
 			<article className="flex flex-col w-fit bg-white py-16 border-solid border-2 border-sky-200 rounded-xl shadow-xl">

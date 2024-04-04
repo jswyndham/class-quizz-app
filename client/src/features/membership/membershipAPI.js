@@ -15,6 +15,7 @@ export const fetchMemberships = createAsyncThunk(
 		}
 	}
 );
+
 // Delete member from group
 export const removeMembership = createAsyncThunk(
 	'membership/removeMembership',
