@@ -304,25 +304,29 @@ const QuizCard = ({
 				)}
 
 				{/*  *********** Quiz Active Dates ****************** */}
+
 				<div className="w-full flex flex-col md:flex-row md:justify-start pl-6 md:pl-12 border-2 border-slate-400 bg-slate-500 text-white">
 					<div className="flex flex-row my-1 md:mr-5">
 						<FaLockOpen className="mt-1 mr-2" />
-						<p>Open From: {startDateFormatted}</p>
+						<p className="text-yellow-200">Start Date:</p>
+						<p className="mx-2">{startDateFormatted}</p>
 					</div>
 					<div className="flex flex-row my-1 md:ml-5">
 						<FaLock className="mt-1 mr-2" />
-						<p>Open Until: {endDateFormatted}</p>
+						<p className="text-yellow-200">Finish Date:</p>
+						<p className="mx-2">{endDateFormatted}</p>
 					</div>
 				</div>
 
 				{/* *********** Quiz info details ************ */}
-				<div className="flex flex-col lg:flex-col xl:flex-row justify-start px-8 py-4 xl:py-3 xl:px-0 bg-white rounded-b-md border-2 border-slate-400 text-sm md:text-md">
-					<div className="flex flex-col md:flex-row md:justify-start ml-6">
+
+				<div className="flex flex-col justify-start px-8 py-4 xl:py-3 xl:px-0 bg-white rounded-b-md border-2 border-slate-400 text-sm md:text-md">
+					<div className="flex flex-col md:flex-row md:justify-start ml-6 md:ml-10">
 						<div className="flex flex-row my-1 md:mr-5">
 							<MdFormatListNumbered className="mt-1 mr-2" />
 							<p className="">{questionCount} questions</p>
 						</div>
-						<div className="flex flex-row my-1 md:ml-5">
+						<div className="flex flex-row my-1 md:ml-24">
 							<GrScorecard className="mt-1 mr-2" />
 							<p>{totalPoints} points</p>
 						</div>

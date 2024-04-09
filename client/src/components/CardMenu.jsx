@@ -50,10 +50,10 @@ const CardMenu = ({
 					: 'absolute invisible'
 			}
 		>
-			<ul className="text-lg md:text-xl">
+			<ul className="text-lg">
 				{menuConfig.copy && (
 					<li
-						className="flex flex-row w-full py-3 px-6 hover:bg-third hover:text-primary hover:rounded-t-md"
+						className="flex flex-row w-full py-3 px-6 hover:bg-slate-500  hover:text-white hover:rounded-t-md"
 						onClick={handleCopy}
 					>
 						<FaCopy className="mt-1 mr-6" />
@@ -63,7 +63,7 @@ const CardMenu = ({
 				{menuConfig.edit && (
 					<li
 						onClick={handleEdit}
-						className="flex flex-row w-full py-3 px-6 hover:bg-third hover:text-primary"
+						className="flex flex-row w-full py-3 px-6 hover:bg-slate-500  hover:text-white"
 					>
 						<FaEdit className="mt-1 mr-6" />
 						{listNameTwo}
@@ -71,7 +71,7 @@ const CardMenu = ({
 				)}
 				{menuConfig.delete && (
 					<li
-						className="flex flex-row w-full py-3 px-6 hover:bg-third hover:text-primary hover:rounded-b-md"
+						className="flex flex-row w-full py-3 px-6 hover:bg-slate-500  hover:text-white hover:rounded-b-md"
 						onClick={() => handleDelete(true)}
 					>
 						<MdDelete className="mt-1 mr-6" />
